@@ -29,9 +29,11 @@ import json
 import pycountry
 import os
 import timeago
+from requests import get
 from urllib.request import urlopen
 
 banchokey = ["1234567890"]
+BASE_API = 'https://osu.ppy.sh/api'
 
 def genToken(username):
     istokne = chkToken(username)
@@ -158,7 +160,7 @@ def checkBeatmapInDB(setid):
 
 def convertToBeatmapidToSetid(bid):
     randomkey = random.choice(banchokey)
-    json_url = urlopen(f"https://osu.ppy.sh/api/get_beatmaps?k={randomkey}&b=" + bid)
+    json_url = urlopen(f"/get_beatmaps?k={randomkey}&b=" + bid)
     data = json.loads(json_url.read())
    #print(data)
     try:
@@ -194,8 +196,18 @@ def convertToBeatmapidToSetid(bid):
 
 def add_beatmap_just_one(setid):
     randomkey = random.choice(banchokey)
-    json_url = urlopen(f"https://osu.ppy.sh/api/get_beatmaps?k={randomkey}&s=" + setid)
-    data = json.loads(json_url.read())
+    params = {
+        'k': randomkey,
+        's': setid
+    }
+    json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
+
+    if not json_url or json_url.status_code != 200:
+        return # TODO: return an error of the request being bad
+
+    data = json_url.json()
+    if not data:
+        return # TODO: return an error of empty data
    #print(data)
     try:
         beatmapid = data[0]['beatmap_id']

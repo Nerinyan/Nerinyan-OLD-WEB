@@ -1,14 +1,9 @@
-from flask import Flask, render_template, redirect, request, send_from_directory, make_response, session, url_for
+from flask import Flask, render_template, send_from_directory, make_response
 from flask.helpers import send_file
-from flask_restful import Resource, Api, reqparse
 from flask_recaptcha import ReCaptcha
 from bin.config import UserConfig
 from bin.functions import *
-import pymysql
 import os
-from colorama import Fore, init
-from threading import Thread
-import random
 from requests import get
 
 app = Flask('NerinaBeatmapMirror')
@@ -48,7 +43,7 @@ def owowowo():
 @app.route('/osu/s/<setid>')
 def download_beatmapset(setid):
     check = check_file(setid)
-    if check == 'alived':
+    if check:
         path = "./beatmaps/"
         fileformat = ".osz"
         filename = get_beatmap_file_name(setid)
@@ -65,7 +60,7 @@ def downlaod_beatmap(bid):
     setid = convertToBeatmapidToSetid(bid)
     print(setid)
     check = check_file(setid)
-    if check == 'alived':
+    if check:
         path = "./beatmaps/"
         fileformat = ".osz"
         filename = get_beatmap_file_name(setid)
@@ -80,61 +75,33 @@ def downlaod_beatmap(bid):
 def api_lists():
     return {'data': {'ok': '5k', '5k': 'ok'}}
 
-
-
-
-
 def download(url, file_name):
     with open(file_name, "wb") as file:
         response = get(url)
-        if str(response.content) in 'Set not found':
+        if response.content <= 13:
             return 'no'
         else:
             file.write(response.content)
 
 def check_file(setid):
     check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
-    if check == True:
-        return 'alived'
-    else:
-        urls = ['https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/']
-        filedir = "beatmaps/" + setid + ".osz"
-        url = f"{urls[0]}{setid}"
+    if check:
+        return True
+    
+    urls = ['https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/']
+    filedir = "beatmaps/" + setid + ".osz"
+    for url in urls:
+        if os.path.exists(filedir):
+            os.remove(filedir)
+        url = f"{urls[1]}{setid}"
         download(url, filedir)
         beatmapsize = os.path.getsize(filedir)
         if beatmapsize >= 1000000:
-            return 'alived'
+            return True
         else:
-            os.remove(filedir)
-            url = f"{urls[1]}{setid}"
-            download(url, filedir)
-            beatmapsize = os.path.getsize(filedir)
-            if beatmapsize >= 1000000:
-                return 'alived'
-            else:           
-                os.remove(filedir) 
-                url = f"{urls[2]}{setid}"
-                download(url, filedir)
-                beatmapsize = os.path.getsize(filedir)
-                if beatmapsize >= 1000000:
-                    return 'alived'
-                else:
-                    os.remove(filedir)
-                    url = f"192.168.0.6:8003?s={setid}&name=false"
-                    download(url, filedir)
-                    beatmapsize = os.path.getsize(filedir)
-                    if beatmapsize >= 1000000:
-                        return 'alived'
-                    else:
-                        os.remove(filedir)
-                        url = f"{urls[3]}{setid}"
-                        download(url, filedir)
-                        beatmapsize = os.path.getsize(filedir)
-                        if beatmapsize >= 1000000:
-                            return 'alived'
-                        else:
-                            os.remove(filedir)
-                            return 'dead'
+            continue
+
+    return False
 
 if __name__ == '__main__':
     app.run(port=port, host=host, debug=debugmode)
