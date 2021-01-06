@@ -88,12 +88,12 @@ def check_file(setid):
     if check:
         return True
     
-    urls = ['https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/']
+    urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
     filedir = "beatmaps/" + setid + ".osz"
     for url in urls:
         if os.path.exists(filedir):
             os.remove(filedir)
-        url = f"{urls[1]}{setid}"
+        url = f"{url}{setid}"
         download(url, filedir)
         beatmapsize = os.path.getsize(filedir)
         if beatmapsize >= 1000000:

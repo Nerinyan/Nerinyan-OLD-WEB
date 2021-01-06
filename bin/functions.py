@@ -37,28 +37,28 @@ BASE_API = 'https://osu.ppy.sh/api'
 
 def genToken(username):
     istokne = chkToken(username)
-    if not istokne[0]:
-        now = time.strftime('%Y-%m-%d %H:%M:%S')
-        now2 = int(time.time())
-        expire = now2 + 259200
-        text = f"{username}tokengeneratedby{now}"
-        result = (bcrypt.hashpw(text.encode('UTF-8'), bcrypt.gensalt())).decode('utf-8')
-        try:
-            mydb = mysql.connector.connect(
-                host=UserConfig["MysqlHost"],
-                user=UserConfig["MysqlUser"],
-                passwd=UserConfig["MysqlPassword"]
-            ) 
-        except Exception as e:
-            print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
-            exit()
-        mycursor = mydb.cursor()
-
-        mycursor.execute(f"INSERT INTO NerinaCDN.token VALUES ('{username}', '{result}', {expire}, 0, {now2})")
-        mydb.commit()
-        return result
-    else:
+    if istokne[0]:
         return istokne[1]
+    now = time.strftime('%Y-%m-%d %H:%M:%S')
+    now2 = int(time.time())
+    expire = now2 + 259200
+    text = f"{username}tokengeneratedby{now}"
+    result = (bcrypt.hashpw(text.encode('UTF-8'), bcrypt.gensalt())).decode('utf-8')
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        exit()
+    mycursor = mydb.cursor()
+
+    mycursor.execute(f"INSERT INTO NerinaCDN.token VALUES ('{username}', '{result}', {expire}, 0, {now2})")
+    mydb.commit()
+    return result
+        
 
 def chkToken(username):
     try:
@@ -75,19 +75,18 @@ def chkToken(username):
     user = mycursor.fetchall()
     if not user:
         return [False]
-    else:
-        user = user[0]
-        expire = user[1]
-        isexpired = user[2]
-        generatewhen = user[3]
-        if isexpired == 0:
-            expirechk = expire - generatewhen
-            if expirechk < 0:
-                mycursor.execute(f"DELETE FROM NerinaCDN.token WHERE userid = '{username}'")
-                mydb.commit()
-                return [False]
-            else:
-                return [True, user[0]]
+    user = user[0]
+    expire = user[1]
+    isexpired = user[2]
+    generatewhen = user[3]
+    if not isexpired:
+        expirechk = expire - generatewhen
+        if expirechk < 0:
+            mycursor.execute(f"DELETE FROM NerinaCDN.token WHERE userid = '{username}'")
+            mydb.commit()
+            return [False]
+
+        return [True, user[0]]
 
 def get_beatmap_file_name(setid):
     try:
@@ -100,8 +99,8 @@ def get_beatmap_file_name(setid):
         print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
         return 'server has some problems now'
     cur = mydb.cursor()
-    sqlopen = open("./bin/sql/get_beatmap_file_name.sql", 'r')
-    sql = (sqlopen.read()).format(setid)
+    with open("./bin/sql/get_beatmap_file_name.sql", 'r') as sqlopen:
+        sql = (sqlopen.read()).format(setid)
     cur.execute(sql)
     beatdata = cur.fetchone()
     try:    
@@ -160,37 +159,18 @@ def checkBeatmapInDB(setid):
 
 def convertToBeatmapidToSetid(bid):
     randomkey = random.choice(banchokey)
-    json_url = urlopen(f"/get_beatmaps?k={randomkey}&b=" + bid)
+    json_url = urlopen(f"{BASE_API}/get_beatmaps?k={randomkey}&b=" + bid)
     data = json.loads(json_url.read())
    #print(data)
     try:
-        beatmapid = data[0]['beatmap_id']
-        b_setid = data[0]['beatmapset_id']
-        b_artist = data[0]['artist']
-        b_artist_unicode = data[0]['artist_unicode']
-        b_title = data[0]['title']
-        b_title_unicode = data[0]['title_unicode']
-        b_creator = data[0]['creator']
-        b_submit_date = data[0]['submit_date']
-        b_last_update = data[0]['last_update']
-        b_playcount = data[0]['playcount']
-        b_bpm = data[0]['bpm']
-        b_tags = data[0]['tags']
-        b_genre_id = data[0]['genre_id']
-        b_language_id = data[0]['language_id']
-        b_favourite_count = data[0]['favourite_count']
-        b_preview_url = f"//b.ppy.sh/preview/{b_setid}.mp3"
-        b_ranked = data[0]['approved']
-        b_ranked_date = data[0]['approved_date']
+        beatmap = data[0]
+        beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)
+        aa = checkBeatmapInDB(beatmap['beatmapset_id'])
 
-        aa = checkBeatmapInDB(b_setid)
+        if not aa:
+            aaaa = insert_data(beatmap)
 
-        if aa == 0:
-            aaaa = insert_data(set_id = b_setid, artist = b_artist, artist_unicode = b_artist_unicode, title = b_title, title_unicode = b_title_unicode, creator = b_creator, 
-                        submit_date = b_submit_date, last_update = b_last_update, playcount = b_playcount, bpm = b_bpm, tags = b_tags, genre_id = b_genre_id, genre_name = '', language_id = b_language_id, language_name = '', favorite_count = b_favourite_count,
-                        preview_url = b_preview_url, ranked = b_ranked, ranked_date = b_ranked_date)
-
-        return b_setid
+        return beatmap['beatmapset_id']
     except Exception as e:
         return e 
 
@@ -210,33 +190,14 @@ def add_beatmap_just_one(setid):
         return # TODO: return an error of empty data
    #print(data)
     try:
-        beatmapid = data[0]['beatmap_id']
-        b_setid = data[0]['beatmapset_id']
-        b_artist = data[0]['artist']
-        b_artist_unicode = data[0]['artist_unicode']
-        b_title = data[0]['title']
-        b_title_unicode = data[0]['title_unicode']
-        b_creator = data[0]['creator']
-        b_submit_date = data[0]['submit_date']
-        b_last_update = data[0]['last_update']
-        b_playcount = data[0]['playcount']
-        b_bpm = data[0]['bpm']
-        b_tags = data[0]['tags']
-        b_genre_id = data[0]['genre_id']
-        b_language_id = data[0]['language_id']
-        b_favourite_count = data[0]['favourite_count']
-        b_preview_url = f"//b.ppy.sh/preview/{b_setid}.mp3"
-        b_ranked = data[0]['approved']
-        b_ranked_date = data[0]['approved_date']
-
-        aaaa = insert_data(set_id = b_setid, artist = b_artist, artist_unicode = b_artist_unicode, title = b_title, title_unicode = b_title_unicode, creator = b_creator, 
-                    submit_date = b_submit_date, last_update = b_last_update, playcount = b_playcount, bpm = b_bpm, tags = b_tags, genre_id = b_genre_id, genre_name = '', language_id = b_language_id, language_name = '', favorite_count = b_favourite_count,
-                    preview_url = b_preview_url, ranked = b_ranked, ranked_date = b_ranked_date)
+        beatmap = data[0]
+        beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)
+        aaaa = insert_data(beatmap)
         return aaaa
     except Exception as e:
         return e
 
-def insert_data(set_id, artist, artist_unicode, title, title_unicode, creator, submit_date, last_update, playcount, bpm, tags, genre_id, genre_name, language_id, language_name, favorite_count, preview_url, ranked, ranked_date):
+def insert_data(beatmap: dict):
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -248,7 +209,7 @@ def insert_data(set_id, artist, artist_unicode, title, title_unicode, creator, s
         return 'server has some problems now'
     cur = mydb.cursor()
 
-    cur.execute(f"select beatmapset_id from BeatmapMirror.sets where beatmapset_id = {set_id}")
+    cur.execute("select beatmapset_id from BeatmapMirror.sets where beatmapset_id = {beatmapset_id}".format(**beatmap))
     chkdata = cur.fetchone()
     try:
         beatmap_id = chkdata[0]
@@ -257,8 +218,8 @@ def insert_data(set_id, artist, artist_unicode, title, title_unicode, creator, s
     if beatmap_id == NULL:
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
-        print(f'INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({set_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {ranked}, "{ranked_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");')
-        cur.execute(f'INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({set_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {ranked}, "{ranked_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");')
+        print('INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");'.format(**beatmap, nowtime = nowtime))
+        cur.execute('INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");'.format(**beatmap, nowtime = nowtime))
         mydb.commit()
     mydb.close()
 
