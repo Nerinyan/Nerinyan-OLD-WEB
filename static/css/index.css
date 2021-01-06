@@ -1,0 +1,416 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #282c2f;
+}
+
+i {
+    font-style: normal !important;
+}
+
+.ui-navbar-block {
+    position: sticky;
+}
+
+.ui-navbar-container {
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+}
+
+.navbar {
+    background-color: rgb(84, 92, 100) !important;
+}
+
+.navbar-block {
+    box-shadow: 0 0 4px #565656;
+    background-color: rgb(84, 92, 100);
+}
+
+.navbar.item {
+    color: rgb(255, 255, 255) !important;
+    border-bottom-color: transparent !important;
+    background-color: rgb(84, 92, 100) !important;
+}
+
+.el-menu-item.navbar.item:hover {
+    background-color: #727c85 !important;
+}
+
+.navbar.item.is-active {
+    color: rgb(255, 208, 75) !important;
+    border-bottom-color: rgb(255, 208, 75) !important;
+    background-color: rgb(84, 92, 100) !important;
+}
+
+.navbar.el-menu.el-menu--horizontal {
+    border-bottom: solid 1px #ffd04b75 !important;
+}
+
+.el-input__inner {
+    background-color: transparent;
+    background-image: none !important;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    color: #000 !important;
+    display: inline-block;
+    font-size: inherit;
+    height: 40px;
+    line-height: 40px;
+    outline: 0;
+    padding: 0 15px;
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    width: 100%;
+    box-shadow: 0 0 4px #565656;
+}
+
+.el-input__inner:hover {
+    border-color: #545c64;
+}
+
+.navbar.search {
+    padding: 14px;
+    background-color: #ffd04b !important;
+    display: flex;
+}
+
+.navbar.search-btn {
+    margin-right: 24px;
+    background-color: #E6A23C !important;
+    box-shadow: 0 0.5px 2px 0px #000 !important;
+}
+
+.navbar-block-col {
+    display: flex;
+}
+
+.el-input__inner {
+    height: 44px;
+}
+
+.navbar-search-box {
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+    position: relative;
+    margin: 0px auto !important;
+    padding: 6px 12px 6px 0;
+}
+
+.navbar-search-icon {
+    font-size: 32px;
+    display: flex;
+    position: relative;
+    text-shadow: 2px 2px 6px #565656;
+}
+
+.el-input__inner::placeholder {
+    color: #000 !important;
+}
+
+.right {
+    float: right !important;
+}
+
+.left {
+    float: left !important;
+}
+
+@font-face{
+    font-family:FontAwesomeExtra;
+    src:url(/static/fonts/extra.6f1f24ae.ttf) format("truetype")
+}
+
+.faa{
+    font-family: FontAwesomeExtra;
+}
+
+.fa-extra-mode-osu:before{
+    content: "\E800";
+}
+
+.fa-extra-mode-fruits:before{
+    content: "\E801";
+}
+
+.fa-extra-mode-mania:before{
+    content:"\E802";
+}
+
+.fa-extra-mode-taiko:before{
+    content:"\E803";
+}
+
+.mode-ico {
+    font-size: 22px !important;
+    color: white;
+    margin-right: 4px;
+}
+
+.bg-placeholder {
+    background-position: 50% 50% !important;
+    height: 119px;
+    width: 100%;
+    background-image: url(/static/images/default-bg.png);
+    margin-bottom: 4px;
+    position: absolute;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.beatmap-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    column-gap: 1em;
+    row-gap: 1em;
+    margin: 12px 0;
+    box-sizing: border-box;
+    width: 100%;
+    place-items: center;
+}
+
+.beatmap_block:hover .song-status{
+    opacity: 0;
+    visibility: hidden;
+    
+}
+
+.beatmap_block{
+    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
+    transition: 200ms box-shadow;
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+}
+
+.beatmap_block:hover{
+    -webkit-box-shadow:0 10px 20px rgba(0,0,0,.75);
+    box-shadow:0 10px 20px rgba(0,0,0,.75);
+}
+
+.beatmap_block:hover .beatmapset-panel-prev{
+    opacity: 1;
+}
+
+.beatmapset-panel__play {
+    color: #fff !important;
+    text-decoration: none;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    -webkit-transition: color .12s ease-in-out;
+    transition: color .12s ease-in-out;
+    position: absolute;
+    left: 10px;
+    top: -10px;
+    font-size: 40px;
+     opacity: 0; 
+    line-height: 1;
+    cursor: pointer;
+}
+
+
+
+
+.beatmapset-panel-prev {
+    position: absolute;
+    top: 0;
+    font-size: 36px;
+    margin: 12px 4px;
+}
+
+.beatmapset-panel__play:hover {
+    color: #fc2 !important;
+}
+
+.song-status {
+    background-color: #313131;
+    padding: 4px 9px;
+    width: 60px;
+    text-align: center;
+    border-radius: 12px;
+    color: #fff;
+}
+    
+.card.hovercard {
+    position: relative;
+    padding-top: 0;
+    margin: 0;
+    overflow: hidden;
+    text-align: left;
+    border-radius: 8px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.12);
+    transition: 0.3s box-shadow;
+
+}
+.cardheader:before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    background-color: rgba(0,0,0,.4);
+}
+
+
+.card {
+    padding-top: 20px;
+    margin: 22px 0 20px 0;
+    background-color: rgba(214, 224, 226, 0.2);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: none !important;
+
+
+}
+
+.card.hovercard .bottom {
+    padding: 8px 12px;
+    display: inline-flex;
+    background-color: #191919;
+    border-top: 1px solid #3e3e3e;
+    flex-basis: 45px;
+    flex-wrap: wrap;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+}
+
+.card.hovercard .info {
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #303438;
+    color: white;
+}
+
+.card.hovercard .info .desc {
+    overflow: hidden;
+    font-size: 14px;
+    text-overflow: ellipsis;
+}
+
+.cardheader {
+    background-position: 50% 50% !important;
+    height: 120px;
+    padding: 8px;
+    position: relative;
+    background-size: cover!important;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+}
+
+span.beatmap.songname {
+    text-shadow: 0 1px 2px rgba(0,0,0,.75);
+    color: #fff;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+span.beatmap.songname.title {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.song-author-name {
+    font-weight: 700;
+    color: #de5894 !important;
+}
+.card.hovercard .info .song-source {
+    font-size: 10px;
+    opacity: 0.5;  
+}
+
+.ui-main-block {
+    padding: 12px;
+}
+
+.song-play {
+    color: white;
+    text-shadow: 0 3px 5px rgba(0, 0, 0, 0.17);
+    font-size: 14px;
+    float: right;
+    font-weight: 600;
+}
+.song-stats-block{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.song-stats {
+    opacity: 1;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+    float: right;
+    position: relative;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+.download-icon {
+    color: #d35894;
+    transition: color 0.4s;
+    font-size: 18px;
+    
+}
+.download-icon:hover {
+    color: #ffb9db;
+}
+
+.beatmaps-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    column-gap: 1em;
+    row-gap: 1em;
+    margin: 12px 0;
+}
+
+@media(max-width: 1500px){
+    .beatmaps-list{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width: 768px){
+    .beatmaps-list{
+        grid-template-columns: 1fr;
+    }
+}
+
+.tooltip-inner {
+    background-color: #202020 !important;
+    font-size: 12px !important;
+    max-width: 220px !important;
+}
+.tooltip .arrow::before {
+    border-top-color: #202020 !important;
+}
+.tooltip-inner>span{
+    font-weight: 700 !important;
+    font-size: 13px !important;
+}
+.tooltip-inner>span>i{
+    margin-left: 2px;
+    font-family: Font Awesome\ 5 Pro;
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+.tooltip-inner>span>i:before{
+    content: "\f005";
+}
