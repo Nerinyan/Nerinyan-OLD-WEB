@@ -89,8 +89,8 @@ def check_file(setid):
         return True
     
     urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
-    filedir = "beatmaps/" + setid + ".osz"
     for url in urls:
+        filedir = "beatmaps/" + setid + ".osz"
         if os.path.exists(filedir):
             os.remove(filedir)
         url = f"{url}{setid}"
