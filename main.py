@@ -1,28 +1,15 @@
 from flask import Flask, render_template, send_from_directory, make_response
 from flask.helpers import send_file
-from flask_recaptcha import ReCaptcha
 from bin.config import UserConfig
 from bin.functions import *
 import os
 from requests import get
 
 app = Flask('NerinaBeatmapMirror')
-recaptcha = ReCaptcha(app=app)
-app.secret_key = os.urandom(24) 
-
-app.config.update({
-    "RECAPTCHA_THEME": "dark",
-    "RECAPTCHA_SITE_KEY": UserConfig["RecaptchaSiteKey"],
-    "RECAPTCHA_SECRET_KEY": UserConfig["RecaptchaSecret"],
-    "RECAPTCHA_ENABLED": True
-})
 
 host = UserConfig["host"]
 port = UserConfig["port"]
 debugmode = bool(UserConfig["debug"])
-
-def NoPerm(session):
-    return render_template("403.html")
 
 @app.route("/dev")
 def main():
@@ -88,7 +75,7 @@ def check_file(setid):
     if check:
         return True
     
-    urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
+    urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', '192.168.0.6:8003?name=false&s=', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
     for url in urls:
         filedir = "beatmaps/" + setid + ".osz"
         if os.path.exists(filedir):
