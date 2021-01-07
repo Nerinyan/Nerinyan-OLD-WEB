@@ -9,96 +9,165 @@
 
 <body>
     <div id="app" v-bind:class="{ 'load' : load }">
-        <script src="/static/js/stickyfill.min.js"></script>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
             integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
         <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
         <div class="ui container" id="main-form">
-            <div class="ui-navbar-block sticky">
-                <el-row class="navbar search">
-                    <el-col :span="1">
-                        <div class="navbar-search-box">
-                            <i class="fas fa-search navbar-search-icon"></i>
-                        </div>
-                    </el-col>
-                    <el-col :span="23" class="navbar-block-col">
-                        <el-input class="navbar-search-input" placeholder="Search..." v-model="search_query"></el-input>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="24" class="navbar-block">
-                        <el-menu :default-active="rank" class="navbar left" mode="horizontal"
-                            @select="handleSelect">
-                            <el-menu-item index="1" class="navbar item">Ranked</el-menu-item>
-                            <el-menu-item index="3" class="navbar item">Qualified</el-menu-item>
-                            <el-menu-item index="4" class="navbar item">Loved</el-menu-item>
-                            <el-menu-item index="0" class="navbar item">Unranked</el-menu-item>
-                            <el-menu-item index="-3" class="navbar item">All</el-menu-item>
-                        </el-menu>
-                        <el-menu :default-active="mode" class="navbar right" mode="horizontal" @select="handleSelect">
-                            <el-tooltip class="item" effect="dark" content="osu! Standard" placement="bottom">
-                                <el-menu-item index="0" class="navbar item"><i
-                                        class="mode-ico faa fa-extra-mode-osu"></i></el-menu-item>
-                            </el-tooltip>
-                            <el-tooltip class="item" effect="dark" content="osu! Mania" placement="bottom">
-                                <el-menu-item index="3" class="navbar item"><i
-                                        class="mode-ico faa fa-extra-mode-mania"></i></el-menu-item>
-                            </el-tooltip>
-                            <el-tooltip class="item" effect="dark" content="osu! Taiko" placement="bottom">
-                                <el-menu-item index="1" class="navbar item"><i
-                                        class="mode-ico faa fa-extra-mode-taiko"></i></el-menu-item>
-                            </el-tooltip>
-                            <el-tooltip class="item" effect="dark" content="osu! Catch The Beat" placement="bottom">
-                                <el-menu-item index="2" class="navbar item"><i
-                                        class="mode-ico faa fa-extra-mode-fruits"></i></el-menu-item>
-                            </el-tooltip>
-                        </el-menu>
-                    </el-col>
-                </el-row>
+            <div class="sticky">
+                <div class="ui-navbar-block">
+                    <el-row class="navbar search">
+                        <el-col :span="1">
+                            <div class="navbar-search-box">
+                                <i class="fas fa-search navbar-search-icon"></i>
+                            </div>
+                        </el-col>
+                        <el-col :span="23" class="navbar-block-col">
+                            <el-input class="navbar-search-input" placeholder="Search..." v-model="search_query"></el-input>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="24" class="navbar-block">
+                            <el-menu :default-active="rank" class="navbar left" mode="horizontal"
+                                @select="handleSelect">
+                                <el-tooltip class="item" effect="dark" content="Ranked" placement="bottom">
+                                    <el-menu-item index="1" class="navbar item">
+                                        <i class="fas fa-angle-double-down ranked"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="Qualified" placement="bottom">
+                                    <el-menu-item index="3" class="navbar item">
+                                        <i class="fas fa-check qualified"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="Loved" placement="bottom">
+                                    <el-menu-item index="4" class="navbar item">
+                                        <i class="fas fa-heart loved"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item bold" effect="dark" content="Unranked" placement="bottom">
+                                    <el-menu-item index="0" class="navbar item">
+                                        <i class="fas fa-question unranked"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-menu-item index="-3" class="navbar item">Any</el-menu-item>
+                            </el-menu>
+                            <el-menu :default-active="mode" class="navbar right" mode="horizontal" @select="handleSelect">
+                                <el-tooltip class="item" effect="dark" content="osu! Standard" placement="bottom">
+                                    <el-menu-item index="0" class="navbar item">
+                                        <i class="navbar-mode-ico faa fa-extra-mode-osu"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="osu! Mania" placement="bottom">
+                                    <el-menu-item index="3" class="navbar item">
+                                        <i class="navbar-mode-ico faa fa-extra-mode-mania"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="osu! Taiko" placement="bottom">
+                                    <el-menu-item index="1" class="navbar item">
+                                        <i class="navbar-mode-ico faa fa-extra-mode-taiko"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="osu! Catch The Beat" placement="bottom">
+                                    <el-menu-item index="2" class="navbar item">
+                                        <i class="navbar-mode-ico faa fa-extra-mode-fruits"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                            </el-menu>
+                        </el-col>
+                    </el-row>
+                </div>
             </div>
             <div class="ui-main-block">
-                <div class="beatmaps-list">
-                    <div class="beatmap_block" v-for="i in list">
-                        <div class="card hovercard">
-                            <div class="bg-placeholder"></div>
-                            <a target="_blank" :href="'/s/' + i.SetID" :id="i.SetID" class="cardheader ranked"
+                <div class="beatmap-row">
+                    <div class="beatmap-block" v-for="i in list">
+                        <div class="beatmap-single">
+                            <div class="beatmap-bg-default"></div>
+                            <a :href="'/s/' + i.SetID" :id="i.SetID" class="cardheader ranked"
                                 :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + i.SetID + '/covers/card.jpg);'">
                                 <div>
                                     <div class="song-status">
-                                        Loved
-                                    </div>
-                                    <div class="song-stats-block">
-                                        <div class="song-stats">
-                                            1 <i class="fas fa-heart"></i>
-                                        </div>
-                                        <div class="song-stats">
-                                            11 <i class="fas fa-play-circle"></i>
-                                        </div>
+                                        <i :class="'fas fa-' + convertRankedStatusToico(i.RankedStatus)"></i>
                                     </div>
                                 </div>
-                                <div class="d-flex flex-column"><span class="beatmap songname title"> <% i.Title %></span>
-                                    <span class="beatmap songname">by <% i.Artist %></span></div>
+                                <div class="d-flex flex-column">
+                                    <span class="beatmap songname title"> <% i.Title %></span>
+                                    <span class="beatmap songname creator">by <% i.Artist %></span>
+                                </div>
                             </a>
                             <div class="beatmapset-preview-elapsed-bar "></div>
                             <div class="info">
                                 <div class="desc">
                                     mapped by <a class="song-author-name"> <% i.Creator %></a>
                                 </div>
-                                <div class="play-download">
-                                    <a target="_blank" href="/d/1209792" class="download-icon">
+                                <div class="beatmap-download-btn">
+                                    <a :href="'/d/' + i.SetID" class="download-icon">
                                         <i class="fa fa-download"></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="bottom">
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
-                                <i class="mode-ico faa fa-extra-mode-osu"></i>
+                            <div class="more-info">
+                                <div class="song-stats-block">
+                                    <el-tooltip class="item" effect="dark" content="Favorites count" placement="bottom">
+                                        <div class="song-stats">
+                                            <i class="fas fa-heart"></i> <% addCommas(i.Favourites) %>
+                                        </div>
+                                    </el-tooltip>
+                                    <el-tooltip class="item" effect="dark" content="Play count" placement="bottom">
+                                        <div class="song-stats">
+                                            <i class="fas fa-play-circle"></i> 123456
+                                        </div>
+                                    </el-tooltip>
+                                    <el-tooltip class="item" effect="dark" content="BPM" placement="bottom">
+                                        <div class="song-stats">
+                                            <i class="fas fa-music"></i> 185♪
+                                        </div>
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                            <div class="version-list">
+                                <el-tooltip placement="top" v-for="ii in i.ChildrenBeatmaps">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <b><% ii.DiffName %></b>
+                                        <br/>
+                                        <div v-if="ii.DifficultyRating < 2">
+                                            <span class="easy beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                        <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
+                                            <span class="normal beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                        <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
+                                            <span class="hard beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                        <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
+                                            <span class="insane beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                        <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
+                                            <span class="expert beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                        <div v-else-if="ii.DifficultyRating > 6.49">
+                                            <span class="expertplus beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                        </div>
+                                    </div>
+                                    <div v-if="ii.DifficultyRating < 2">
+                                        <i class="mode-ico faa fa-extra-mode-osu easy"></i>
+                                    </div>
+                                    <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
+                                        <i class="mode-ico faa fa-extra-mode-osu normal"></i>
+                                    </div>
+                                    <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
+                                        <i class="mode-ico faa fa-extra-mode-osu hard"></i>
+                                    </div>
+                                    <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
+                                        <i class="mode-ico faa fa-extra-mode-osu insane"></i>
+                                    </div>
+                                    <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
+                                        <i class="mode-ico faa fa-extra-mode-osu expert"></i>
+                                    </div>
+                                    <div v-else-if="ii.DifficultyRating > 6.49">
+                                        <i class="mode-ico faa fa-extra-mode-osu expertplus"></i>
+                                    </div>
+                                </el-tooltip>
                             </div>
                         </div>
                         <span class="beatmapset-panel-prev beatmapset-panel__play">
@@ -110,17 +179,18 @@
 
         </div>
     </div>
-    <script>
-        var elements = document.querySelectorAll('.sticky');
-        Stickyfill.add(elements);
-    </script>
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/vue_modules/vue.min.js"></script>
+    <script src="/static/js/stickyfill.min.js"></script>
+    <script src="/static/vue_modules/vue.js"></script>
     <script src="/static/vue_modules/vue-axios-plugin.min.js"></script>
     <script src="/static/vue_modules/vue-timeago.min.js"></script>
     <script src="/static/vue/mixins/generalMixins.js?14882020"></script>
     <script src="/static/vue/pages/beatmaps.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        var elements = document.querySelectorAll('.sticky');
+        Stickyfill.add(elements);
+    </script>
 </body>
 
 </html>

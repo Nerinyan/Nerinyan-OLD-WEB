@@ -1,11 +1,22 @@
+@font-face{font-family:'NanumGothic';font-weight:normal;src:url("/static/fonts/NanumGothic.woff2")}
+@font-face{font-family:'NanumGothicBold';font-weight:normal;src:url("/static/fonts/NanumGothicBold.woff2")}
+
 body {
     margin: 0;
     padding: 0;
     background-color: #282c2f;
+    font-family: 'NanumGothic' !important;
 }
 
 i {
     font-style: normal !important;
+}
+
+.sticky {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100;
 }
 
 .ui-navbar-block {
@@ -60,7 +71,7 @@ i {
     line-height: 40px;
     outline: 0;
     padding: 0 15px;
-    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
     width: 100%;
     box-shadow: 0 0 4px #565656;
 }
@@ -117,46 +128,81 @@ i {
     float: left !important;
 }
 
-@font-face{
-    font-family:FontAwesomeExtra;
-    src:url(/static/fonts/extra.6f1f24ae.ttf) format("truetype")
+@font-face {
+    font-family: FontAwesomeExtra;
+    src: url(/static/fonts/extra.6f1f24ae.ttf) format("truetype")
 }
 
-.faa{
+.faa {
     font-family: FontAwesomeExtra;
 }
 
-.fa-extra-mode-osu:before{
+.fa-extra-mode-osu:before {
     content: "\E800";
 }
 
-.fa-extra-mode-fruits:before{
+.fa-extra-mode-fruits:before {
     content: "\E801";
 }
 
-.fa-extra-mode-mania:before{
-    content:"\E802";
+.fa-extra-mode-mania:before {
+    content: "\E802";
 }
 
-.fa-extra-mode-taiko:before{
-    content:"\E803";
+.fa-extra-mode-taiko:before {
+    content: "\E803";
 }
 
 .mode-ico {
-    font-size: 22px !important;
+    font-size: 18px !important;
     color: white;
-    margin-right: 4px;
+    margin-right: 5px;
+    padding: 2px;
 }
 
-.bg-placeholder {
+.navbar-mode-ico {ee
+    font-size: 30px !important;
+    color: white;
+    margin-right: 5px;
+    padding: 2px;
+}
+
+.easy {
+    color: #88B300;
+}
+
+.normal {
+    color: #66CCFF;
+}
+
+.hard {
+    color: #FFCC22;
+}
+
+.insane {
+    color: #FF66AA;
+}
+
+.expert {
+    color: #8866EE;
+}
+
+.expertplus {
+    color: #000;
+}
+
+.beatmap-tooltip {
+    font-size: 13px !important;
+    text-align: center;
+}
+
+.beatmap-bg-default {
     background-position: 50% 50% !important;
     height: 119px;
     width: 100%;
-    background-image: url(/static/images/default-bg.png);
+    background-image: url(/static/images/beatmaps-default.png);
     margin-bottom: 4px;
     position: absolute;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
 }
 
 .beatmap-row {
@@ -170,27 +216,27 @@ i {
     place-items: center;
 }
 
-.beatmap_block:hover .song-status{
+.beatmap-block:hover .song-status {
     opacity: 0;
     visibility: hidden;
-    
+
 }
 
-.beatmap_block{
+.beatmap-block {
     box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
     -webkit-box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
     transition: 200ms box-shadow;
     overflow: hidden;
     position: relative;
-    border-radius: 8px;
+    width: 100%;
 }
 
-.beatmap_block:hover{
-    -webkit-box-shadow:0 10px 20px rgba(0,0,0,.75);
-    box-shadow:0 10px 20px rgba(0,0,0,.75);
+.beatmap-block:hover {
+    -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, .75);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .75);
 }
 
-.beatmap_block:hover .beatmapset-panel-prev{
+.beatmap-block:hover .beatmapset-panel-prev {
     opacity: 1;
 }
 
@@ -204,19 +250,17 @@ i {
     left: 10px;
     top: -10px;
     font-size: 40px;
-     opacity: 0; 
+    opacity: 0;
     line-height: 1;
     cursor: pointer;
 }
-
-
-
 
 .beatmapset-panel-prev {
     position: absolute;
     top: 0;
     font-size: 36px;
     margin: 12px 4px;
+    transition: all 0.2s ease-in-out;
 }
 
 .beatmapset-panel__play:hover {
@@ -224,26 +268,25 @@ i {
 }
 
 .song-status {
-    background-color: #313131;
+    background-color: #313131b5;
     padding: 4px 9px;
-    width: 60px;
+    width: 35px;
     text-align: center;
     border-radius: 12px;
     color: #fff;
 }
-    
-.card.hovercard {
+
+.beatmap-single {
     position: relative;
     padding-top: 0;
     margin: 0;
     overflow: hidden;
     text-align: left;
-    border-radius: 8px;
     background-color: rgb(255, 255, 255);
     box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.12);
     transition: 0.3s box-shadow;
-
 }
+
 .cardheader:before {
     content: "";
     width: 100%;
@@ -251,7 +294,7 @@ i {
     top: 0;
     left: 0;
     position: absolute;
-    background-color: rgba(0,0,0,.4);
+    background-color: rgba(0, 0, 0, .4);
 }
 
 
@@ -263,14 +306,12 @@ i {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     border: none !important;
-
-
 }
 
-.card.hovercard .bottom {
+.beatmap-single .version-list {
     padding: 8px 12px;
     display: inline-flex;
-    background-color: #191919;
+    background-color: #33312a;
     border-top: 1px solid #3e3e3e;
     flex-basis: 45px;
     flex-wrap: wrap;
@@ -279,7 +320,7 @@ i {
     width: 100%;
 }
 
-.card.hovercard .info {
+.beatmap-single .info {
     padding: 6px 12px;
     display: flex;
     justify-content: space-between;
@@ -288,7 +329,16 @@ i {
     color: white;
 }
 
-.card.hovercard .info .desc {
+.beatmap-single .more-info {
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #23292e;
+    color: white;
+}
+
+.beatmap-single .info .desc {
     overflow: hidden;
     font-size: 14px;
     text-overflow: ellipsis;
@@ -299,7 +349,7 @@ i {
     height: 120px;
     padding: 8px;
     position: relative;
-    background-size: cover!important;
+    background-size: cover !important;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
     overflow: hidden;
@@ -310,7 +360,7 @@ i {
 }
 
 span.beatmap.songname {
-    text-shadow: 0 1px 2px rgba(0,0,0,.75);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .75);
     color: #fff;
     white-space: nowrap;
     font-size: 15px;
@@ -329,9 +379,10 @@ span.beatmap.songname.title {
     font-weight: 700;
     color: #de5894 !important;
 }
-.card.hovercard .info .song-source {
+
+.beatmap-single .info .song-source {
     font-size: 10px;
-    opacity: 0.5;  
+    opacity: 0.5;
 }
 
 .ui-main-block {
@@ -345,11 +396,12 @@ span.beatmap.songname.title {
     float: right;
     font-weight: 600;
 }
-.song-stats-block{
+
+.song-stats-block {
     display: flex;
-    flex-direction: column;
     align-items: flex-end;
 }
+
 .song-stats {
     opacity: 1;
     color: white;
@@ -359,18 +411,22 @@ span.beatmap.songname.title {
     position: relative;
     font-weight: 600;
     transition: opacity 0.2s;
+    padding: 4px;
+    margin-right: 4px;
 }
+
 .download-icon {
     color: #d35894;
     transition: color 0.4s;
     font-size: 18px;
-    
+
 }
+
 .download-icon:hover {
     color: #ffb9db;
 }
 
-.beatmaps-list{
+.beatmap-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     column-gap: 1em;
@@ -378,14 +434,14 @@ span.beatmap.songname.title {
     margin: 12px 0;
 }
 
-@media(max-width: 1500px){
-    .beatmaps-list{
+@media(max-width: 1500px) {
+    .beatmap-row {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-@media(max-width: 768px){
-    .beatmaps-list{
+@media(max-width: 768px) {
+    .beatmap-row {
         grid-template-columns: 1fr;
     }
 }
@@ -395,14 +451,17 @@ span.beatmap.songname.title {
     font-size: 12px !important;
     max-width: 220px !important;
 }
+
 .tooltip .arrow::before {
     border-top-color: #202020 !important;
 }
-.tooltip-inner>span{
+
+.tooltip-inner>span {
     font-weight: 700 !important;
     font-size: 13px !important;
 }
-.tooltip-inner>span>i{
+
+.tooltip-inner>span>i {
     margin-left: 2px;
     font-family: Font Awesome\ 5 Pro;
     font-weight: 900;
@@ -411,6 +470,41 @@ span.beatmap.songname.title {
     text-rendering: auto;
     line-height: 1;
 }
-.tooltip-inner>span>i:before{
+
+.tooltip-inner>span>i:before {
     content: "\f005";
+}
+
+.beatmap.songname.creator {
+    color: #debb58 !important;
+}
+
+.fas.ranked {
+    color: #66CCFF !important;
+    font-size: 32px;
+    text-shadow: 0 0 4px #66CCFF;
+}
+
+.fas.qualified {
+    color: #A5CC00 !important;
+    font-size: 32px;
+    text-shadow: 0 0 4px #A5CC00;
+}
+
+.fas.approved {
+    color: #A5CC00 !important;
+    font-size: 32px;
+    text-shadow: 0 0 4px #A5CC00;
+}
+
+.fas.loved {
+    color: #FF66AA !important;
+    font-size: 32px;
+    text-shadow: 0 0 4px #FF66AA;
+}
+
+.fas.unranked {
+    color: white !important;
+    font-size: 32px;
+    text-shadow: 0 0 4px white;
 }

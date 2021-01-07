@@ -1,4 +1,5 @@
 Vue.use(window.VueTimeago);
+Vue.config.devtools = true
 new Vue({
     el: "#app",
     delimiters: ["<%", "%>"],
@@ -37,9 +38,9 @@ new Vue({
             this.$axios.get("https://nerina.wtf/api/search", {
                 params: {
                     offset: 0,
-                    mode: this.mode,
-                    amount: this.page * 20,
-                    status: this.rank
+                    mode: Number(this.mode),
+                    amount: Number(this.page * 20),
+                    status: Number(this.rank)
                 }
             }).then(function (response) {
                 vm.list = response.data;

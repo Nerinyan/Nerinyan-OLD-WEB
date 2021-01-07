@@ -359,6 +359,62 @@ Vue.mixin({
             }
             return result;
         },
+        convertRankedStatusToText(rankedstatus){
+            var result;
+            switch(rankedstatus){
+                default:
+                case -2:
+                    result = "Graveyard!";
+                    break;
+                case -1:
+                    result = "WIP";
+                    break;
+                case 0:
+                    result = "Pending";
+                    break;
+                case 1:
+                    result = "Ranked";
+                    break;
+                case 2:
+                    result = "Approved";
+                    break;
+                case 3:
+                    result = "Qualified";
+                    break;
+                case 4:
+                    result = "Loved";
+                    break;
+            }
+            return result; 
+        },
+        convertRankedStatusToico(rankedstatus){
+            var result;
+            switch(rankedstatus){
+                default:
+                case -2:
+                    result = "question unranked";
+                    break;
+                case -1:
+                    result = "question unranked";
+                    break;
+                case 0:
+                    result = "question unranked";
+                    break;
+                case 1:
+                    result = "angle-double-down ranked";
+                    break;
+                case 2:
+                    result = "check approved";
+                    break;
+                case 3:
+                    result = "check qualified";
+                    break;
+                case 4:
+                    result = "heart loved";
+                    break;
+            }
+            return result; 
+        },
         convertModeToTextFull(mode){
             var result;
             switch(mode){
