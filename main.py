@@ -99,7 +99,7 @@ def check_file(setid):
     if check:
         return True
     
-    urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', '192.168.0.6:8003?name=false&s=', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
+    urls = ('https://hentai.ninja/d/', 'https://beatconnect.io/b/', 'http://192.168.0.6:8003?name=false&s=', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
     for url in urls:
         filedir = "beatmaps/" + setid + ".osz"
         if os.path.exists(filedir):
