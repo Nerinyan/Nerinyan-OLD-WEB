@@ -1,92 +1,16 @@
 from pymysql import NULL
 from .config import UserConfig
-from flask_jsonpify import jsonify
 import random
-from collections import defaultdict
-import requests
-import pprint
-
-from Crypto import Random
-from Crypto.Cipher import AES
-import base64
-import hashlib
-from Crypto import Random
-
 import time
-import datetime
 import locale
-
 import mysql.connector
-from colorama import init, Fore
-import redis
-import bcrypt
-import datetime
-import requests
-from discord_webhook import DiscordWebhook, DiscordEmbed
 import time
-import hashlib
 import json
-import pycountry
-import os
-import timeago
 from requests import get
 from urllib.request import urlopen
 
 banchokey = ["1234567890"]
 BASE_API = 'https://osu.ppy.sh/api'
-
-def genToken(username):
-    istokne = chkToken(username)
-    if istokne[0]:
-        return istokne[1]
-    now = time.strftime('%Y-%m-%d %H:%M:%S')
-    now2 = int(time.time())
-    expire = now2 + 259200
-    text = f"{username}tokengeneratedby{now}"
-    result = (bcrypt.hashpw(text.encode('UTF-8'), bcrypt.gensalt())).decode('utf-8')
-    try:
-        mydb = mysql.connector.connect(
-            host=UserConfig["MysqlHost"],
-            user=UserConfig["MysqlUser"],
-            passwd=UserConfig["MysqlPassword"]
-        ) 
-    except Exception as e:
-        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
-        exit()
-    mycursor = mydb.cursor()
-
-    mycursor.execute(f"INSERT INTO NerinaCDN.token VALUES ('{username}', '{result}', {expire}, 0, {now2})")
-    mydb.commit()
-    return result
-        
-
-def chkToken(username):
-    try:
-        mydb = mysql.connector.connect(
-            host=UserConfig["MysqlHost"],
-            user=UserConfig["MysqlUser"],
-            passwd=UserConfig["MysqlPassword"]
-        ) 
-    except Exception as e:
-        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
-        exit()    
-    mycursor = mydb.cursor()
-    mycursor.execute(f"SELECT token, expire, isexpired, generatetime FROM NerinaCDN.token WHERE userid = '{username}'")
-    user = mycursor.fetchall()
-    if not user:
-        return [False]
-    user = user[0]
-    expire = user[1]
-    isexpired = user[2]
-    generatewhen = user[3]
-    if not isexpired:
-        expirechk = expire - generatewhen
-        if expirechk < 0:
-            mycursor.execute(f"DELETE FROM NerinaCDN.token WHERE userid = '{username}'")
-            mydb.commit()
-            return [False]
-
-        return [True, user[0]]
 
 def get_beatmap_file_name(setid):
     try:
@@ -161,7 +85,6 @@ def convertToBeatmapidToSetid(bid):
     randomkey = random.choice(banchokey)
     json_url = urlopen(f"{BASE_API}/get_beatmaps?k={randomkey}&b=" + bid)
     data = json.loads(json_url.read())
-   #print(data)
     try:
         beatmap = data[0]
         beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)
@@ -218,8 +141,7 @@ def insert_data(beatmap: dict):
     if beatmap_id == NULL:
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
-        print('INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");'.format(**beatmap, nowtime = nowtime))
-        cur.execute('INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");'.format(**beatmap, nowtime = nowtime))
+        cur.execute('INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title}", "{artist}", "{artist}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favorite_count}, "{preview_url}");'.format(**beatmap, nowtime = nowtime))
         mydb.commit()
     mydb.close()
 
