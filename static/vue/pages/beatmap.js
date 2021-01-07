@@ -35,7 +35,7 @@ Vue.component('beatmap', {
                                 <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
                             </div>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="Play count" placement="bottom">
+                        <el-tooltip class="item" effect="dark" content="Play count" placement="bottom" v-if="rank != -2">
                             <div class="song-stats">
                                 <i class="fas fa-play-circle"></i> 123456
                             </div>

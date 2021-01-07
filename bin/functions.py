@@ -7,6 +7,7 @@ import mysql.connector
 import time
 import json
 from requests import get
+from colorama import Fore
 from urllib.request import urlopen
 
 banchokey = ["1234567890"]
@@ -58,6 +59,50 @@ def get_beatmap_file_name(setid):
                 return f'db not found'
         else:
             return f'db not found'
+
+def get_data_from_db(page, mode, ranked, query):
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        return 'server has some problems now'
+    cur = mydb.cursor()
+    if page == 0:
+        offset = 20
+    else:
+        offset = 20 * page + 20
+
+    if len(query) > 2:
+        sqldir = "./bin/sql/api_sql/with_query.sql"
+        with open(sqldir, 'r') as sqlopen:
+            sql = (sqlopen.read()).format(offset, mode, ranked, query)
+    else:
+        sqldir = "./bin/sql/api_sql/without_query.sql"
+        with open(sqldir, 'r') as sqlopen:
+            sql = (sqlopen.read()).format(offset, mode, ranked)
+
+    cur.execute(sql)
+
+    try:
+        first_data = cur.fetchall()
+        row_headers = [x[0] for x in cur.description]
+        second_data = list(first_data)
+        data = []
+        for result in second_data:
+            data.append(dict(zip(row_headers, result)))
+    except:
+        data = []
+
+    mydb.close()
+
+    json = {'result': data}
+    
+    return json
+
 
 def checkBeatmapInDB(setid):
     try:
@@ -111,7 +156,7 @@ def add_beatmap_just_one(setid):
     data = json_url.json()
     if not data:
         return # TODO: return an error of empty data
-   #print(data)
+
     try:
         beatmap = data[0]
         beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)

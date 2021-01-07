@@ -1,4 +1,5 @@
-from flask import Flask, render_template, send_from_directory, make_response
+from flask import Flask, render_template, send_from_directory, make_response, jsonify
+from flask_restful import reqparse
 from flask.helpers import send_file
 from bin.config import UserConfig
 from bin.functions import *
@@ -58,9 +59,32 @@ def downlaod_beatmap(bid):
     else:
         return f'beatmap file({setid}) not found'
 
-@app.route('/api/lists')
+@app.route('/api/search')
 def api_lists():
-    return {'data': {'ok': '5k', '5k': 'ok'}}
+    parser = reqparse.RequestParser()
+    parser.add_argument('p', type=int)
+    parser.add_argument('m', type=int)
+    parser.add_argument('r', type=int)
+    parser.add_argument('q', type=str)
+    args = parser.parse_args()
+    page = args['p']
+    mode = args['m']
+    ranked = args['r']
+    query = args['q']
+
+    if type(page) != int:
+        page = 0
+    if type(mode) != int:
+        mode = 0
+    if type(ranked) != int:
+        ranked = 0
+    if len(query) < 1:
+        query = ''
+
+    data = get_data_from_db(page, mode, ranked, query)
+    result = jsonify(data)
+
+    return result
 
 def download(url, file_name):
     with open(file_name, "wb") as file:
@@ -91,4 +115,4 @@ def check_file(setid):
     return False
 
 if __name__ == '__main__':
-    app.run(port=port, host=host, debug=debugmode)
+    app.run(port=port, host=host, debug=True)
