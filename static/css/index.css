@@ -96,13 +96,21 @@ i {
     display: flex;
 }
 
+.el-input {
+    max-width: 1300px;
+}
+
 .el-input__inner {
     height: 44px;
 }
 
 .navbar-search-box {
+    float: left !important;
+    justify-content: left;
+    justify-items: left;
+    justify-self: left;
+    width: 100%;
     display: flex;
-    justify-content: center;
     vertical-align: middle;
     position: relative;
     margin: 0px auto !important;
@@ -114,6 +122,9 @@ i {
     display: flex;
     position: relative;
     text-shadow: 2px 2px 6px #565656;
+    padding: 0 40px 0 40px;
+    place-items: center;
+    place-self: center;
 }
 
 .el-input__inner::placeholder {
@@ -198,7 +209,7 @@ i {
 
 .beatmap-bg-default {
     background-position: 50% 50% !important;
-    height: 119px;
+    height: 136px;
     width: 100%;
     background-image: url(/static/images/beatmaps-default.png);
     margin-bottom: 4px;
@@ -386,7 +397,7 @@ span.beatmap.songname.title {
 }
 
 .ui-main-block {
-    padding: 12px;
+    padding: 12px 24px;
 }
 
 .song-play {
@@ -507,4 +518,8 @@ span.beatmap.songname.title {
     color: white !important;
     font-size: 32px;
     text-shadow: 0 0 4px white;
+}
+
+.el-tooltip__popper.is-dark {
+    background-color: #6b6b6bb3 !important;
 }

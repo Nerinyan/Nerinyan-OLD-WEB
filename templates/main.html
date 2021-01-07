@@ -8,6 +8,12 @@
 </head>
 
 <body>
+    <noscript>
+        현재 사용 중인 브라우저는 스크립트를 지원하지 않거나, 해당 기능이 활성화되어 있지 않습니다!
+    </noscript>
+    <script>
+        var scrptloadchk = 0;
+    </script>
     <div id="app" v-bind:class="{ 'load' : load }">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
             integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
@@ -17,42 +23,16 @@
             <div class="sticky">
                 <div class="ui-navbar-block">
                     <el-row class="navbar search">
-                        <el-col :span="1">
+                        <el-col :span="24">
                             <div class="navbar-search-box">
                                 <i class="fas fa-search navbar-search-icon"></i>
+                                <el-input class="navbar-search-input" placeholder="Search..." v-model="search_query"></el-input>
                             </div>
-                        </el-col>
-                        <el-col :span="23" class="navbar-block-col">
-                            <el-input class="navbar-search-input" placeholder="Search..." v-model="search_query"></el-input>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="24" class="navbar-block">
-                            <el-menu :default-active="rank" class="navbar left" mode="horizontal"
-                                @select="handleSelect">
-                                <el-tooltip class="item" effect="dark" content="Ranked" placement="bottom">
-                                    <el-menu-item index="1" class="navbar item">
-                                        <i class="fas fa-angle-double-down ranked"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="Qualified" placement="bottom">
-                                    <el-menu-item index="3" class="navbar item">
-                                        <i class="fas fa-check qualified"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="Loved" placement="bottom">
-                                    <el-menu-item index="4" class="navbar item">
-                                        <i class="fas fa-heart loved"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item bold" effect="dark" content="Unranked" placement="bottom">
-                                    <el-menu-item index="0" class="navbar item">
-                                        <i class="fas fa-question unranked"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-menu-item index="-3" class="navbar item">Any</el-menu-item>
-                            </el-menu>
-                            <el-menu :default-active="mode" class="navbar right" mode="horizontal" @select="handleSelect">
+                            <el-menu :default-active="mode" class="navbar left" mode="horizontal" @select="chnageMode">
                                 <el-tooltip class="item" effect="dark" content="osu! Standard" placement="bottom">
                                     <el-menu-item index="0" class="navbar item">
                                         <i class="navbar-mode-ico faa fa-extra-mode-osu"></i>
@@ -74,6 +54,29 @@
                                     </el-menu-item>
                                 </el-tooltip>
                             </el-menu>
+                            <el-menu :default-active="rank" class="navbar right" mode="horizontal" @select="chnageRankedStatus">
+                                <el-tooltip class="item" effect="dark" content="Ranked" placement="bottom">
+                                    <el-menu-item index="1" class="navbar item">
+                                        <i class="fas fa-angle-double-up ranked"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="Qualified" placement="bottom">
+                                    <el-menu-item index="3" class="navbar item">
+                                        <i class="fas fa-check qualified"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="Loved" placement="bottom">
+                                    <el-menu-item index="4" class="navbar item">
+                                        <i class="fas fa-heart loved"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-tooltip class="item bold" effect="dark" content="Unranked" placement="bottom">
+                                    <el-menu-item index="0" class="navbar item">
+                                        <i class="fas fa-question unranked"></i>
+                                    </el-menu-item>
+                                </el-tooltip>
+                                <el-menu-item index="-3" class="navbar item">Any</el-menu-item>
+                            </el-menu>
                         </el-col>
                     </el-row>
                 </div>
@@ -85,18 +88,24 @@
                     </template>
                 </div>
             </div>
-
         </div>
     </div>
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/stickyfill.min.js"></script>
-    <script src="/static/vue_modules/vue.js"></script>
-    <script src="/static/vue_modules/vue-axios-plugin.min.js"></script>
-    <script src="/static/vue_modules/vue-timeago.min.js"></script>
-    <script src="/static/vue/mixins/generalMixins.js?14882020"></script>
-    <script src="/static/vue/pages/index.js"></script>
-    <script src="/static/vue/pages/beatmap.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="/static/js/jquery.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/mixins/generalMixins.js?14882020" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/beatmap.js" onload="scrptloadchk += 1;"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
+    <script>
+        setTimeout(CheckLoadScript, 1000);
+        function CheckLoadScript() {
+            if(scrptloadchk != 8) { 
+                window.location.replace(window.location.pathname + window.location.search + window.location.hash);
+            } 
+        }
+    </script>
 </body>
 
 </html>

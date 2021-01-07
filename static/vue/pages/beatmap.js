@@ -35,7 +35,7 @@ Vue.component('beatmap', {
                                 <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
                             </div>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="Play count" placement="bottom" v-if="rank != -2">
+                        <el-tooltip class="item" effect="dark" content="Play count" placement="bottom">
                             <div class="song-stats">
                                 <i class="fas fa-play-circle"></i> 123456
                             </div>
@@ -72,22 +72,22 @@ Vue.component('beatmap', {
                             </div>
                         </div>
                         <div v-if="ii.DifficultyRating < 2">
-                            <i class="mode-ico faa fa-extra-mode-osu easy"></i>
+                            <i :class="'mode-ico easy faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                         <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
-                            <i class="mode-ico faa fa-extra-mode-osu normal"></i>
+                            <i :class="'mode-ico normal faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                         <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
-                            <i class="mode-ico faa fa-extra-mode-osu hard"></i>
+                            <i :class="'mode-ico hard faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                         <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
-                            <i class="mode-ico faa fa-extra-mode-osu insane"></i>
+                            <i :class="'mode-ico insane faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                         <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
-                            <i class="mode-ico faa fa-extra-mode-osu expert"></i>
+                            <i :class="'mode-ico expert faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                         <div v-else-if="ii.DifficultyRating > 6.49">
-                            <i class="mode-ico faa fa-extra-mode-osu expertplus"></i>
+                            <i :class="'mode-ico expertplus faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                         </div>
                     </el-tooltip>
                 </div>
@@ -146,7 +146,7 @@ Vue.component('beatmap', {
                     result = "question unranked";
                     break;
                 case 1:
-                    result = "angle-double-down ranked";
+                    result = "angle-double-up ranked";
                     break;
                 case 2:
                     result = "check approved";
@@ -156,6 +156,25 @@ Vue.component('beatmap', {
                     break;
                 case 4:
                     result = "heart loved";
+                    break;
+            }
+            return result; 
+        },
+        convertModeToico(mode){
+            var result;
+            switch(mode){
+                default:
+                case 0:
+                    result = "osu";
+                    break;
+                case 1:
+                    result = "taiko";
+                    break;
+                case 2:
+                    result = "fruits";
+                    break;
+                case 3:
+                    result = "mania";
                     break;
             }
             return result; 

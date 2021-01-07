@@ -35,6 +35,7 @@ def get_beatmap_file_name(setid):
         mydb.close()
         return final_file_name
     except:
+        print(f"{Fore.GREEN} {setid}: 해당 비트맵이 DB에 존재하지 않습니다.{Fore.RESET}")
         addbeatmap = add_beatmap_just_one(setid)
         if addbeatmap == 'ok':
             try:
@@ -143,18 +144,22 @@ def convertToBeatmapidToSetid(bid):
         return e 
 
 def add_beatmap_just_one(setid):
+    print(f"{Fore.LIGHTBLUE_EX} {setid}: 해당 비트맵셋 데이터를 반초에서 받아옵니다.{Fore.RESET}")
     randomkey = random.choice(banchokey)
     params = {
         'k': randomkey,
         's': setid
     }
     json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
-
+    
     if not json_url or json_url.status_code != 200:
+        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #1{Fore.RESET}")
         return # TODO: return an error of the request being bad
 
     data = json_url.json()
+    
     if not data:
+        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #2{Fore.RESET}")
         return # TODO: return an error of empty data
 
     try:
@@ -166,6 +171,7 @@ def add_beatmap_just_one(setid):
         return e
 
 def insert_data(beatmap: dict):
+    print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(0/2){Fore.RESET}")
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -176,17 +182,18 @@ def insert_data(beatmap: dict):
         print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
         return 'server has some problems now'
     cur = mydb.cursor()
-
     cur.execute("select beatmapset_id from BeatmapMirror.sets where beatmapset_id = {beatmapset_id}".format(**beatmap))
     chkdata = cur.fetchone()
+    print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(1/2){Fore.RESET}")
     try:
         beatmap_id = chkdata[0]
     except:
         beatmap_id = NULL
     if beatmap_id == NULL:
+        print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(2/2){Fore.RESET}")
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
-        sql = 'INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
+        sql = 'REPLACE INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
         cur.execute(sql)
         mydb.commit()
     mydb.close()

@@ -36,11 +36,11 @@ def download_beatmapset(setid):
         fileformat = ".osz"
         filename = get_beatmap_file_name(setid)
         if filename == 'db not found':
-            return f'beatmap file({setid}) not found'
+            return f'beatmap file({setid}) not found (error=1)'
         else:
             return send_file(f"{path}{setid}{fileformat}", attachment_filename=filename, as_attachment=True)
     else:
-        return f'beatmap file({setid}) not found'
+        return f'beatmap file({setid}) not found (error=3)'
 
 @app.route('/osu/b/<bid>')
 @app.route('/b/<bid>')
@@ -89,10 +89,10 @@ def api_lists():
 def download(url, file_name):
     with open(file_name, "wb") as file:
         response = get(url)
-        if response.content <= 13:
-            return 'no'
-        else:
+        if len(response.content) > 13:
             file.write(response.content)
+        else:
+            return 'no'
 
 def check_file(setid):
     check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
