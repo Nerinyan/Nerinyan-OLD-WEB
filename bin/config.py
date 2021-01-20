@@ -8,19 +8,16 @@ DefaultConfig = {
     "port": "1241",
     "host": "0.0.0.0",
     "debug": "True",
-    "RedisHost": "",
-    "RedisPassword": "",
-    "RedisPort": 6379,
-    "RedisDb": 0,
 
     #MYSQL SETTINGS
     "MysqlHost" : "",
     "MysqlUser" : "",
     "MysqlPassword" : "",
     "MysqlDb" : "",
-    "UseRecaptcha" : True,
-    "RecaptchaSecret" : "",
-    "RecaptchaSiteKey" : ""
+    "MongoHost" : "",
+    "MongoUser": "",
+    "MongoPassword": "",
+    "MongoDB": ""
 }
 
 class JsonFile:

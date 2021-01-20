@@ -5,22 +5,51 @@ Vue.component('beatmap', {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a :href="'/s/' + beatmap.SetID" :id="beatmap.SetID" class="cardheader ranked"
+                <a :href="'/d/' + beatmap.SetID" :id="beatmap.SetID" class="cardheader ranked"
                     :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/card.jpg);'">
                     <div>
                         <div class="song-status">
                             <i :class="'fas fa-' + convertRankedStatusToico(beatmap.RankedStatus)"></i>
                         </div>
+                        <div class="song-stats-block">
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Favorites count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
+                                    </div>
+                                </el-tooltip>   
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Play count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-play-circle"></i> <% addCommas(beatmap.Playcounts) %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="BPM" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-music"></i> <% beatmap.BPM %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Beatmaps Count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-clipboard-list"></i> <% beatmap.BeatmapCount %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="d-flex flex-column creator-title">
                         <span class="beatmap songname title"> <% beatmap.Title %></span>
                         <span class="beatmap songname creator">by <% beatmap.Artist %></span>
                     </div>
                 </a>
-                <div class="beatmapset-preview-elapsed-bar "></div>
                 <div class="info">
                     <div class="desc">
-                        mapped by <a class="song-author-name"> <% beatmap.Creator %></a>
+                        mapped by <a class="song-author-name" :href="'/main?creator=' + beatmap.CreatorID"> <% beatmap.Creator %></a>
                     </div>
                     <div class="beatmap-download-btn">
                         <a :href="'/d/' + beatmap.SetID" class="download-icon">
@@ -28,68 +57,54 @@ Vue.component('beatmap', {
                         </a>
                     </div>
                 </div>
-                <div class="more-info">
-                    <div class="song-stats-block">
-                        <el-tooltip class="item" effect="dark" content="Favorites count" placement="bottom">
-                            <div class="song-stats">
-                                <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
+                <div class="version-list">
+                    <div class="version-list-block">
+                        <el-tooltip placement="top" v-for="ii in beatmap.ChildrenBeatmaps" v-bind:key="ii.id">
+                            <div slot="content" class="beatmap-tooltip">
+                                <div v-if="ii.DifficultyRating < 2">
+                                    <b><% ii.DiffName %></b> <span class="easy beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
+                                    <b><% ii.DiffName %></b> <span class="normal beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
+                                    <b><% ii.DiffName %></b> <span class="hard beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
+                                    <b><% ii.DiffName %></b> <span class="insane beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
+                                    <b><% ii.DiffName %></b> <span class="expert beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <div v-else-if="ii.DifficultyRating > 6.49">
+                                    <b><% ii.DiffName %></b> <span class="expertplus beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
+                                </div>
+                                <i class="fas fa-music"></i> <b><% ii.BPM %></b> | <b><i class="el-icon-timer more_thic"></i></b> <% secondsToTime(ii.TotalLength) %>
+                                <br/>
+                                <b>CS: </b><% ii.CS %> | <b>AR: </b><% ii.AR %> | <b>OD: </b><% ii.OD %> | <b>HP: </b><% ii.HP %>
+                                <br/>
+                                <b>Objects: </b><% addCommas(ii.CircleCount + ii.SpinnerCount + ii.SliderCount) %>
                             </div>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="Play count" placement="bottom">
-                            <div class="song-stats">
-                                <i class="fas fa-play-circle"></i> 123456
+                            <div v-if="ii.DifficultyRating < 2">
+                                <i :class="'mode-ico easy faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                             </div>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="BPM" placement="bottom">
-                            <div class="song-stats">
-                                <i class="fas fa-music"></i> 185♪
+                            <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
+                                <i :class="'mode-ico normal faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
+                            </div>
+                            <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
+                                <i :class="'mode-ico hard faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
+                            </div>
+                            <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
+                                <i :class="'mode-ico insane faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
+                            </div>
+                            <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
+                                <i :class="'mode-ico expert faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
+                            </div>
+                            <div v-else-if="ii.DifficultyRating > 6.49">
+                                <i :class="'mode-ico expertplus faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
                             </div>
                         </el-tooltip>
                     </div>
-                </div>
-                <div class="version-list">
-                    <el-tooltip placement="top" v-for="ii in beatmap.ChildrenBeatmaps" v-bind:key="ii.id">
-                        <div slot="content" class="beatmap-tooltip">
-                            <b><% ii.DiffName %></b>
-                            <br/>
-                            <div v-if="ii.DifficultyRating < 2">
-                                <span class="easy beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                            <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
-                                <span class="normal beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                            <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
-                                <span class="hard beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                            <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
-                                <span class="insane beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                            <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
-                                <span class="expert beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                            <div v-else-if="ii.DifficultyRating > 6.49">
-                                <span class="expertplus beatmap-diff-text"><% addCommas((ii.DifficultyRating).toFixed(2)) %> <i class="fas fa-star"></i></span>
-                            </div>
-                        </div>
-                        <div v-if="ii.DifficultyRating < 2">
-                            <i :class="'mode-ico easy faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                        <div v-else-if="(ii.DifficultyRating < 2.7) && (ii.DifficultyRating > 1.99)">
-                            <i :class="'mode-ico normal faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                        <div v-else-if="(ii.DifficultyRating < 4) && (ii.DifficultyRating > 2.69)">
-                            <i :class="'mode-ico hard faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                        <div v-else-if="(ii.DifficultyRating < 5.3) && (ii.DifficultyRating > 3.99)">
-                            <i :class="'mode-ico insane faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                        <div v-else-if="(ii.DifficultyRating < 6.5) && (ii.DifficultyRating > 5.29)">
-                            <i :class="'mode-ico expert faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                        <div v-else-if="ii.DifficultyRating > 6.49">
-                            <i :class="'mode-ico expertplus faa fa-extra-mode-' + convertModeToico(ii.Mode)"></i>
-                        </div>
-                    </el-tooltip>
                 </div>
             </div>
             <span class="beatmapset-panel-prev beatmapset-panel__play">
@@ -229,7 +244,7 @@ Vue.component('beatmap', {
             audioElement.addEventListener('loadeddata', function() {
                 if (vm.playing) return;
                 vm.playing = true;
-                audioElement.volume = 0.3;
+                audioElement.volume = 0.15;
                 audioElement.play();
             });
 

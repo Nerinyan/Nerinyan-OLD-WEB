@@ -9,8 +9,9 @@ import json
 from requests import get
 from colorama import Fore
 from urllib.request import urlopen
+import pymongo
+from bson.json_util import dumps
 
-banchokey = ["1234567890"]
 BASE_API = 'https://osu.ppy.sh/api'
 
 def get_beatmap_file_name(setid):
@@ -61,7 +62,7 @@ def get_beatmap_file_name(setid):
         else:
             return f'db not found'
 
-def get_data_from_db(page, mode, ranked, query):
+def get_setdata_from_db(setid):
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -72,21 +73,8 @@ def get_data_from_db(page, mode, ranked, query):
         print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
         return 'server has some problems now'
     cur = mydb.cursor()
-    if page == 0:
-        offset = 20
-    else:
-        offset = 20 * page + 20
 
-    if len(query) > 2:
-        sqldir = "./bin/sql/api_sql/with_query.sql"
-        with open(sqldir, 'r') as sqlopen:
-            sql = (sqlopen.read()).format(offset, mode, ranked, query)
-    else:
-        sqldir = "./bin/sql/api_sql/without_query.sql"
-        with open(sqldir, 'r') as sqlopen:
-            sql = (sqlopen.read()).format(offset, mode, ranked)
-
-    cur.execute(sql)
+    cur.execute(f"SELECT beatmap_id, beatmapset_id, beatmap_version, ranked, FORMAT(difficulty_rating,0) as difficulty_rating, mode, mode_str, FORMAT(bpm,0) as bpm, FORMAT(ar,0) as ar, FORMAT(cs,0) as cs, FORMAT(od,0) as od, FORMAT(hp,0) as hp, total_length, hit_length, playcount, passcount FROM BeatmapMirror.beatmaps where beatmap_id = {setid} limit 1;")
 
     try:
         first_data = cur.fetchall()
@@ -100,10 +88,97 @@ def get_data_from_db(page, mode, ranked, query):
 
     mydb.close()
 
+    print(data)
+
     json = {'result': data}
     
     return json
 
+def get_data_from_db(offset, amout, mode, status, query):
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        return 'server has some problems now'
+    cur = mydb.cursor()
+
+    if status == 0:
+        ranked = '0, -1, -2'
+    elif status == 4:
+        ranked = '4'
+    elif status == 3:
+        ranked = '3, 2'
+    elif status == -3:
+        ranked = '-1, -2, 0, 1, 2, 3, 4 ,5'
+    elif status == 1:
+        ranked = '1'
+    else:
+        ranked = '-1, -2, 0, 1, 2, 3, 4 ,5'
+
+
+    if len(query) > 1:
+        sqldir = "./bin/sql/api_sql/with_query.sql"
+        with open(sqldir, 'r') as sqlopen:
+            sql = (sqlopen.read()).format(offset, mode, ranked, query)
+    else:
+        sqldir = "./bin/sql/api_sql/without_query.sql"
+        with open(sqldir, 'r') as sqlopen:
+            sql = (sqlopen.read()).format(ranked, mode, offset, 2)
+
+    cur.execute(sql)
+    aa = [{'a':'b', 'c':'d'}, {'e':'f', 'g':'h'}]
+    try:
+        first_data = cur.fetchall()
+        row_headers = [x[0] for x in cur.description]
+        row_headers.insert(1, 'Beatmaps')
+        bmapdata = []
+        for i in first_data:
+            bsetid = i[0]
+            sqldir = "./bin/sql/api_sql/beatmap_query.sql"
+            with open(sqldir, 'r') as sqlopen:
+                sql = (sqlopen.read()).format(bsetid)
+            cur.execute(sql)
+            bmapdatas = cur.fetchall()
+            row_headers = [x[0] for x in cur.description]
+            bmapdatalist = list(bmapdatas)
+
+            print(row_headers)
+            for result in bmapdatalist:
+                bmapdata.append(dict(zip(row_headers, result)))
+            
+        dbdatalist = list(first_data)
+        dbdatalist.insert(1, aa)
+        first_data = tuple(dbdatalist)
+        data = []
+        for result in dbdatalist:
+            data.append(dict(zip(row_headers, result)))
+    except Exception as e:
+        data = [{'error': str(e)}]
+
+    mydb.close()
+
+    json = {'result': bmapdata}
+    
+    return json
+
+def get_data_from_mongodb(offset, amout, mode, status, query):
+    host = UserConfig["MongoHost"]
+    user = UserConfig["MongoUser"]
+    password = UserConfig["MongoPassword"]
+    client = pymongo.MongoClient(f'mongodb://{user}:{password}@{host}')
+    db = client["Debian"]
+    collection = db["BeatmapSets"]
+    data = [{"a": "b"}]
+    results = dumps(collection.find().sort([("last_updated", -1)]).limit(30))
+    dict = json.loads(results)
+    
+    client.close()
+
+    return dict
 
 def checkBeatmapInDB(setid):
     try:

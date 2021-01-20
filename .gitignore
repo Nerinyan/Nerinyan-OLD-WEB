@@ -130,3 +130,7 @@ dmypy.json
 templates/old.html
 config.json
 templates/main.html.bak
+bin/config.py
+bin/qwe.json
+bin/sql/api_sql/test.sql
+templates/test.html

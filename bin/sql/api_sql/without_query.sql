@@ -1,8 +1,22 @@
-SELECT
-	id, ranked_status, UNIX_TIMESTAMP(approved_date) as approved_date, UNIX_TIMESTAMP(last_update) as last_update, UNIX_TIMESTAMP(last_checked) as last_checked, artist, title, creator, favourites, FLOOR(bpm) as bpm, playcount, mode
+SELECT 
+    set_id AS 'SetID',
+    set_ranked AS 'RankedStatus',
+    set_submitted_date AS 'ApprovedDate',
+    set_last_updated AS 'LastUpdate',
+    artist AS 'Artist',
+    title AS 'Title',
+    creator AS 'Creator',
+    creator_id AS 'CreatorID',
+    favourite_count AS 'Favourites',
+    tags AS 'Tags',
+    has_video AS 'HasVideo',
+    has_storyboard AS 'HasStoryboard',
+    genre_id AS 'Genre',
+    language_id AS 'Language'
 FROM
-	(select * from cheesegull.sets WHERE ranked_status = {2} LIMIT {0}) as base
-left join
-	(select bpm, parent_set_id, playcount, mode from cheesegull.beatmaps where mode = {1} group by parent_set_id) as cheese on base.id = cheese.parent_set_id
-order by playcount desc
-;
+    BeatmapMirror.beatmaps
+WHERE
+    ranked IN ({0}) AND mode = {1}
+GROUP BY set_id
+ORDER BY last_updated DESC
+LIMIT {2} , {3};
