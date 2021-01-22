@@ -118,6 +118,7 @@ def check_file(setid):
         if beatmapsize >= 1000000:
             return True
         else:
+            os.remove(filedir)
             continue
 
     return False
