@@ -47,6 +47,10 @@ def main():
 def oldmain():
     return render_template("old.html")
 
+@app.route("/wp-login.php")
+def wtf1():
+    return "t^^t"
+
 @app.route('/example')
 def owowowo():
     resp = make_response(send_from_directory('', 'video.txt'))
@@ -107,7 +111,7 @@ def check_file(setid):
     if check:
         return True
     
-    urls = ('https://beatconnect.io/b/', 'http://192.168.0.6:8003?name=false&s=', 'https://hentai.ninja/d/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
+    urls = ('http://192.168.0.6:8003?name=false&s=', 'https://beatconnect.io/b/', 'https://hentai.ninja/d/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
     for url in urls:
         filedir = "beatmaps/" + setid + ".osz"
         if os.path.exists(filedir):
