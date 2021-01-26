@@ -85,4 +85,4 @@ def goto_error_page(reason):
     return render_template("404.html", reason=reason)
 
 if __name__ == '__main__':
-    app.run(port=port, host=host, debug=True)
+    app.run(port=port, host=host, debug=False)

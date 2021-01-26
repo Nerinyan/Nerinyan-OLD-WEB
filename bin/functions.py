@@ -1,4 +1,5 @@
 from pymysql import NULL
+from requests.api import request
 from .config import UserConfig
 import random
 import time
@@ -30,42 +31,51 @@ def check_file(setid):
         a = check_mtime_file(setid)
         if a:
             return True
-    
     down = download_file(setid)
+
     return down
 
 def check_mtime_file(setid):
+    print(f"{Fore.GREEN}{setid} | 파일 마지막 수정 날짜 체크중...{Fore.RESET}")
     check = os.path.getmtime(f"/media/data/beatmaps/{setid}.osz")
     data = get_beatmap_data_on_bancho(setid)
     last_update = data['last_update']
-    ts_last_update = time.mktime(datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S').timetuple())
-    owo = ts_last_update - check
-
-    print(owo)
+    ts_last_update = time.mktime(datetime.datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S').timetuple())
+    owo = int(check - ts_last_update)
 
     if owo < 0:
+        print(f"{Fore.RED}{setid} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
         os.remove(f"/media/data/beatmaps/{setid}.osz")
+        print(f"{Fore.RED}{setid} | 파일 재 다운로드 시작{Fore.RESET}")
         down = download_file(setid)
         return down
 
     return True
 
 def download_file(setid):
-    urls = ('http://192.168.0.6:8003?name=false&s=', 'https://beatconnect.io/b/', 'https://hentai.ninja/d/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
-    for url in urls:
-        filedir = "beatmaps/" + setid + ".osz"
-        if os.path.exists(filedir):
+    filedir = "beatmaps/" + setid + ".osz"
+    if os.path.exists(filedir):
+        os.remove(filedir)
+    url = f"http://192.168.0.6:8003?name=false&s={setid}"
+    print(f"{Fore.GREEN}{url} | 다운로드 시도중...{Fore.RESET}")
+    download = get(url)
+    status = download.status_code
+    if status == 200:
+        beatmapsize = os.path.getsize(filedir)
+        if beatmapsize >= 1000000:
+            print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
+            return True
+        else:
             os.remove(filedir)
-        url = f"{url}{setid}"
-        down = download(url, filedir)
+    else:
+        print(f"{Fore.RED}{url} | 다운로드 실패{Fore.RESET}")
+        url = f"http://beatconnect.io/b/{setid}"
+        down = download(url)
         if down:
-            beatmapsize = os.path.getsize(filedir)
-            if beatmapsize >= 1000000:
-                return True
-            else:
-                os.remove(filedir)
-                continue
-    return False
+            print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
+            return True
+        else:
+            return False
 
 def get_beatmap_file_name(setid):
     try:
@@ -89,7 +99,6 @@ def get_beatmap_file_name(setid):
         mydb.close()
         return final_file_name
     except:
-        print(f"{Fore.GREEN} {setid}: 해당 비트맵이 DB에 존재하지 않습니다.{Fore.RESET}")
         addbeatmap = add_beatmap_just_one(setid)
         if addbeatmap == 'ok':
             try:
@@ -272,7 +281,6 @@ def convertToBeatmapidToSetid(bid):
         return e 
 
 def get_beatmap_data_on_bancho(setid):
-    print(f"{Fore.LIGHTBLUE_EX} {setid}: 해당 비트맵셋 데이터를 반초에서 받아옵니다.{Fore.RESET}")
     randomkey = random.choice(banchokey)
     params = {
         'k': randomkey,
@@ -295,7 +303,6 @@ def get_beatmap_data_on_bancho(setid):
     return beatmap
 
 def add_beatmap_just_one(setid):
-    print(f"{Fore.LIGHTBLUE_EX} {setid}: 해당 비트맵셋 데이터를 반초에서 받아옵니다.{Fore.RESET}")
     randomkey = random.choice(banchokey)
     params = {
         'k': randomkey,
@@ -322,7 +329,7 @@ def add_beatmap_just_one(setid):
         return e
 
 def insert_data(beatmap: dict):
-    print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(0/2){Fore.RESET}")
+    print(f"{Fore.LIGHTGREEN_EX}DB 추가 시도중(0/2){Fore.RESET}")
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -341,7 +348,7 @@ def insert_data(beatmap: dict):
     except:
         beatmap_id = NULL
     if beatmap_id == NULL:
-        print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(2/2){Fore.RESET}")
+        print(f"{Fore.LIGHTGREEN_EX}DB 추가 시도중(2/2){Fore.RESET}")
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
         sql = 'REPLACE INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
