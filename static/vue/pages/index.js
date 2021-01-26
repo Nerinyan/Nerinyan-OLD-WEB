@@ -13,7 +13,7 @@ new Vue({
             list: [],
             page: 1,
             offset: 0,
-            search_query: '',
+            search_query: q,
             creatorid: creator,
             delay: null,
             activeSearchDetails: ['0'],

@@ -11,8 +11,61 @@ from colorama import Fore
 from urllib.request import urlopen
 import pymongo
 from bson.json_util import dumps
+import datetime
+import os
 
 BASE_API = 'https://osu.ppy.sh/api'
+
+def download(url, file_name):
+    with open(file_name, "wb") as file:
+        response = get(url)
+        if len(response.content) > 13:
+            file.write(response.content)
+        else:
+            return False
+
+def check_file(setid):
+    check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
+    if check:
+        a = check_mtime_file(setid)
+        if a:
+            return True
+    
+    down = download_file(setid)
+    return down
+
+def check_mtime_file(setid):
+    check = os.path.getmtime(f"/media/data/beatmaps/{setid}.osz")
+    data = get_beatmap_data_on_bancho(setid)
+    last_update = data['last_update']
+    ts_last_update = time.mktime(datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S').timetuple())
+    owo = ts_last_update - check
+
+    print(owo)
+
+    if owo < 0:
+        os.remove(f"/media/data/beatmaps/{setid}.osz")
+        down = download_file(setid)
+        return down
+
+    return True
+
+def download_file(setid):
+    urls = ('http://192.168.0.6:8003?name=false&s=', 'https://beatconnect.io/b/', 'https://hentai.ninja/d/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
+    for url in urls:
+        filedir = "beatmaps/" + setid + ".osz"
+        if os.path.exists(filedir):
+            os.remove(filedir)
+        url = f"{url}{setid}"
+        down = download(url, filedir)
+        if down:
+            beatmapsize = os.path.getsize(filedir)
+            if beatmapsize >= 1000000:
+                return True
+            else:
+                os.remove(filedir)
+                continue
+    return False
 
 def get_beatmap_file_name(setid):
     try:
@@ -217,6 +270,29 @@ def convertToBeatmapidToSetid(bid):
         return beatmap['beatmapset_id']
     except Exception as e:
         return e 
+
+def get_beatmap_data_on_bancho(setid):
+    print(f"{Fore.LIGHTBLUE_EX} {setid}: 해당 비트맵셋 데이터를 반초에서 받아옵니다.{Fore.RESET}")
+    randomkey = random.choice(banchokey)
+    params = {
+        'k': randomkey,
+        's': setid
+    }
+    json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
+    
+    if not json_url or json_url.status_code != 200:
+        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #1{Fore.RESET}")
+        return # TODO: return an error of the request being bad
+
+    data = json_url.json()
+    
+    if not data:
+        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #2{Fore.RESET}")
+        return # TODO: return an error of empty data
+
+    beatmap = data[0]
+    beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)
+    return beatmap
 
 def add_beatmap_just_one(setid):
     print(f"{Fore.LIGHTBLUE_EX} {setid}: 해당 비트맵셋 데이터를 반초에서 받아옵니다.{Fore.RESET}")

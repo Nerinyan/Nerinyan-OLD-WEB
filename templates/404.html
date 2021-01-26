@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeriNyan: osu! beatmap mirror</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta property="og:title" content="NeriNyan: osu! Beatmap Mirror">
+    <link rel="canonical" href="https://nerina.pw/">
+    <link rel="alternate" href="https://nerina.pw/">
+    <meta property="og:url" content="https://nerina.pw/">
+    <meta property="og:site_name" content="NeriNyan: osu! Beatmap Mirror">
+    <meta property="og:type" content="website">
+    <meta name="Subject" content="osu! Beatmap Mirror">
+    <meta name="Publisher" content="osu! Beatmap Mirror">
+    <meta name="description" content="osu! beatmap mirror by nerina">
+    <meta name="keywords"
+        content="osu!,오스,beatmap,osu! beatmap, osu! mirror, bloodcat, beatconnect, nerina, osu! beatmap mirror, mirror, beatmap mirror, cookiezi">
+    <meta name="author" content="Nerina">
+    <meta name="Location" content="South Korea">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta property="article:tag" content="osu!">
+    <meta property="article:tag" content="osu! beatmap mirror">
+    <meta property="article:tag" content="osu! beatmap">
+    <meta property="article:tag" content="osu! beatmap download">
+    <meta property="article:tag" content="osu! mirror">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-PZPLP7ZRTL');
+    </script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/404.css?12516215341">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <div class="box__ghost">
+            <div class="symbol"></div>
+            <div class="symbol"></div>
+            <div class="symbol"></div>
+            <div class="symbol"></div>
+            <div class="symbol"></div>
+            <div class="symbol"></div>
+
+            <div class="box__ghost-container">
+                <div class="box__ghost-eyes">
+                    <div class="box__eye-left"></div>
+                    <div class="box__eye-right"></div>
+                </div>
+                <div class="box__ghost-bottom">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="box__ghost-shadow"></div>
+        </div>
+        <div class="box__description">
+            <div class="box__description-container">
+                <div class="box__description-title">Whoops!</div>
+                <div class="box__description-text">{{ reason }}</div>
+            </div>
+            <a href="https://nerina.pw/main" target="_blank" class="box__button">Go back</a>
+        </div>
+    </div>
+    <script src="/static/js/404.js?12516215341"></script>
+</body>
+
+</html>

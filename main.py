@@ -3,8 +3,6 @@ from flask_restful import reqparse
 from flask.helpers import send_file
 from bin.config import UserConfig
 from bin.functions import *
-import os
-from requests import get
 
 app = Flask('NerinaBeatmapMirror')
 
@@ -12,15 +10,11 @@ host = UserConfig["host"]
 port = UserConfig["port"]
 debugmode = bool(UserConfig["debug"])
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("404.html", reason=error)
+
 @app.route("/")
-@app.route("/dev")
-def main_redirect():
-    return redirect(url_for('main'))
-
-@app.route('/ip', methods=['GET'])
-def get_ip():
-    return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-
 @app.route("/main")
 def main():
     parser = reqparse.RequestParser()
@@ -47,16 +41,6 @@ def main():
 def oldmain():
     return render_template("old.html")
 
-@app.route("/wp-login.php")
-def wtf1():
-    return "t^^t"
-
-@app.route('/example')
-def owowowo():
-    resp = make_response(send_from_directory('', 'video.txt'))
-    resp.headers['Content-type'] = 'text/plain; charset=utf-8'
-    return resp
-
 @app.route('/d/<setid>')
 @app.route('/s/<setid>')
 @app.route('/osu/s/<setid>')
@@ -67,11 +51,11 @@ def download_beatmapset(setid):
         fileformat = ".osz"
         filename = get_beatmap_file_name(setid)
         if filename == 'db not found':
-            return f'beatmap({setid}) not found ErrorCode-1'
+            return goto_error_page('Error Code #1')
         else:
             return send_file(f"{path}{setid}{fileformat}", attachment_filename=filename, as_attachment=True)
     else:
-        return f'beatmap({setid}) not found ErrorCode-3'
+        return goto_error_page('Error Code #2')
 
 @app.route('/osu/b/<bid>')
 @app.route('/b/<bid>')
@@ -84,48 +68,21 @@ def downlaod_beatmap(bid):
         fileformat = ".osz"
         filename = get_beatmap_file_name(setid)
         if filename == 'db not found':
-            return f'beatmap({setid}) not found ErrorCode-4'
+            return goto_error_page('Error Code #3')
         else:
             return send_file(f"{path}{setid}{fileformat}", attachment_filename=filename, as_attachment=True)
     else:
-        return f'beatmap({setid}) not found ErrorCode-5'
+        return goto_error_page('Error Code #4')
 
 @app.route('/api/b/<setid>')
 def api_getset(setid):
-
     data = get_setdata_from_db(setid)
     result = jsonify(data)
 
     return result
 
-def download(url, file_name):
-    with open(file_name, "wb") as file:
-        response = get(url)
-        if len(response.content) > 13:
-            file.write(response.content)
-        else:
-            return 'no'
-
-def check_file(setid):
-    check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
-    if check:
-        return True
-    
-    urls = ('http://192.168.0.6:8003?name=false&s=', 'https://beatconnect.io/b/', 'https://hentai.ninja/d/', 'http://storage.ainu.pw/d/', 'http://storage.ripple.moe/d/')
-    for url in urls:
-        filedir = "beatmaps/" + setid + ".osz"
-        if os.path.exists(filedir):
-            os.remove(filedir)
-        url = f"{url}{setid}"
-        download(url, filedir)
-        beatmapsize = os.path.getsize(filedir)
-        if beatmapsize >= 1000000:
-            return True
-        else:
-            os.remove(filedir)
-            continue
-
-    return False
+def goto_error_page(reason):
+    return render_template("404.html", reason=reason)
 
 if __name__ == '__main__':
-    app.run(port=port, host=host, debug=debugmode)
+    app.run(port=port, host=host, debug=True)
