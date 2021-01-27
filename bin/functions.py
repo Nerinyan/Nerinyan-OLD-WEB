@@ -56,10 +56,10 @@ def download_file(setid):
     filedir = "beatmaps/" + setid + ".osz"
     if os.path.exists(filedir):
         os.remove(filedir)
-    url = f"http://192.168.0.6:8003?name=false&s={setid}"
+    url = f"http://192.168.0.6:8003/d/?name=false&s={setid}"
     print(f"{Fore.GREEN}{url} | 다운로드 시도중...{Fore.RESET}")
-    download = get(url)
-    status = download.status_code
+    downloads = get(url)
+    status = downloads.status_code
     if status == 200:
         beatmapsize = os.path.getsize(filedir)
         if beatmapsize >= 1000000:
@@ -70,10 +70,17 @@ def download_file(setid):
     else:
         print(f"{Fore.RED}{url} | 다운로드 실패{Fore.RESET}")
         url = f"http://beatconnect.io/b/{setid}"
-        down = download(url)
+        print(f"{Fore.GREEN}{url} | 다운로드 시도중...{Fore.RESET}")
+        down = download(url, filedir)
         if down:
-            print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
-            return True
+            beatmapsize = os.path.getsize(filedir)
+            if beatmapsize >= 1000000:
+                print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
+                return True
+            else:
+                os.remove(filedir)
+                print(f"{Fore.RED}{url} | 다운로드 실패{Fore.RESET}")
+                return False
         else:
             return False
 
@@ -329,7 +336,6 @@ def add_beatmap_just_one(setid):
         return e
 
 def insert_data(beatmap: dict):
-    print(f"{Fore.LIGHTGREEN_EX}DB 추가 시도중(0/2){Fore.RESET}")
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -342,13 +348,11 @@ def insert_data(beatmap: dict):
     cur = mydb.cursor()
     cur.execute("select beatmapset_id from BeatmapMirror.sets where beatmapset_id = {beatmapset_id}".format(**beatmap))
     chkdata = cur.fetchone()
-    print(f"{Fore.LIGHTGREEN_EX} DB 추가 시도중(1/2){Fore.RESET}")
     try:
         beatmap_id = chkdata[0]
     except:
         beatmap_id = NULL
     if beatmap_id == NULL:
-        print(f"{Fore.LIGHTGREEN_EX}DB 추가 시도중(2/2){Fore.RESET}")
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
         sql = 'REPLACE INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
