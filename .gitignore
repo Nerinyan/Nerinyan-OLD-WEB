@@ -134,3 +134,4 @@ bin/config.py
 bin/qwe.json
 bin/sql/api_sql/test.sql
 templates/test.html
+*.osz

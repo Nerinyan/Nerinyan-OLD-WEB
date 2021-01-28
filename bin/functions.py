@@ -36,7 +36,6 @@ def check_file(setid):
     return down
 
 def check_mtime_file(setid):
-    print(f"{Fore.GREEN}{setid} | 파일 마지막 수정 날짜 체크중...{Fore.RESET}")
     check = os.path.getmtime(f"/media/data/beatmaps/{setid}.osz")
     data = get_beatmap_data_on_bancho(setid)
     last_update = data['last_update']
@@ -44,9 +43,9 @@ def check_mtime_file(setid):
     owo = int(check - ts_last_update)
 
     if owo < 0:
-        print(f"{Fore.RED}{setid} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
         os.remove(f"/media/data/beatmaps/{setid}.osz")
-        print(f"{Fore.RED}{setid} | 파일 재 다운로드 시작{Fore.RESET}")
+        print(f"[D]{Fore.RED} {setid} | 파일 재 다운로드 시작{Fore.RESET}")
         down = download_file(setid)
         return down
 
@@ -57,31 +56,33 @@ def download_file(setid):
     if os.path.exists(filedir):
         os.remove(filedir)
     url = f"http://192.168.0.6:8003/d/?name=false&s={setid}"
-    print(f"{Fore.GREEN}{url} | 다운로드 시도중...{Fore.RESET}")
+    print(f"[D]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 시도중...{Fore.RESET}")
     downloads = get(url)
     status = downloads.status_code
     if status == 200:
         beatmapsize = os.path.getsize(filedir)
         if beatmapsize >= 1000000:
-            print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
+            print(f"[✔]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 성공!{Fore.RESET}")
             return True
         else:
             os.remove(filedir)
     else:
-        print(f"{Fore.RED}{url} | 다운로드 실패{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
         url = f"http://beatconnect.io/b/{setid}"
-        print(f"{Fore.GREEN}{url} | 다운로드 시도중...{Fore.RESET}")
+        print(f"[D]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 시도중...{Fore.RESET}")
         down = download(url, filedir)
         if down:
             beatmapsize = os.path.getsize(filedir)
             if beatmapsize >= 1000000:
-                print(f"{Fore.GREEN}{url} | 다운로드 성공!{Fore.RESET}")
+                print(f"[✔] {Fore.GREEN} {url}{Fore.RESET} | 다운로드 성공!{Fore.RESET}")
                 return True
             else:
                 os.remove(filedir)
-                print(f"{Fore.RED}{url} | 다운로드 실패{Fore.RESET}")
+                print(f"[❌] {Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
                 return False
         else:
+            print(f"[❌] {Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
+            os.remove(filedir)
             return False
 
 def get_beatmap_file_name(setid):
@@ -130,6 +131,21 @@ def get_beatmap_file_name(setid):
                 return f'db not found'
         else:
             return f'db not found'
+
+def req_update_beatmapsets(setid):
+    url = f"http://192.168.0.6:8003/?s={setid}"
+    print(f"[U] {Fore.GREEN} {setid}{Fore.RESET} | 비트맵셋 업데이트 중...{Fore.RESET}")
+    try:
+        downloads = get(url)
+        status = downloads.status_code
+
+        if status == 200:
+            return True
+        else:
+            return False
+    except:
+        return False
+
 
 def get_setdata_from_db(setid):
     try:
@@ -296,13 +312,13 @@ def get_beatmap_data_on_bancho(setid):
     json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
     
     if not json_url or json_url.status_code != 200:
-        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #1{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 반초API에서의 응답이 원할하지 않습니다.{Fore.RESET}")
         return # TODO: return an error of the request being bad
 
     data = json_url.json()
     
     if not data:
-        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #2{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET}| 반초API 데이터를 JSON으로 변환하는 도중 문제가 발생하였습니다.{Fore.RESET}")
         return # TODO: return an error of empty data
 
     beatmap = data[0]
@@ -318,13 +334,13 @@ def add_beatmap_just_one(setid):
     json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
     
     if not json_url or json_url.status_code != 200:
-        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #1{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 반초API에서의 응답이 원할하지 않습니다.{Fore.RESET}")
         return # TODO: return an error of the request being bad
 
     data = json_url.json()
     
     if not data:
-        print(f"{Fore.RED} {setid}: 해당 비트맵을 반초에서 받아오는 과정에서 오류가 발생하엿습니다. #2{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET}| 반초API 데이터를 JSON으로 변환하는 도중 문제가 발생하였습니다.{Fore.RESET}")
         return # TODO: return an error of empty data
 
     try:
