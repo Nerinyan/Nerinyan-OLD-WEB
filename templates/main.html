@@ -54,7 +54,7 @@
         var scrptloadchk = 0;
     </script>
     <div id="app">
-        <el-col class="loading" :span="24" v-bind:class="{ 'load' : load }">
+        <el-col class="loading" :span="24" v-bind:class="{ 'load' : load }" v-if="first_load">
             <div class="artboard">
                 <div class="domino">
                     <div></div>

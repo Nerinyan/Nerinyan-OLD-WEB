@@ -5,6 +5,7 @@ new Vue({
     delimiters: ["<%", "%>"],
     data() {
         return {
+            first_load: true,
             advenced: false,
             mode: m,
             load: true,
@@ -58,7 +59,7 @@ new Vue({
         var vm = this;
         $((function () {
             $(window).scroll((function () {
-                $(window).scrollTop() + $(window).height() > $(document).height() - 300 && 0 == vm.load && vm.list.length >= 48 * vm.page && vm.changeoffset(vm.page + 1, !0)
+                $(window).scrollTop() + $(window).height() > (($(document).height() - 300) * 0.05) && 0 == vm.load && vm.list.length >= 48 * vm.page && vm.changeoffset(vm.page + 1, !0)
             })), vm.getBeatmapData()
         }));
     },
@@ -151,6 +152,7 @@ new Vue({
                     }).then(function (response) {
                         vm.list = response.data;
                         vm.load = false;
+                        vm.first_load = false;
                     });
                 }
                 else {
