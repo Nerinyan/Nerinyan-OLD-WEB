@@ -125,7 +125,7 @@ def api_test():
     sort = args["sort"]
     sortby = args["sortby"]
 
-    data = test_api_1111(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amout, sort=sort, sortby=sortby)
+    data = ApiV1(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amout, sort=sort, sortby=sortby)
     result = jsonify(data)
 
     return result
