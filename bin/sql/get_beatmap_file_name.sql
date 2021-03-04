@@ -1,1 +1,1 @@
-SELECT artist, title FROM BeatmapMirror.sets where beatmapset_id = {0} group by beatmapset_id;
+SELECT artist, title FROM BeatmapMirror.beatmaps where set_id = {0} limit 1;

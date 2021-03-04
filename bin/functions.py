@@ -52,7 +52,7 @@ def check_mtime_file(setid):
     return True
 
 def download_file(setid):
-    filedir = "beatmaps/" + setid + ".osz"
+    filedir = "/media/data/beatmaps/" + setid + ".osz"
     if os.path.exists(filedir):
         os.remove(filedir)
     url = f"http://192.168.0.6:8003/d/?name=false&s={setid}"
@@ -277,7 +277,7 @@ def checkBeatmapInDB(setid):
         return 'server has some problems now'
     cur = mydb.cursor()
     try:
-        cur.execute(f"select * from BeatmapMirror where beatmapset_id = {setid}")
+        cur.execute(f"select * from BeatmapMirror.beatmaps where set_id = {setid} limit 1")
         data = cur.fetchone()
         beatmapid = data[0]
     except:
@@ -297,7 +297,7 @@ def convertToBeatmapidToSetid(bid):
         aa = checkBeatmapInDB(beatmap['beatmapset_id'])
 
         if not aa:
-            aaaa = insert_data(beatmap)
+            aaaa = add_beatmap_just_one(beatmap['beatmapset_id'])
 
         return beatmap['beatmapset_id']
     except Exception as e:
@@ -326,30 +326,13 @@ def get_beatmap_data_on_bancho(setid):
     return beatmap
 
 def add_beatmap_just_one(setid):
-    randomkey = random.choice(banchokey)
-    params = {
-        'k': randomkey,
-        's': setid
-    }
-    json_url = get(f'{BASE_API}/get_beatmaps?', params = params)
-    
+    json_url = get(f'http://192.168.0.6:8003/?&s={setid}')
+
     if not json_url or json_url.status_code != 200:
-        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 반초API에서의 응답이 원할하지 않습니다.{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 비트맵 데이터를 수동으로 추가하는데 문제가 발생하였습니다.{Fore.RESET}")
         return # TODO: return an error of the request being bad
 
-    data = json_url.json()
-    
-    if not data:
-        print(f"[❌]{Fore.RED} {setid}{Fore.RESET}| 반초API 데이터를 JSON으로 변환하는 도중 문제가 발생하였습니다.{Fore.RESET}")
-        return # TODO: return an error of empty data
-
-    try:
-        beatmap = data[0]
-        beatmap['preview_url'] = "//b.ppy.sh/preview/{beatmapset_id}.mp3".format(**beatmap)
-        aaaa = insert_data(beatmap)
-        return aaaa
-    except Exception as e:
-        return e
+    return 'ok'
 
 def insert_data(beatmap: dict):
     try:
@@ -371,12 +354,163 @@ def insert_data(beatmap: dict):
     if beatmap_id == NULL:
         locale.setlocale(locale.LC_TIME,'ko_KR.UTF-8')
         nowtime = time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(time.time()))
-        sql = 'REPLACE INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
+        sql = 'INSERT INTO BeatmapMirror.sets (beatmapset_id, title, title_unicode, artist, artist_unicode, creator, submitted_date, ranked, ranked_date, last_updated, lset_checked, play_count, bpm, tags, genre_id, genre_name, language_id, language_name, favourite_count, preview_url) VALUES ({beatmapset_id}, "{title}", "{title_unicode}", "{artist}", "{artist_unicode}", "{creator}", "{submit_date}", {approved}, "{approved_date}", "{last_update}", "{nowtime}", {playcount}, {bpm}, "{tags}", {genre_id}, "", {language_id}, "", {favourite_count}, "{preview_url}");'.format(**beatmap, nowtime=nowtime)
         cur.execute(sql)
         mydb.commit()
     mydb.close()
 
     return 'ok'   
+
+def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby):
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        return 'server has some problems now'
+    whereQuery = ""
+    whereQuery2 = ""
+    if ar['min'] == None:
+        minAR = 0
+    else:
+        minAR = ar['min']
+    if ar['max'] == None:
+        maxAR = 10
+    else:
+        maxAR = ar['max']
+    if cs['min'] == None:
+        minCS = 0
+    else:
+        minCS = cs['min']
+    if cs['max'] == None:
+        maxCS = 10
+    else:
+        maxCS = cs['min']
+    if od['min'] == None:
+        minOD = 0
+    else:
+        minOD = od['min']
+    if od['max'] == None:
+        maxOD = 10
+    else:
+        maxOD = od['min']
+    if hp['min'] == None:
+        minHP = 0
+    else:
+        minHP = hp['min']
+    if hp['max'] == None:
+        maxHP = 10
+    else:
+        minHP = hp['min']
+    if bpm['min'] == None:
+        minBPM = 0
+    else:
+        minBPM = bpm['min']
+    if bpm['max'] == None:
+        maxBPM = 600
+    else:
+        maxBPM = bpm['min']
+    if length['min'] == None:
+        minLENGTH = 0
+    else:
+        minLENGTH = length['min']
+    if length['max'] == None:
+        maxLENGTH = 5000
+    else:
+        maxLENGTH = length['min']
+
+    if status == 1:
+        whereQuery += 'main.ranked in (1,2) '
+    elif status == 3:
+        whereQuery += 'main.ranked in (3) '
+    elif status == 4:
+        whereQuery += 'main.ranked in (4) '
+    elif status == 0:
+        whereQuery += 'main.ranked in (0, -1, -2) '
+    elif status == -3:
+        whereQuery += 'main.ranked in (0, -1, -2,1,2,3,4,5,6) '
+    elif status == None:
+        whereQuery += 'main.ranked in (1,2) '
+
+    if mode == None:
+        whereQuery += f'and main.mode = 0 '
+        whereQuery2 += f'mode = 0 '
+    else:
+        whereQuery += f'and main.mode = {mode} '
+        whereQuery2 += f'mode = {mode} '
+    if sortby == None:
+        sortQuery = " order by set_last_updated"
+        sortQuery2 = " order by last_updated"
+    else:
+        sortQuery = f"order by {sortby}"
+        sortQuery2 = f"order by {sortby}"
+        sortQuery2 = sortQuery2.replace("set_", "")
+    if sort == None:
+        sortQuery += f" desc"
+        sortQuery2 += f" desc"
+    else:
+        sortQuery += f" {sort}"
+        sortQuery2 += f" {sort}"
+    if amount == None:
+        sortQuery += f" limit 48"
+        sortQuery2 += f" limit 48"
+    else:
+        sortQuery += f" limit {amount}"
+        sortQuery2 += f" limit {amount}"
+
+    whereQuery += f'And main.ar between {minAR} and {maxAR} '
+    whereQuery += f'And main.od between {minOD} and {maxOD} '
+    whereQuery += f'And main.cs between {minCS} and {maxCS} '
+    whereQuery += f'And main.hp between {minHP} and {maxHP} '
+    whereQuery += f'And main.bpm between {minBPM} and {maxBPM} '
+    whereQuery += f'And main.total_length between {minLENGTH} and {maxLENGTH} '
+
+    whereQuery2 += f'And ar between {minAR} and {maxAR} '
+    whereQuery2 += f'And od between {minOD} and {maxOD} '
+    whereQuery2 += f'And cs between {minCS} and {maxCS} '
+    whereQuery2 += f'And hp between {minHP} and {maxHP} '
+    whereQuery2 += f'And bpm between {minBPM} and {maxBPM} '
+    whereQuery2 += f'And total_length between {minLENGTH} and {maxLENGTH} '
+    
+    cur = mydb.cursor()
+    if query != None and len(query) > 0:
+        with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(query, whereQuery, sortQuery)
+    else:
+        with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(whereQuery.replace("main.", ""), sortQuery, sortQuery2)
+    
+    cur.execute(sql)
+    try:
+        first_data = cur.fetchall()
+        row_headers = [x[0] for x in cur.description]
+        row_headers.insert(1, "ChildrenBeatmaps")
+        a = list()
+        second_data = list(first_data)
+        for setdata in second_data:
+            setdata = list(setdata)
+            beatmapsetid = setdata[0]
+            with open("./bin/sql/api_sql/subquery.sql", 'r') as sqlopen:
+                sql = (sqlopen.read()).format(beatmapsetid)
+            cur.execute(sql)
+            ffirst_data = cur.fetchall()
+            subrow_headers = [x[0] for x in cur.description]
+            sub_data = list(ffirst_data)
+            bmdata = []
+            for bdata in sub_data:
+                bmdata.append(dict(zip(subrow_headers, bdata)))
+            setdata.insert(1, bmdata)
+            a.append(setdata)
+        data = []
+        for result in a:
+            data.append(dict(zip(row_headers, result)))
+        return data
+    except Exception as e:
+        return {'error': str(e)}
+
 
 cute_emoji = [ 'Σ(￣□￣;)', 'へ(￣∇￣へ)', '(ㅇ︿ㅇ)', '๑°⌓°๑', '٩(๑`^´๑)۶', '(ง •̀_•́)ง', "٩( 'ω' )و", '(๑╹∀╹๑)', '(╹౪╹*๑)', '٩(๑>∀<๑)۶', '(๑・‿・๑)', '✿˘◡˘✿', '(❀╹◡╹)', 'ʅ（´◔౪◔）ʃ'
  ]

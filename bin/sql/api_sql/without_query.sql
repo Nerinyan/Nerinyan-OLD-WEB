@@ -1,22 +1,28 @@
-SELECT 
-    set_id AS 'SetID',
-    set_ranked AS 'RankedStatus',
-    set_submitted_date AS 'ApprovedDate',
-    set_last_updated AS 'LastUpdate',
-    artist AS 'Artist',
-    title AS 'Title',
-    creator AS 'Creator',
-    creator_id AS 'CreatorID',
-    favourite_count AS 'Favourites',
-    tags AS 'Tags',
-    has_video AS 'HasVideo',
-    has_storyboard AS 'HasStoryboard',
-    genre_id AS 'Genre',
-    language_id AS 'Language'
-FROM
-    BeatmapMirror.beatmaps
-WHERE
-    ranked IN ({0}) AND mode = {1}
-GROUP BY set_id
-ORDER BY last_updated DESC
-LIMIT {2} , {3};
+SELECT  beatmapset_id                                     AS SetID 
+       ,ranked                                            AS RankedStatus 
+       ,DATE_FORMAT(ranked_date,'%Y-%m-%d UTC %H:%i:%s')  AS ApprovedDate 
+       ,DATE_FORMAT(last_updated,'%Y-%m-%d UTC %H:%i:%s') AS LastUpdate 
+       ,Artist                                            AS Artist 
+       ,title                                             AS Title 
+       ,creator                                           AS Creator 
+       ,bms.creator_id                                    AS CreatorID 
+       ,play_count                                        AS Playcounts 
+       ,favourite_count                                   AS Favourites 
+       ,FORMAT(bpm,0)                                     AS BPM 
+       ,bms.has_video                                     AS hasVideo 
+       ,genre_id                                          AS Genre 
+       ,language_id                                       AS Language 
+       ,tags                                              AS Tags 
+       ,bms.beatmaps_count                                AS BeatmapCount
+FROM BeatmapMirror.`sets`
+JOIN 
+(
+	SELECT  set_id 
+	       ,has_video 
+	       ,creator_id
+              ,beatmaps_count
+	FROM BeatmapMirror.beatmaps
+	WHERE {0} 
+	GROUP BY  set_id {1} 
+) AS bms
+ON bms.set_id = beatmapset_id {2};

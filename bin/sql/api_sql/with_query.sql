@@ -1,7 +1,28 @@
-SELECT
-	id, ranked_status, UNIX_TIMESTAMP(approved_date) as approved_date, UNIX_TIMESTAMP(last_update) as last_update, UNIX_TIMESTAMP(last_checked) as last_checked, artist, title, creator, favourites, FLOOR(bpm) as bpm, playcount, mode
-FROM
-	(select * from cheesegull.sets WHERE ranked_status = {2} and CONCAT_WS('', artist, title, creator) LIKE '%{3}%' LIMIT {0}) as base
-left join
-	(select  FLOOR(bpm) as bpm, parent_set_id, playcount, mode from cheesegull.beatmaps where mode = {1} group by parent_set_id) as cheese on base.id = cheese.parent_set_id
-;
+SELECT  main.set_id                                                AS SetID 
+       ,main.set_ranked                                            AS RankedStatus 
+       ,DATE_FORMAT(main.set_ranked_date,'%Y-%m-%d UTC %H:%i:%s')  AS ApprovedDate 
+       ,DATE_FORMAT(main.set_last_updated,'%Y-%m-%d UTC %H:%i:%s') AS LastUpdate 
+       ,main.Artist                                                AS Artist 
+       ,main.title                                                 AS Title 
+       ,main.creator                                               AS Creator 
+       ,main.creator_id                                            AS CreatorID 
+       ,main.set_playcount                                         AS Playcounts 
+       ,main.favourite_count                                       AS Favourites 
+       ,FORMAT(main.set_bpm,0)                                     AS BPM 
+       ,main.has_video                                             AS hasVideo 
+       ,main.genre_id                                              AS Genre 
+       ,main.language_id                                           AS Language 
+       ,main.tags                                                  AS Tags 
+       ,main.beatmaps_count                                        AS BeatmapCount
+FROM BeatmapMirror.beatmaps main
+JOIN 
+(
+	SELECT  *
+	FROM BeatmapMirror.sets
+	WHERE concat_ws(' ', beatmapset_id, artist, title, creator) like '%{0}%'
+	ORDER BY CASE WHEN concat_ws(' ', artist, title, creator) like '{0}%' THEN 1 WHEN concat_ws(' ', artist, title, creator) like '%{0}' THEN 3 else 2 end 
+	AND last_updated desc  
+) AS sets
+ON sets.beatmapset_id = main.set_id
+WHERE {1} 
+GROUP BY  set_id {2};

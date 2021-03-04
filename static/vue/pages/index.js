@@ -141,9 +141,8 @@ new Vue({
             }
             else {
                 if (vm.advenced != true) {
-                    this.$axios.get("https://nerina.wtf/api/v3/search", {
+                    this.$axios.get("https://nerina.pw/api/v1/search", {
                         params: {
-                            offset: this.offset,
                             mode: this.mode,
                             amount: 48 * this.page,
                             status: this.rank,
@@ -166,7 +165,7 @@ new Vue({
             var advenced_query = vm.makeAdvencedQuery();
             this.search_query = advenced_query;
             window.history.replaceState('', document.title, "/main?mode="+vm.mode+'&status='+vm.rank+'sort='+this.form.sort+'&order='+this.form.sort2+'&query='+vm.search_query);
-            this.$axios.get("https://nerina.wtf/api/v3/advencedsearch", {
+            this.$axios.get("https://nerina.pw/api/v1/search", {
                 params: {
                     offset: this.offset,
                     mode: this.mode,
@@ -186,7 +185,7 @@ new Vue({
             var vm = this;
             console.log("Creator ID: " + vm.creatorid);
             
-            this.$axios.get("https://nerina.wtf/api/v3/search", {
+            this.$axios.get("https://nerina.pw/api/v1/search", {
                 params: {
                     offset: this.offset,
                     mode: this.mode,
