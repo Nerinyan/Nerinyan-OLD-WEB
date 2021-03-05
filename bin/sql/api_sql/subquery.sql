@@ -19,4 +19,4 @@ SELECT  id                                                AS BeatmapID
        ,has_storyboard                                    AS HasStoryBoard 
        ,DATE_FORMAT(last_updated,'%Y-%m-%d UTC %H:%i:%s') AS LastUpdate
 FROM BeatmapMirror.beatmaps
-WHERE set_id = {};  
+WHERE set_id = {} order by mode, difficulty_rating asc;  

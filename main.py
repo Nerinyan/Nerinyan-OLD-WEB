@@ -108,7 +108,7 @@ def api_test():
     parser.add_argument('query', type=str)
     parser.add_argument('mode', type=int)
     parser.add_argument('status', type=int)
-    parser.add_argument('amout', type=int)
+    parser.add_argument('amount', type=int)
     parser.add_argument('sort', type=str)
     parser.add_argument('sortby', type=str)
     args = parser.parse_args()
@@ -121,11 +121,11 @@ def api_test():
     query = args["query"]
     mode = args["mode"]
     status = args["status"]
-    amout = args["amout"]
+    amount = args["amount"]
     sort = args["sort"]
     sortby = args["sortby"]
 
-    data = ApiV1(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amout, sort=sort, sortby=sortby)
+    data = ApiV1(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby)
     result = jsonify(data)
 
     return result
@@ -134,4 +134,4 @@ def goto_error_page(reason):
     return render_template("404.html", reason=reason)
 
 if __name__ == '__main__':
-    app.run(port=port, host=host, debug=True)
+    app.run(port=port, host=host, debug=False)

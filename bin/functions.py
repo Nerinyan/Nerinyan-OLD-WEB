@@ -438,6 +438,9 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     if mode == None:
         whereQuery += f'and main.mode = 0 '
         whereQuery2 += f'mode = 0 '
+    elif mode == -1:
+        whereQuery += ''
+        whereQuery2 += ''
     else:
         whereQuery += f'and main.mode = {mode} '
         whereQuery2 += f'mode = {mode} '
@@ -482,7 +485,6 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
             sql = (sqlopen.read()).format(whereQuery.replace("main.", ""), sortQuery, sortQuery2)
-    
     cur.execute(sql)
     try:
         first_data = cur.fetchall()
