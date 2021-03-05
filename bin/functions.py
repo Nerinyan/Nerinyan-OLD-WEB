@@ -484,7 +484,7 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
             sql = (sqlopen.read()).format(query, whereQuery, sortQuery)
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
-            sql = (sqlopen.read()).format(whereQuery.replace("main.", ""), sortQuery, sortQuery2)
+            sql = (sqlopen.read()).format(whereQuery2, sortQuery, sortQuery2)
     cur.execute(sql)
     try:
         first_data = cur.fetchall()
