@@ -13,9 +13,9 @@ SELECT  id                                                AS BeatmapID
        ,passcount                                         AS Passcount 
        ,max_combo                                         AS MaxCombo 
        ,CONVERT(difficulty_rating,Float)                       AS DifficultyRating 
-       ,count_circles                                     AS CirclesCount 
-       ,count_sliders                                     AS SlidersCount 
-       ,count_spinners                                    AS SpinnersCount 
+       ,count_circles                                     AS CircleCount 
+       ,count_sliders                                     AS SliderCount 
+       ,count_spinners                                    AS SpinnerCount 
        ,has_storyboard                                    AS HasStoryBoard 
        ,DATE_FORMAT(last_updated,'%Y-%m-%d UTC %H:%i:%s') AS LastUpdate
 FROM BeatmapMirror.beatmaps

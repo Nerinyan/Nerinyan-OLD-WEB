@@ -91,33 +91,25 @@ def api_getset(setid):
     return result
 
 @app.route('/api/v1/search', methods=['get'])
-def api_test():
+def routeApiV1():
     parser = reqparse.RequestParser()
-    parser.add_argument('min_ar', type=int)
-    parser.add_argument('max_ar', type=int)
-    parser.add_argument('min_cs', type=int)
-    parser.add_argument('max_cs', type=int)
-    parser.add_argument('min_od', type=int)
-    parser.add_argument('max_od', type=int)
-    parser.add_argument('min_hp', type=int)
-    parser.add_argument('max_hp', type=int)
-    parser.add_argument('min_bpm', type=int)
-    parser.add_argument('max_bpm', type=int)
-    parser.add_argument('min_length', type=int)
-    parser.add_argument('max_length', type=int)
-    parser.add_argument('query', type=str)
-    parser.add_argument('mode', type=int)
-    parser.add_argument('status', type=int)
-    parser.add_argument('amount', type=int)
-    parser.add_argument('sort', type=str)
-    parser.add_argument('sortby', type=str)
+    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount'},
+                    'str': {'query','sort','sortby'}
+                }
+    for parsers in parser_rows:
+        parserKey = parser_rows[parsers]
+        for pars in parserKey:
+            parser.add_argument(pars, type=type(parsers))
+
     args = parser.parse_args()
+
     ar = dict(min=args["min_ar"], max=args["max_ar"])
     cs = dict(min=args["min_cs"], max=args["max_cs"])
     od = dict(min=args["min_od"], max=args["max_od"])
     hp = dict(min=args["min_hp"], max=args["max_hp"])
     bpm = dict(min=args["min_bpm"], max=args["max_bpm"])
     length = dict(min=args["min_length"], max=args["max_length"])
+
     query = args["query"]
     mode = args["mode"]
     status = args["status"]
@@ -134,4 +126,4 @@ def goto_error_page(reason):
     return render_template("404.html", reason=reason)
 
 if __name__ == '__main__':
-    app.run(port=port, host=host, debug=False)
+    app.run(port=port, host=host, debug=debugmode)
