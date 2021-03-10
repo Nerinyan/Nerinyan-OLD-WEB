@@ -51,8 +51,10 @@ def update_beatmap(setid):
     else:
         return goto_error_page('Beatmap Update Failed')
 
-@app.route('/d2/<setid>')
-def loadBalenceDownadBeatmapset(setid):
+@app.route('/d/<setid>')
+@app.route('/s/<setid>', methods=['get'])
+@app.route('/osu/s/<setid>', methods=['get'])
+def loadBalanceDownadBeatmapset(setid):
     global loadbal
     if loadbal == 0:
         loadbal += 1
@@ -65,9 +67,9 @@ def loadBalenceDownadBeatmapset(setid):
         else:
             download_beatmapset(setid)   
 
-@app.route('/d/<setid>', methods=['get'])
-@app.route('/s/<setid>', methods=['get'])
-@app.route('/osu/s/<setid>', methods=['get'])
+@app.route('/d2/<setid>', methods=['get'])
+@app.route('/s2/<setid>', methods=['get'])
+@app.route('/osu/s2/<setid>', methods=['get'])
 def download_beatmapset(setid):
     check = check_file(setid)
     if check:

@@ -538,11 +538,9 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     cur = mydb.cursor()
     if query != None and len(query) > 0:
         with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
-            print('with query')
             sql = (sqlopen.read()).format(query, whereQuery, sortQuery)
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
-            print('without query')
             sql = (sqlopen.read()).format(whereQuery2, sortQuery, sortQuery2)
     cur.execute(sql)
     try:
