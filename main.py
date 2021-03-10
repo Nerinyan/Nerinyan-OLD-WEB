@@ -58,14 +58,14 @@ def loadBalanceDownadBeatmapset(setid):
     global loadbal
     if loadbal == 0:
         loadbal += 1
-        download_beatmapset(setid)
+        return download_beatmapset(setid)
     else:
         loadbal = 0
         check = isthftgrAlive(setid)
         if check:
             return returnDownloadThtftgr(setid)
         else:
-            download_beatmapset(setid)   
+            return download_beatmapset(setid)   
 
 @app.route('/d2/<setid>', methods=['get'])
 @app.route('/s2/<setid>', methods=['get'])
