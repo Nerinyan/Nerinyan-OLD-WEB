@@ -14,6 +14,7 @@ import pymongo
 from bson.json_util import dumps
 import datetime
 import os
+from flask import redirect
 
 BASE_API = 'https://osu.ppy.sh/api'
 
@@ -26,6 +27,7 @@ def download(url, file_name):
             return False
 
 def check_file(setid):
+    print(f"[C]{Fore.LIGHTBLUE_EX} NERINA{Fore.RESET} | 메인 서버에 파일이 존재하는지 체크 중 ...{Fore.RESET}")
     check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
     if check:
         a = check_mtime_file(setid)
@@ -43,9 +45,9 @@ def check_mtime_file(setid):
     owo = int(check - ts_last_update)
 
     if owo < 0:
-        print(f"[❌]{Fore.RED} {setid} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
         os.remove(f"/media/data/beatmaps/{setid}.osz")
-        print(f"[D]{Fore.RED} {setid} | 파일 재 다운로드 시작{Fore.RESET}")
+        print(f"[D]{Fore.RED} {setid}{Fore.RESET} | 파일 재 다운로드 시작")
         down = download_file(setid)
         return down
 
@@ -132,6 +134,27 @@ def get_beatmap_file_name(setid):
         else:
             return f'db not found'
 
+def isthftgrAlive(setid):
+    URLBASE = "https://xiiov.com/alive/"
+    url = URLBASE + setid
+    print(f"[C]{Fore.LIGHTBLUE_EX} {url}{Fore.RESET} | THFTGR 서버에 파일이 존재하는지 체크 중 ...{Fore.RESET}")
+    downloads = get(url)
+    if not downloads or downloads.status_code != 200:
+        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | THFTGR 서버에 파일이 존재하지 않습니다.{Fore.RESET}")
+        return False
+    
+    return True
+
+def returnDownloadThtftgr(setid):
+    filename = get_beatmapFileName_from_db(setid)
+
+    URLBASE = "https://xiiov.com/d/"
+    url = URLBASE + setid + f"?filename={filename}"
+
+    return redirect(url)
+
+    
+
 def req_update_beatmapsets(setid):
     url = f"http://192.168.0.6:8003/?s={setid}"
     print(f"[U] {Fore.GREEN} {setid}{Fore.RESET} | 비트맵셋 업데이트 중...{Fore.RESET}")
@@ -172,8 +195,6 @@ def get_setdata_from_db(setid):
         data = []
 
     mydb.close()
-
-    print(data)
 
     json = {'result': data}
     
@@ -264,6 +285,30 @@ def get_data_from_mongodb(offset, amout, mode, status, query):
     client.close()
 
     return dict
+
+def get_beatmapFileName_from_db(setid):
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        return 'server has some problems now'
+    cur = mydb.cursor()
+
+    cur.execute(f"SELECT concat(set_id, ' ', artist, ' - ', title, '.osz') from BeatmapMirror.beatmaps where set_id = {setid} limit 1;")
+
+    try:
+        d = cur.fetchone()
+        filename = d[0]
+    except:
+        filename = 'None'
+
+    mydb.close()
+    
+    return filename
 
 def checkBeatmapInDB(setid):
     try:
@@ -422,28 +467,38 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     else:
         maxLENGTH = length['min']
 
-    if status == 1:
-        whereQuery += 'main.ranked in (1,2) '
-    elif status == 3:
-        whereQuery += 'main.ranked in (3) '
-    elif status == 4:
-        whereQuery += 'main.ranked in (4) '
-    elif status == 0:
-        whereQuery += 'main.ranked in (0, -1, -2) '
-    elif status == -3:
-        whereQuery += 'main.ranked in (0, -1, -2,1,2,3,4,5,6) '
+    if status == '1':
+        whereQuery += 'main.set_ranked in (1,2) '
+        whereQuery2 += 'set_ranked in (1,2) '
+    elif status == '3':
+        whereQuery += 'main.set_ranked in (3) '
+        whereQuery2 += 'set_ranked in (3) '
+    elif status == '4':
+        whereQuery += 'main.set_ranked in (4) '
+        whereQuery2 += 'set_ranked in (4) '
+    elif status == '0':
+        whereQuery += 'main.set_ranked in (0, -1, -2) '
+        whereQuery2 += 'set_ranked in (0, -1, -2) '
+    elif status == '-3':
+        whereQuery += 'main.set_ranked in (0, -1, -2,1,2,3,4,5,6) '
+        whereQuery2 += 'set_ranked in (0, -1, -2,1,2,3,4,5,6) '
     elif status == None:
-        whereQuery += 'main.ranked in (1,2) '
+        whereQuery += 'main.set_ranked in (1,2) '
+        whereQuery2 += 'set_ranked in (1,2) '
+    else:
+        whereQuery += 'main.set_ranked in (1,2) '
+        whereQuery2 += 'set_ranked in (1,2) '
 
     if mode == None:
         whereQuery += f'and main.mode = 0 '
-        whereQuery2 += f'mode = 0 '
-    elif mode == -1:
+        whereQuery2 += f'and mode = 0 '
+    elif mode == '-1':
         whereQuery += ''
         whereQuery2 += ''
     else:
         whereQuery += f'and main.mode = {mode} '
-        whereQuery2 += f'mode = {mode} '
+        whereQuery2 += f'and mode = {mode} '
+
     if sortby == None:
         sortQuery = " order by set_last_updated"
         sortQuery2 = " order by last_updated"
@@ -451,12 +506,14 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
         sortQuery = f"order by {sortby}"
         sortQuery2 = f"order by {sortby}"
         sortQuery2 = sortQuery2.replace("set_", "")
+
     if sort == None:
         sortQuery += f" desc"
         sortQuery2 += f" desc"
     else:
         sortQuery += f" {sort}"
         sortQuery2 += f" {sort}"
+
     if amount == None:
         sortQuery += f" limit 48"
         sortQuery2 += f" limit 48"
@@ -481,9 +538,11 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     cur = mydb.cursor()
     if query != None and len(query) > 0:
         with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
+            print('with query')
             sql = (sqlopen.read()).format(query, whereQuery, sortQuery)
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
+            print('without query')
             sql = (sqlopen.read()).format(whereQuery2, sortQuery, sortQuery2)
     cur.execute(sql)
     try:

@@ -10,6 +10,8 @@ host = UserConfig["host"]
 port = UserConfig["port"]
 debugmode = bool(UserConfig["debug"])
 
+loadbal = 0
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template("404.html", reason=error)
@@ -48,6 +50,20 @@ def update_beatmap(setid):
         return "ok"
     else:
         return goto_error_page('Beatmap Update Failed')
+
+@app.route('/d2/<setid>')
+def loadBalenceDownadBeatmapset(setid):
+    global loadbal
+    if loadbal == 0:
+        loadbal += 1
+        download_beatmapset(setid)
+    else:
+        loadbal = 0
+        check = isthftgrAlive(setid)
+        if check:
+            return returnDownloadThtftgr(setid)
+        else:
+            download_beatmapset(setid)   
 
 @app.route('/d/<setid>', methods=['get'])
 @app.route('/s/<setid>', methods=['get'])
@@ -91,7 +107,7 @@ def api_getset(setid):
     return result
 
 @app.route('/api/v1/search', methods=['get'])
-def routeApiV1():
+def routeapiV1():
     parser = reqparse.RequestParser()
     parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount'},
                     'str': {'query','sort','sortby'}
