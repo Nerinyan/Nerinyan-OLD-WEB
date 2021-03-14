@@ -51,6 +51,10 @@ def update_beatmap(setid):
     else:
         return goto_error_page('Beatmap Update Failed')
 
+@app.route('/d')
+def test_page_01():
+    return 'ok'
+
 @app.route('/d/<setid>')
 @app.route('/s/<setid>', methods=['get'])
 @app.route('/osu/s/<setid>', methods=['get'])
