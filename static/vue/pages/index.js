@@ -62,7 +62,7 @@ new Vue({
         var vm = this;
         $((function () {
             $(window).scroll((function () {
-                $(window).scrollTop() + $(window).height() > (($(document).height() - 300) * 0.05) && 0 == vm.load && vm.list.length >= 48 * vm.page && vm.changeoffset(vm.page + 1, !0)
+                $(window).scrollTop() + $(window).height() > (($(document).height() - 300) * 0.08) && 0 == vm.load && vm.list.length >= 48 * vm.page && vm.changeoffset(vm.page + 1, !0)
             })), vm.getBeatmapData()
         }));
     },
