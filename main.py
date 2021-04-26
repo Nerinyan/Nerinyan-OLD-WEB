@@ -39,6 +39,10 @@ def main():
         query = ''
     return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query))
 
+@app.route("/d")
+def downloadMainPage():
+    return render_template("download.html")
+
 @app.route("/old")
 def oldmain():
     return render_template("old.html")
@@ -50,10 +54,6 @@ def update_beatmap(setid):
         return "ok"
     else:
         return goto_error_page('Beatmap Update Failed')
-
-@app.route('/d')
-def test_page_01():
-    return 'ok'
 
 @app.route('/d/<setid>')
 @app.route('/s/<setid>', methods=['get'])
@@ -140,6 +140,38 @@ def routeapiV1():
     sortby = args["sortby"]
 
     data = ApiV1(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby)
+    result = jsonify(data)
+
+    return result
+
+@app.route('/api/v2/search', methods=['get'])
+def routeapiV2():
+    parser = reqparse.RequestParser()
+    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount'},
+                    'str': {'query','sort','sortby'}
+                }
+    for parsers in parser_rows:
+        parserKey = parser_rows[parsers]
+        for pars in parserKey:
+            parser.add_argument(pars, type=type(parsers))
+
+    args = parser.parse_args()
+
+    ar = dict(min=args["min_ar"], max=args["max_ar"])
+    cs = dict(min=args["min_cs"], max=args["max_cs"])
+    od = dict(min=args["min_od"], max=args["max_od"])
+    hp = dict(min=args["min_hp"], max=args["max_hp"])
+    bpm = dict(min=args["min_bpm"], max=args["max_bpm"])
+    length = dict(min=args["min_length"], max=args["max_length"])
+
+    query = args["query"]
+    mode = args["mode"]
+    status = args["status"]
+    amount = args["amount"]
+    sort = args["sort"]
+    sortby = args["sortby"]
+
+    data = ApiV2(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby)
     result = jsonify(data)
 
     return result

@@ -16,6 +16,7 @@ import datetime
 import os
 from flask import redirect
 
+banchokey = ["28f20f82543296d041b81d84ced64bd531c74acd", "ffdb6ee944a7c12bfac34de64de696bdfcfff035", "76fae2956e44480a762510652aeadae554c1758e", "f708cc6311ddec3aadc40b7250e3397a7462fa17", "238ab45c43ab2c94d220872879f09abdb18da138", "4f5e618b7b567f803a410c8ebe31830538d7dcc9"]
 BASE_API = 'https://osu.ppy.sh/api'
 
 def download(url, file_name):
@@ -542,6 +543,7 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
             sql = (sqlopen.read()).format(whereQuery2, sortQuery, sortQuery2)
+    print(sql)
     cur.execute(sql)
     try:
         first_data = cur.fetchall()
@@ -566,6 +568,203 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
         data = []
         for result in a:
             data.append(dict(zip(row_headers, result)))
+        return data
+    except Exception as e:
+        return {'error': str(e)}
+
+
+def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby):
+    try:
+        mydb = mysql.connector.connect(
+            host=UserConfig["MysqlHost"],
+            user=UserConfig["MysqlUser"],
+            passwd=UserConfig["MysqlPassword"]
+        ) 
+    except Exception as e:
+        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
+        return 'server has some problems now'
+    whereQuery = ""
+    whereQuery2 = ""
+    if ar['min'] == None:
+        minAR = 0
+    else:
+        minAR = ar['min']
+    if ar['max'] == None:
+        maxAR = 10
+    else:
+        maxAR = ar['max']
+    if cs['min'] == None:
+        minCS = 0
+    else:
+        minCS = cs['min']
+    if cs['max'] == None:
+        maxCS = 10
+    else:
+        maxCS = cs['min']
+    if od['min'] == None:
+        minOD = 0
+    else:
+        minOD = od['min']
+    if od['max'] == None:
+        maxOD = 10
+    else:
+        maxOD = od['min']
+    if hp['min'] == None:
+        minHP = 0
+    else:
+        minHP = hp['min']
+    if hp['max'] == None:
+        maxHP = 10
+    else:
+        minHP = hp['min']
+    if bpm['min'] == None:
+        minBPM = 0
+    else:
+        minBPM = bpm['min']
+    if bpm['max'] == None:
+        maxBPM = 600
+    else:
+        maxBPM = bpm['min']
+    if length['min'] == None:
+        minLENGTH = 0
+    else:
+        minLENGTH = length['min']
+    if length['max'] == None:
+        maxLENGTH = 5000
+    else:
+        maxLENGTH = length['min']
+
+    NewWhereQuery = ""
+    NewWhereQuery2 = ""
+
+    if status == '1':
+        NewWhereQuery += 'set_ranked in (1,2) '
+        NewWhereQuery2 += "main.set_ranked in (1,2) "
+    elif status == '3':
+        NewWhereQuery2 += 'main.set_ranked in (3) '
+        NewWhereQuery += 'set_ranked in (3) '
+    elif status == '4':
+        NewWhereQuery2 += 'main.set_ranked in (4) '
+        NewWhereQuery += 'set_ranked in (4) '
+    elif status == '0':
+        NewWhereQuery2 += 'main.set_ranked in (0, -1, -2) '
+        NewWhereQuery += 'set_ranked in (0, -1, -2) '
+    elif status == '-3':
+        NewWhereQuery2 += 'main.set_ranked in (0, -1, -2,1,2,3,4,5,6) '
+        NewWhereQuery += 'set_ranked in (0, -1, -2,1,2,3,4,5,6) '
+    elif status == None:
+        NewWhereQuery2 += 'main.set_ranked in (1,2) '
+        NewWhereQuery += 'set_ranked in (1,2) '
+    else:
+        NewWhereQuery2 += 'main.set_ranked in (1,2) '
+        NewWhereQuery += 'set_ranked in (1,2) '
+
+    if mode == None:
+        NewWhereQuery2 += f'and main.mode = 0 '
+        NewWhereQuery += f'and mode = 0 '
+    elif mode == '-1':
+        pass
+    else:
+        NewWhereQuery2 += f'and main.mode = {mode} '
+        NewWhereQuery += f'and mode = {mode} '
+
+    if sortby == None:
+        sortQuery = " order by set_last_updated"
+        sortQuery2 = " order by last_updated"
+    else:
+        sortQuery = f"order by {sortby}"
+        sortQuery2 = f"order by {sortby}"
+        sortQuery2 = sortQuery2.replace("set_", "")
+
+    if sort == None:
+        sortQuery += f" desc"
+        sortQuery2 += f" desc"
+    else:
+        sortQuery += f" {sort}"
+        sortQuery2 += f" {sort}"
+
+    if amount == None:
+        sortQuery += f" limit 48"
+        sortQuery2 += f" limit 48"
+    else:
+        sortQuery += f" limit {amount}"
+        sortQuery2 += f" limit {amount}"
+
+    whereQuery += f'And main.ar between {minAR} and {maxAR} '
+    whereQuery += f'And main.od between {minOD} and {maxOD} '
+    whereQuery += f'And main.cs between {minCS} and {maxCS} '
+    whereQuery += f'And main.hp between {minHP} and {maxHP} '
+    whereQuery += f'And main.bpm between {minBPM} and {maxBPM} '
+    whereQuery += f'And main.total_length between {minLENGTH} and {maxLENGTH} '
+
+    whereQuery2 += f'And ar between {minAR} and {maxAR} '
+    whereQuery2 += f'And od between {minOD} and {maxOD} '
+    whereQuery2 += f'And cs between {minCS} and {maxCS} '
+    whereQuery2 += f'And hp between {minHP} and {maxHP} '
+    whereQuery2 += f'And bpm between {minBPM} and {maxBPM} '
+    whereQuery2 += f'And total_length between {minLENGTH} and {maxLENGTH} '
+    
+    QuerySpliceList = ["cs<=", "cs=", "cs>=", "ar>=", "ar=", "ar<=", "od<=", "od=", "od>=", "hp<=", "hp=", "hp>=", "bpm<=", "bpm=", "bpm>=", "length<=", "length=", "length>="]
+    SubCheckList = ["<", ">"]
+    QuerySplice = str(query).split(" ")
+    LastQuery = query
+    QueryAddCount = 0   
+    for queryText in QuerySplice:
+        for WhereList in QuerySpliceList:
+            if WhereList in queryText:
+                print(f'{queryText} in {WhereList} | ok')
+                if queryText in SubCheckList:
+                    try:
+                        queryText = queryText.replace("<=", " <= ")
+                    except:
+                        pass
+                    try:
+                        queryText = queryText.replace(">=", " >= ")
+                    except:
+                        pass
+                else:
+                    NewWhereQuery += "AND " + queryText + " "   
+                    NewWhereQuery2 += "AND " + "main." + queryText + " "   
+                    QueryAddCount += 1
+                    LastQuery = LastQuery.replace(queryText, "")
+                    LastQuery = LastQuery.replace(" ", "")
+            else:
+                pass
+            
+    cur = mydb.cursor()
+    if query != None and len(query) > 0:
+        with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(LastQuery, NewWhereQuery2, sortQuery)
+    else:
+        with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(NewWhereQuery, sortQuery, sortQuery2)
+    cur.execute(sql)
+    try:
+        first_data = cur.fetchall()
+        row_headers = [x[0] for x in cur.description]
+        row_headers.insert(1, "ChildrenBeatmaps")
+        a = list()
+        second_data = list(first_data)
+        for setdata in second_data:
+            setdata = list(setdata)
+            beatmapsetid = setdata[0]
+            with open("./bin/sql/api_sql/subquery.sql", 'r') as sqlopen:
+                sql = (sqlopen.read()).format(beatmapsetid)
+            cur.execute(sql)
+            ffirst_data = cur.fetchall()
+            subrow_headers = [x[0] for x in cur.description]
+            sub_data = list(ffirst_data)
+            bmdata = []
+            for bdata in sub_data:
+                bmdata.append(dict(zip(subrow_headers, bdata)))
+            setdata.insert(1, bmdata)
+            # print(setdata[16]) beatmaps count
+            a.append(setdata)
+
+        data = []
+        for result in a:
+            data.append(dict(zip(row_headers, result)))
+        
         return data
     except Exception as e:
         return {'error': str(e)}

@@ -20,8 +20,7 @@ JOIN
 	SELECT  *
 	FROM BeatmapMirror.sets
 	WHERE concat_ws(' ', beatmapset_id, artist, title, creator) like '%{0}%'
-	ORDER BY CASE WHEN concat_ws(' ', artist, title, creator) like '{0}%' THEN 1 WHEN concat_ws(' ', artist, title, creator) like '%{0}' THEN 3 else 2 end 
-	AND last_updated desc  
+	ORDER BY last_updated desc  
 ) AS sets
 ON sets.beatmapset_id = main.set_id
 WHERE {1} 

@@ -1,0 +1,137 @@
+.search {
+    --background: #ffffff;
+    --text-color: #414856;
+    --primary-color: #4F29F0;
+    --border-radius: 10px;
+    --width: 190px;
+    --height: 55px;
+    background: var(--background);
+    width: auto;
+    height: var(--height);
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .search input[type=text] {
+    position: relative;
+    width: 100%;
+    height: var(--height);
+    font: 400 16px "Varela Round", sans-serif;
+    color: var(--text-color);
+    border: 0;
+    box-sizing: border-box;
+    outline: none;
+    padding: 0 0 0 40px;
+    transition: width 0.6s ease;
+    z-index: 10;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .search input[type=text]:focus {
+    z-index: 0;
+    opacity: 1;
+    width: var(--width);
+  }
+  .search input[type=text]:focus ~ .symbol::before {
+    width: 0%;
+  }
+  .search input[type=text]:focus ~ .symbol:after {
+    -webkit-clip-path: inset(0% 0% 0% 100%);
+            clip-path: inset(0% 0% 0% 100%);
+    transition: -webkit-clip-path 0.04s linear 0.105s;
+    transition: clip-path 0.04s linear 0.105s;
+    transition: clip-path 0.04s linear 0.105s, -webkit-clip-path 0.04s linear 0.105s;
+  }
+  .search input[type=text]:focus ~ .symbol .cloud {
+    top: -30px;
+    left: -30px;
+    transform: translate(0, 0);
+    transition: all 0.6s ease;
+  }
+  .search input[type=text]:focus ~ .symbol .lens {
+    top: 20px;
+    left: 15px;
+    transform: translate(0, 0);
+    fill: var(--primary-color);
+    transition: top 0.5s ease 0.1s, left 0.5s ease 0.1s, fill 0.3s ease;
+  }
+  .search .symbol {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .search .symbol:before {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    z-index: -1;
+    transition: width 0.6s ease;
+  }
+  .search .symbol:after {
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 21px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    z-index: 1;
+    -webkit-clip-path: inset(0% 0% 0% 0%);
+            clip-path: inset(0% 0% 0% 0%);
+    transition: -webkit-clip-path 0.04s linear 0.225s;
+    transition: clip-path 0.04s linear 0.225s;
+    transition: clip-path 0.04s linear 0.225s, -webkit-clip-path 0.04s linear 0.225s;
+  }
+  .search .symbol .cloud,
+  .search .symbol .lens {
+    position: absolute;
+    fill: #fff;
+    stroke: none;
+    top: 50%;
+    left: 50%;
+  }
+  .search .symbol .cloud {
+    width: 35px;
+    height: 32px;
+    transform: translate(-50%, -60%);
+    transition: all 0.6s ease;
+  }
+  .search .symbol .lens {
+    fill: #fff;
+    width: 16px;
+    height: 16px;
+    z-index: 2;
+    top: 24px;
+    left: 24px;
+    transition: top 0.3s ease, left 0.3s ease, fill 0.2s ease 0.2s;
+  }
+  
+  body .socials {
+    position: fixed;
+    display: block;
+    left: 20px;
+    bottom: 20px;
+  }
+  body .socials > a {
+    display: block;
+    width: 30px;
+    opacity: var(--opacity, 0.2);
+    transform: scale(var(--scale, 0.8));
+    transition: transform 0.3s cubic-bezier(0.38, -0.12, 0.24, 1.91);
+  }
+  body .socials > a:hover {
+    --scale: 1;
+  }
