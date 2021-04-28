@@ -92,22 +92,11 @@ def download_beatmapset(setid):
 def downlaod_beatmap(bid):
     setid = convertToBeatmapidToSetid(bid)
     print(f"bid({bid}) converting -> sid({setid})")
-    check = check_file(setid)
-    if check:
-        path = "/media/data/beatmaps/"
-        fileformat = ".osz"
-        filename = get_beatmap_file_name(setid)
-        if filename == 'db not found':
-            return goto_error_page('Failed to get data from beatmap.')
-        else:
-            return send_file(f"{path}{setid}{fileformat}", attachment_filename=filename, as_attachment=True)
-    else:
-        return goto_error_page('Beatmap does not exist.')
+    return loadBalanceDownadBeatmapset(setid)
 
 @app.route('/api/b/<setid>', methods=['get'])
 def api_getset(setid):
     data = get_setdata_from_db(setid)
-    #result = jsonify(data)
     result = data
 
     return result

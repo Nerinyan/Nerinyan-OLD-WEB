@@ -210,8 +210,8 @@
                         </el-col>
                     </el-row>
                 </div>
-                <el-alert title="This site is currently under development." type="warning"
-                    description="이 사이트는 현재 개발 진행중입니다. ver. B0314" show-icon effect="dark">
+                <el-alert title="cs, ar, od, hp, bpm, length search support ex)cs>3 kimi no bouken" type="Success"
+                    description="cs, ar, od, hp, bpm, length 검색 지원 ex)cs>3 kimi no bouken" show-icon effect="dark">
                 </el-alert>
             </div>
             <div class="ui-main-block">
@@ -221,6 +221,12 @@
                     </template>
                 </div>
             </div>
+
+            <el-col :span="24" class="loading_block" v-if="load">
+                <div class="loadingWrap">
+                    <div class="loadingBall"></div>
+                </div>
+            </el-col>
         </div>
     </div>
     <script src="/static/js/jquery.min.js" onload="scrptloadchk += 1;"></script>
@@ -228,7 +234,7 @@
     <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue/mixins/generalMixins.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.min.js?12351261" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue/pages/beatmap.js" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
