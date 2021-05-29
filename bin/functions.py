@@ -146,10 +146,8 @@ def isthftgrAlive(setid):
     return True
 
 def returnDownloadThtftgr(setid):
-    filename = get_beatmapFileName_from_db(setid)
-
     URLBASE = "https://xiiov.com/d/"
-    url = URLBASE + setid + f"?filename={filename}"
+    url = URLBASE + setid
 
     return redirect(url)
 
@@ -542,7 +540,7 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     else:
         with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
             sql = (sqlopen.read()).format(whereQuery2, sortQuery, sortQuery2)
-    print(sql)
+    # print(sql)
     cur.execute(sql)
     try:
         first_data = cur.fetchall()
@@ -584,6 +582,8 @@ def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
         return 'server has some problems now'
     whereQuery = ""
     whereQuery2 = ""
+    if query == None:
+        query = ''
     if ar['min'] == None:
         minAR = 0
     else:
@@ -737,8 +737,12 @@ def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
     SearchQueryText = SearchQueryText[:-1]
 
     cur = mydb.cursor()
-    with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
-        sql = (sqlopen.read()).format(SearchQueryText, NewWhereQuery2, sortQuery)
+    if len(SearchQueryText) >= 1:
+        with open("./bin/sql/api_sql/with_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(SearchQueryText, NewWhereQuery2, sortQuery)
+    else:
+        with open("./bin/sql/api_sql/without_query.sql", 'r') as sqlopen:
+            sql = (sqlopen.read()).format(NewWhereQuery, sortQuery, sortQuery2)
     cur.execute(sql)
     try:
         first_data = cur.fetchall()
