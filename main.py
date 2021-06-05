@@ -1,3 +1,4 @@
+import base64
 from flask import Flask, render_template, send_from_directory, make_response, jsonify, redirect, url_for, request
 from flask_restful import reqparse
 from flask.helpers import send_file
@@ -43,10 +44,6 @@ def main():
 def downloadMainPage():
     return render_template("download.html")
 
-@app.route("/old")
-def oldmain():
-    return render_template("old.html")
-
 @app.route('/beatmap/update/<setid>')
 def update_beatmap(setid):
     aaaa = req_update_beatmapsets(setid)
@@ -58,42 +55,39 @@ def update_beatmap(setid):
 @app.route('/d/<setid>')
 @app.route('/s/<setid>', methods=['get'])
 @app.route('/osu/s/<setid>', methods=['get'])
-def loadBalanceDownadBeatmapset(setid):
-    global loadbal
-    if loadbal == 0:
-        loadbal += 1
-        return download_beatmapset(setid)
-    else:
-        loadbal = 0
-        return returnDownloadThtftgr(setid)
+def RedirectDownload(setid):
+    parser = reqparse.RequestParser()
+    parser_rows = {'int': {'s'}}
+    for parsers in parser_rows:
+        parserKey = parser_rows[parsers]
+        for pars in parserKey:
+            parser.add_argument(pars, type=type(parsers))
 
-@app.route('/d2/<setid>', methods=['get'])
-@app.route('/s2/<setid>', methods=['get'])
-@app.route('/osu/s2/<setid>', methods=['get'])
-def download_beatmapset(setid):
-    check = check_file(setid)
-    if check:
-        path = "/media/data/beatmaps/"
-        fileformat = ".osz"
-        filename = get_beatmap_file_name(setid)
-        if filename == 'db not found':
-            return goto_error_page('Failed to get data from beatmap.')
-        else:
-            return send_file(f"{path}{setid}{fileformat}", attachment_filename=filename, as_attachment=True)
-    else:
-        return goto_error_page('Beatmap does not exist.')
+    args = parser.parse_args()
+    server = args["s"]
+
+    BaseURL = "https://api.nerina.pw/download?b="
+    setJson = {
+        "server": int(server),
+        "beatmapset_id": int(setid)
+    }
+    setString = str(json.dumps(setJson))
+    setb64 = str(stringToBase64(setString))
+    setb64 = setb64.replace("b'", "")
+    setb64 = setb64.replace("'", "")
+
+    return redirect(f"{BaseURL}{setb64}")
 
 @app.route('/osu/b/<bid>', methods=['get'])
 @app.route('/b/<bid>', methods=['get'])
 def downlaod_beatmap(bid):
     setid = convertToBeatmapidToSetid(bid)
     print(f"bid({bid}) converting -> sid({setid})")
-    return loadBalanceDownadBeatmapset(setid)
+    return RedirectDownload(setid)
 
 @app.route('/api/b/<setid>', methods=['get'])
 def api_getset(setid):
     data = get_setdata_from_db(setid)
-    #result = jsonify(data)
     result = data
 
     return result

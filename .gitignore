@@ -144,3 +144,9 @@ static/css/index.css
 static/css/index.css
 static/vue/pages/index.js
 templates/download.html
+bin/glob.py
+static/css/index.css
+static/css/index.css
+static/vue/pages/beatmap.js
+static/vue/pages/testindex.js
+static/vue/pages/mirror.js

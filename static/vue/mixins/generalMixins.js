@@ -434,6 +434,25 @@ Vue.mixin({
             }
             return result; 
         },
+        convertModeToico(mode){
+            var result;
+            switch(mode){
+                default:
+                case 0:
+                    result = "osu";
+                    break;
+                case 1:
+                    result = "taiko";
+                    break;
+                case 2:
+                    result = "fruits";
+                    break;
+                case 3:
+                    result = "mania";
+                    break;
+            }
+            return result; 
+        },
         convertModeToText(mode){
             var result;
             switch(mode){

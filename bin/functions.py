@@ -18,143 +18,11 @@ from flask import redirect
 
 BASE_API = 'https://osu.ppy.sh/api'
 
-def download(url, file_name):
-    with open(file_name, "wb") as file:
-        response = get(url)
-        if len(response.content) > 13:
-            file.write(response.content)
-        else:
-            return False
-
-def check_file(setid):
-    print(f"[C]{Fore.LIGHTBLUE_EX} NERINA{Fore.RESET} | 메인 서버에 파일이 존재하는지 체크 중 ...{Fore.RESET}")
-    check = os.path.isfile(f"/media/data/beatmaps/{setid}.osz")
-    if check:
-        a = check_mtime_file(setid)
-        if a:
-            return True
-    down = download_file(setid)
-
-    return down
-
-def check_mtime_file(setid):
-    check = os.path.getmtime(f"/media/data/beatmaps/{setid}.osz")
-    data = get_beatmap_data_on_bancho(setid)
-    last_update = data['last_update']
-    ts_last_update = time.mktime(datetime.datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S').timetuple())
-    owo = int(check - ts_last_update)
-
-    if owo < 0:
-        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | 파일 마지막 수정 날짜 불일치{Fore.RESET}")
-        os.remove(f"/media/data/beatmaps/{setid}.osz")
-        print(f"[D]{Fore.RED} {setid}{Fore.RESET} | 파일 재 다운로드 시작")
-        down = download_file(setid)
-        return down
-
-    return True
-
-def download_file(setid):
-    filedir = "/media/data/beatmaps/" + setid + ".osz"
-    if os.path.exists(filedir):
-        os.remove(filedir)
-    url = f"http://192.168.0.6:8003/d/?name=false&s={setid}"
-    print(f"[D]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 시도중...{Fore.RESET}")
-    downloads = get(url)
-    status = downloads.status_code
-    if status == 200:
-        beatmapsize = os.path.getsize(filedir)
-        if beatmapsize >= 1000000:
-            print(f"[✔]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 성공!{Fore.RESET}")
-            return True
-        else:
-            os.remove(filedir)
-    else:
-        print(f"[❌]{Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
-        url = f"http://beatconnect.io/b/{setid}"
-        print(f"[D]{Fore.GREEN} {url}{Fore.RESET} | 다운로드 시도중...{Fore.RESET}")
-        down = download(url, filedir)
-        if down:
-            beatmapsize = os.path.getsize(filedir)
-            if beatmapsize >= 1000000:
-                print(f"[✔] {Fore.GREEN} {url}{Fore.RESET} | 다운로드 성공!{Fore.RESET}")
-                return True
-            else:
-                os.remove(filedir)
-                print(f"[❌] {Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
-                return False
-        else:
-            print(f"[❌] {Fore.RED} {url}{Fore.RESET} | 다운로드 실패{Fore.RESET}")
-            os.remove(filedir)
-            return False
-
-def get_beatmap_file_name(setid):
-    try:
-        mydb = mysql.connector.connect(
-            host=UserConfig["MysqlHost"],
-            user=UserConfig["MysqlUser"],
-            passwd=UserConfig["MysqlPassword"]
-        ) 
-    except Exception as e:
-        print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
-        return 'server has some problems now'
-    cur = mydb.cursor()
-    with open("./bin/sql/get_beatmap_file_name.sql", 'r') as sqlopen:
-        sql = (sqlopen.read()).format(setid)
-    cur.execute(sql)
-    beatdata = cur.fetchone()
-    try:    
-        artist = beatdata[0]
-        title = beatdata[1] 
-        final_file_name = f"{setid} {artist} - {title}.osz"
-        mydb.close()
-        return final_file_name
-    except:
-        addbeatmap = add_beatmap_just_one(setid)
-        if addbeatmap == 'ok':
-            try:
-                mydb = mysql.connector.connect(
-                    host=UserConfig["MysqlHost"],
-                    user=UserConfig["MysqlUser"],
-                    passwd=UserConfig["MysqlPassword"]
-                ) 
-            except Exception as e:
-                print(f"{Fore.RED} DB서버 접속에 실패하였습니다.\n 에러: {e}{Fore.RESET}")
-                return 'server has some problems now'
-            cur = mydb.cursor()
-            cur.execute(sql)
-            beatdata = cur.fetchone()
-            try:    
-                artist = beatdata[0]
-                title = beatdata[1] 
-                final_file_name = f"{setid} {artist} - {title}.osz"
-                mydb.close()
-                return final_file_name
-            except:
-                return f'db not found'
-        else:
-            return f'db not found'
-
-def isthftgrAlive(setid):
-    URLBASE = "https://xiiov.com/alive/"
-    url = URLBASE + setid
-    print(f"[C]{Fore.LIGHTBLUE_EX} {url}{Fore.RESET} | THFTGR 서버에 파일이 존재하는지 체크 중 ...{Fore.RESET}")
-    downloads = get(url)
-    if not downloads or downloads.status_code != 200:
-        print(f"[❌]{Fore.RED} {setid}{Fore.RESET} | THFTGR 서버에 파일이 존재하지 않습니다.{Fore.RESET}")
-        return False
-    
-    return True
-
-def returnDownloadThtftgr(setid):
-    URLBASE = "https://xiiov.com/d/"
-    url = URLBASE + setid
-
-    return redirect(url)
-
-    
+def stringToBase64(s):
+    return base64.b64encode(s.encode('utf-8'))
 
 def req_update_beatmapsets(setid):
-    url = f"http://192.168.0.6:8003/?s={setid}"
+    url = f"http://192.168.0.6:1246/?k={UserConfig['ApiKey']}&s={setid}"
     print(f"[U] {Fore.GREEN} {setid}{Fore.RESET} | 비트맵셋 업데이트 중...{Fore.RESET}")
     try:
         downloads = get(url)
@@ -166,7 +34,6 @@ def req_update_beatmapsets(setid):
             return False
     except:
         return False
-
 
 def get_setdata_from_db(setid):
     try:

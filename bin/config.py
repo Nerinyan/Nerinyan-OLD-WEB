@@ -7,7 +7,8 @@ init()
 DefaultConfig = {
     "port": "1241",
     "host": "0.0.0.0",
-    "debug": True,
+    "debug": "True",
+    "ApiKey": "qweqwe",
 
     #MYSQL SETTINGS
     "MysqlHost" : "",

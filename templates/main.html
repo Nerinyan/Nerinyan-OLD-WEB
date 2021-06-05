@@ -27,6 +27,12 @@
     <meta property="article:tag" content="osu! beatmap download">
     <meta property="article:tag" content="osu! mirror">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/vue_modules/vue.min.js"></script>
+    <script src="/static/vue_modules/vue-axios-plugin.min.js"></script>
+    <script src="/static/vue_modules/vue-timeago.min.js"></script>
+    <script src='nprogress.js'></script>
+    <link rel='stylesheet' href='nprogress.css'/>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -40,6 +46,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
         integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/static/css/index.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css"> -->
 </head>
 
 <body>
@@ -52,18 +60,16 @@
         var s = '{{ status }}';
         var q = '{{ query }}';
         var scrptloadchk = 0;
+        var dlserver = 0;
     </script>
     <div id="app">
         <el-col class="loading" :span="24" v-bind:class="{ 'load' : load }" v-if="first_load">
             <div class="artboard">
-                <div class="domino">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
+                <span class="loadingcircle"><i class="el-icon-loading"></i></span>
+                <span class="loadtxt">Please Wait</span>
             </div>
         </el-col>
+
         <div class="ui container" id="main-form">
             <div class="ui-navbar-block">
                 <el-row class="navbar logo">
@@ -76,12 +82,25 @@
                         </div>
                     </el-col>
                 </el-row>
-                <el-row class="navbar search" :style="activeSearchDetails == '0' ? '' : 'display: none'">
-                    <el-col :span="24">
-                        <div class="navbar-search-box">
-                            <i class="fas fa-search navbar-search-icon"></i>
-                            <el-input class="navbar-search-input dark" placeholder="Search..."
-                                v-model="search_query"></el-input>
+                <el-row class="navbar search">
+                    <el-col :span="24" class="navbar-search-flex">
+                        <div class="navbar-search-box aa" :style="activeSearchDetails == '0' ? '' : 'display: none'">
+                            <div class="navbar-search-block">
+                                <i class="fas fa-search navbar-search-icon"></i>
+                                <el-input class="navbar-search-input dark" placeholder="Search..."
+                                    v-model="search_query">
+                                </el-input>
+                            </div>
+                            <div class="navbar-switcher-block">
+                                <el-select v-model="serverid" placeholder="Select">
+                                    <el-option
+                                      v-for="item in downloadserver"
+                                      :key="item.serverid"
+                                      :label="item.listlabel"
+                                      :value="item.serverid">
+                                    </el-option>
+                                  </el-select>
+                            </div>
                         </div>
                     </el-col>
                 </el-row>
@@ -159,22 +178,22 @@
                     <el-row>
                         <el-col :span="24" class="navbar-block">
                             <el-menu :default-active="mode" class="navbar left" mode="horizontal" @select="chnageMode">
-                                <el-tooltip class="item" effect="dark" content="osu! Standard" placement="bottom">
+                                <el-tooltip class="item" effect="dark" content="osu!Standard" placement="bottom">
                                     <el-menu-item index="0" class="navbar item">
                                         <i class="navbar-mode-ico faa fa-extra-mode-osu"></i>
                                     </el-menu-item>
                                 </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu! Taiko" placement="bottom">
+                                <el-tooltip class="item" effect="dark" content="osu!Taiko" placement="bottom">
                                     <el-menu-item index="1" class="navbar item">
                                         <i class="navbar-mode-ico faa fa-extra-mode-taiko"></i>
                                     </el-menu-item>
                                 </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu! Catch The Beat" placement="bottom">
+                                <el-tooltip class="item" effect="dark" content="osu!Catch The Beat" placement="bottom">
                                     <el-menu-item index="2" class="navbar item">
                                         <i class="navbar-mode-ico faa fa-extra-mode-fruits"></i>
                                     </el-menu-item>
                                 </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu! Mania" placement="bottom">
+                                <el-tooltip class="item" effect="dark" content="osu!Mania" placement="bottom">
                                     <el-menu-item index="3" class="navbar item">
                                         <i class="navbar-mode-ico faa fa-extra-mode-mania"></i>
                                     </el-menu-item>
@@ -210,6 +229,9 @@
                         </el-col>
                     </el-row>
                 </div>
+                <!-- <el-row class="progressbar-line" v-if="load">
+                    <el-progress stroke-width="12" stroke-linecap="butt" :percentage="loadPercent" :color="colors"></el-progress>
+                </el-row> -->
                 <el-alert title="cs, ar, od, hp, bpm, length search support ex)cs>3 kimi no bouken" type="Success"
                     description="cs, ar, od, hp, bpm, length 검색 지원 ex)cs>3 kimi no bouken" show-icon effect="dark">
                 </el-alert>
@@ -229,19 +251,14 @@
             </el-col>
         </div>
     </div>
-    <script src="/static/js/jquery.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue_modules/vue.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/mixins/generalMixins.min.js" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.min.js?12351261" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/beatmap.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/mixins/generalMixins.min.js?123" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.min.js?1643312345" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
         setTimeout(CheckLoadScript, 1000);
 
         function CheckLoadScript() {
-            if (scrptloadchk != 8) {
+            if (scrptloadchk != 3) {
                 window.location.replace(window.location.pathname + window.location.search + window.location.hash);
             }
         }

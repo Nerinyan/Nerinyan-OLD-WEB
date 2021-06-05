@@ -5,8 +5,92 @@ Vue.component('beatmap', {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a :href="'/d/' + beatmap.SetID" :id="beatmap.SetID" class="cardheader ranked"
-                    :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/card.jpg);'">
+                <a v-if="dlserver == 0" :href="'/d/' + beatmap.SetID + '?/s=0'" :id="beatmap.SetID" class="cardheader ranked"
+                    :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/cover.jpg?1622784772);'">
+                    <div>
+                        <div class="song-status">
+                            <i :class="'fas fa-' + convertRankedStatusToico(beatmap.RankedStatus)"></i>
+                        </div>
+                        <div class="song-stats-block">
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Favorites count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
+                                    </div>
+                                </el-tooltip>   
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Play count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-play-circle"></i> <% addCommas(beatmap.Playcounts) %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="BPM" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-music"></i> <% beatmap.BPM %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Beatmaps Count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-clipboard-list"></i> <% beatmap.BeatmapCount %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column creator-title">
+                        <span class="beatmap songname title"> <% beatmap.Title %></span>
+                        <span class="beatmap songname creator">by <% beatmap.Artist %></span>
+                    </div>
+                </a>
+                <a v-if="dlserver == 1" :href="'/d/' + beatmap.SetID + '?/s=1'" :id="beatmap.SetID" class="cardheader ranked"
+                    :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/cover.jpg?1622784772);'">
+                    <div>
+                        <div class="song-status">
+                            <i :class="'fas fa-' + convertRankedStatusToico(beatmap.RankedStatus)"></i>
+                        </div>
+                        <div class="song-stats-block">
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Favorites count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
+                                    </div>
+                                </el-tooltip>   
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Play count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-play-circle"></i> <% addCommas(beatmap.Playcounts) %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="BPM" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-music"></i> <% beatmap.BPM %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats">
+                                <el-tooltip class="item" effect="dark" content="Beatmaps Count" placement="top">
+                                    <div class="song-stats">
+                                        <i class="fas fa-clipboard-list"></i> <% beatmap.BeatmapCount %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column creator-title">
+                        <span class="beatmap songname title"> <% beatmap.Title %></span>
+                        <span class="beatmap songname creator">by <% beatmap.Artist %></span>
+                    </div>
+                </a>
+                <a v-if="dlserver == 2" :href="'/d/' + beatmap.SetID + '?/s=2'" :id="beatmap.SetID" class="cardheader ranked"
+                    :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/cover.jpg?1622784772);'">
                     <div>
                         <div class="song-status">
                             <i :class="'fas fa-' + convertRankedStatusToico(beatmap.RankedStatus)"></i>
@@ -52,7 +136,13 @@ Vue.component('beatmap', {
                         mapped by <a class="song-author-name" :href="'/main?creator=' + beatmap.CreatorID"> <% beatmap.Creator %></a>
                     </div>
                     <div class="beatmap-download-btn">
-                        <a :href="'/d/' + beatmap.SetID" class="download-icon">
+                        <a v-if="dlserver == 0" :href="'/d/' + beatmap.SetID + '?/s=0'" class="download-icon">
+                            <i class="fa fa-download"></i>
+                        </a>
+                        <a v-else-if="dlserver == 1" :href="'/d/' + beatmap.SetID + '?/s=1'" class="download-icon">
+                            <i class="fa fa-download"></i>
+                        </a>
+                        <a v-else-if="dlserver == 2" :href="'/d/' + beatmap.SetID + '?/s=2'" class="download-icon">
                             <i class="fa fa-download"></i>
                         </a>
                     </div>
