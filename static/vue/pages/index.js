@@ -5,7 +5,7 @@ var beatmap = {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a @click="redirectDownload(beatmap.SetID)" :id="beatmap.SetID" class="cardheader ranked"
+                <a :href="createBmpDlUri(beatmap.SetID)" :id="beatmap.SetID" class="cardheader ranked"
                     :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/cover.jpg?1622784772);'">
                     <div>
                         <div class="song-status">
@@ -47,14 +47,21 @@ var beatmap = {
                         <span class="beatmap songname creator">by <% beatmap.Artist %></span>
                     </div>
                 </a>
+                <div :class="'beatmap-preview-progressbar '+(playing ? 'playing' : '')">
+                </div>
                 <div class="info">
                     <div class="desc">
                         mapped by <a class="song-author-name" :href="'/main?creator=' + beatmap.CreatorID"> <% beatmap.Creator %></a>
                     </div>
                     <div class="beatmap-clipboard-btn">
+                        <el-tooltip class="item" effect="dark" content="Download" placement="top">
+                            <a :href="createBmpDlUri(beatmap.SetID)" class="clipboard-icon">
+                                <i class="copyico fas fa-download"></i>
+                            </a>
+                        </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="Copy Download URL" placement="top">
                             <a @click="clipboardDluri(beatmap.SetID)" class="clipboard-icon">
-                                <i class="fas fa-clipboard"></i>
+                                <i class="copyico fas fa-paste" :id="'Copy-' + beatmap.SetID"></i>
                             </a>
                         </el-tooltip>
                     </div>
@@ -143,7 +150,8 @@ var beatmap = {
     data() {
         return {
             playing: false,
-            active: true
+            active: true,
+            copied: false
         }
     },
     methods: {
@@ -300,7 +308,7 @@ var beatmap = {
             audioElement.addEventListener('loadeddata', function() {
                 if (vm.playing) return;
                 vm.playing = true;
-                audioElement.volume = 0.15;
+                audioElement.volume = 0.2;
                 audioElement.play();
             });
 
@@ -338,11 +346,11 @@ var beatmap = {
             t.select();
             document.execCommand('copy');
             document.body.removeChild(t);
-            this.$notify({
-                title: 'Nerinyan',
-                message: 'copied!',
-                type: 'success'
-            });
+            const aa = document.getElementById("Copy-" + setid);
+            aa.className = "copyico fas fa-check";
+            setTimeout(function () {
+                aa.className = "copyico fas fa-paste";
+            }, 2500);
         }
     }
 }
@@ -579,7 +587,7 @@ new Vue({
         getBeatmapDataByCreatorId: function() {
             var vm = this;
             console.log("Creator ID: " + vm.creatorid);
-            
+            window.history.replaceState('', document.title, "/main?creator=" + vm.creatorid + "&mode="+vm.mode+'&status='+vm.rank+'sort='+this.form.sort+'&order='+this.form.sort2+'&query='+vm.search_query);
             this.$axios.get("https://nerina.pw/api/v2/search", {
                 params: {
                     offset: this.offset,
@@ -592,6 +600,7 @@ new Vue({
             }).then(function (response) {
                 vm.list = response.data;
                 vm.load = false;
+                vm.first_load = false;
             });
         },
         chnageMode(key, keyPath) {

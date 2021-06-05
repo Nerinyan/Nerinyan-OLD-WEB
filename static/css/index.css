@@ -16230,6 +16230,12 @@ input .el-input__inner::placeholder {
     text-align: center;
 }
 
+.beatmap-clipboard-btn {
+    padding: 1px 4px;
+    border-radius: 2px;
+
+}
+
 .beatmap-bg-default {
     background-position: 50% 50% !important;
     height: 136px;
@@ -16592,7 +16598,7 @@ span.beatmap.songname.title {
 }
 
 .clipboard-icon:hover {
-    color: #d35894;
+    color: #b9ff6d;
     cursor: pointer;
 }
 
@@ -16923,13 +16929,34 @@ span.beatmap.songname.title {
 }
 
 .pace .pace-progress {
-	background: #dc793f;
+	background: #e6b443;
 	position: fixed;
 	z-index: 2000;
-	top: 268px;
+	top: 0;
 	right: 100%;
 	width: 100%;
 	height: 8px;
+}
+
+.beatmap-preview-progressbar {
+    position: absolute;
+    left: 0;
+    top: 132px;
+    transition: width 250ms linear;
+    background-color: #ffa722;
+    height: 4px;
+    transition-duration: 0;
+    width: 0px;
+    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, .14);
+}
+
+.beatmap-preview-progressbar.playing{
+    transition-duration: 10.0049s;
+    width: 100%;
+}
+
+.copyico {
+    vertical-align: middle;
 }
 
 .pace .pace-progress-inner {
@@ -16939,6 +16966,7 @@ span.beatmap.songname.title {
 	width: 100px;
 	height: 100%;
 	opacity: 1.0;
+	box-shadow: 0 0 10px #ffa722, 0 0 5px #ffa722;
 	-webkit-transform: rotate(3deg) translate(0px, -4px);
 	-moz-transform: rotate(3deg) translate(0px, -4px);
 	-ms-transform: rotate(3deg) translate(0px, -4px);
@@ -16950,13 +16978,13 @@ span.beatmap.songname.title {
 	display: block;
 	position: fixed;
 	z-index: 2000;
-	top: 283px;
+	top: 23px;
 	right: 15px;
 	width: 14px;
 	height: 14px;
 	border: solid 2px transparent;
-	border-top-color: #dc793f;
-	border-left-color: #dc793f;
+	border-top-color: #e6b443;
+	border-left-color: #e6b443;
 	border-radius: 10px;
 	-webkit-animation: pace-spinner 400ms linear infinite;
 	-moz-animation: pace-spinner 400ms linear infinite;

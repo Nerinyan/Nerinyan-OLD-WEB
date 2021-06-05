@@ -15,6 +15,7 @@ from bson.json_util import dumps
 import datetime
 import os
 from flask import redirect
+import base64
 
 BASE_API = 'https://osu.ppy.sh/api'
 
@@ -437,7 +438,7 @@ def ApiV1(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
         return {'error': str(e)}
 
 
-def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby):
+def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby, creatorid):
     try:
         mydb = mysql.connector.connect(
             host=UserConfig["MysqlHost"],
@@ -602,6 +603,10 @@ def ApiV2(ar, cs, od, hp, bpm, length, query, mode, status, amount, sort, sortby
             SearchQueryText += queryText + " "
             pass
     SearchQueryText = SearchQueryText[:-1]
+
+    if creatorid != None:
+        NewWhereQuery += f"AND creator_id = {creatorid} "
+        NewWhereQuery2 += f"AND main.creator_id = {creatorid} "
 
     cur = mydb.cursor()
     if len(SearchQueryText) >= 1:

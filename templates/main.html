@@ -28,11 +28,10 @@
     <meta property="article:tag" content="osu! mirror">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/vue_modules/vue.min.js"></script>
-    <script src="/static/vue_modules/vue-axios-plugin.min.js"></script>
-    <script src="/static/vue_modules/vue-timeago.min.js"></script>
-    <script src='nprogress.js'></script>
-    <link rel='stylesheet' href='nprogress.css'/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?1256742">
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -43,11 +42,6 @@
 
         gtag('config', 'G-PZPLP7ZRTL');
     </script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
-        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css"> -->
 </head>
 
 <body>
@@ -251,14 +245,17 @@
             </el-col>
         </div>
     </div>
-    <script src="/static/vue/mixins/generalMixins.min.js?123" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.min.js?1643312345" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/mixins/generalMixins.min.js?1256742" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.min.js?1256742" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
         setTimeout(CheckLoadScript, 1000);
 
         function CheckLoadScript() {
-            if (scrptloadchk != 3) {
+            if (scrptloadchk != 6) {
                 window.location.replace(window.location.pathname + window.location.search + window.location.hash);
             }
         }

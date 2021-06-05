@@ -1,9 +1,9 @@
-import base64
 from flask import Flask, render_template, send_from_directory, make_response, jsonify, redirect, url_for, request
 from flask_restful import reqparse
 from flask.helpers import send_file
 from bin.config import UserConfig
 from bin.functions import *
+import base64
 
 app = Flask('NerinaBeatmapMirror')
 app.config['JSON_SORT_KEYS'] = False
@@ -66,6 +66,9 @@ def RedirectDownload(setid):
     args = parser.parse_args()
     server = args["s"]
 
+    if server == None:
+        server = 0
+
     BaseURL = "https://api.nerina.pw/download?b="
     setJson = {
         "server": int(server),
@@ -127,7 +130,7 @@ def routeapiV1():
 @app.route('/api/v2/search', methods=['get', 'options'])
 def routeapiV2():
     parser = reqparse.RequestParser()
-    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount'},
+    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount', 'creatorid'},
                     'str': {'query','sort','sortby'}
                 }
     for parsers in parser_rows:
@@ -136,22 +139,21 @@ def routeapiV2():
             parser.add_argument(pars, type=type(parsers))
 
     args = parser.parse_args()
-
     ar = dict(min=args["min_ar"], max=args["max_ar"])
     cs = dict(min=args["min_cs"], max=args["max_cs"])
     od = dict(min=args["min_od"], max=args["max_od"])
     hp = dict(min=args["min_hp"], max=args["max_hp"])
     bpm = dict(min=args["min_bpm"], max=args["max_bpm"])
     length = dict(min=args["min_length"], max=args["max_length"])
-
     query = args["query"]
     mode = args["mode"]
     status = args["status"]
     amount = args["amount"]
     sort = args["sort"]
     sortby = args["sortby"]
+    creatorid = args["creatorid"]
 
-    data = ApiV2(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby)
+    data = ApiV2(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby, creatorid=creatorid)
     result = jsonify(data)
 
     return result
