@@ -365,7 +365,6 @@ new Vue({
     data() {
         return {
             first_load: true,
-            loadPercent: 0,
             colors: [
                 {color: '#f56c6c', percentage: 20},
                 {color: '#e6a23c', percentage: 40},
@@ -517,12 +516,6 @@ new Vue({
             this.offset = 0;
             vm.getBeatmapData();
         },
-        runloadPercent() {
-            var vm = this;
-            while (this.loadPercent < 100){
-                vm.loadPercent += 5;
-            }
-        },
         getBeatmapData: function () {
             var vm = this;
             vm.load = true;
@@ -545,10 +538,6 @@ new Vue({
                         vm.load = false;
                         vm.first_load = false;
                         this.fullscreenLoading = false;
-                        this.loadPercent = 100;
-                        setInterval(() => {
-                            this.loadPercent = 0;
-                        }, 200);
                     });
                 }
                 else {
@@ -595,7 +584,7 @@ new Vue({
                     amount: 48 * this.page,
                     status: this.rank,
                     query: this.search_query,
-                    creator: this.creatorid
+                    creatorid: this.creatorid
                 }
             }).then(function (response) {
                 vm.list = response.data;
