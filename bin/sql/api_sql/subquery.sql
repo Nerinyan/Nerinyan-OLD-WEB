@@ -2,11 +2,11 @@ SELECT  id                                                AS BeatmapID
        ,set_id                                            AS BeatmapsetID 
        ,version                                           AS DiffName 
        ,mode                                              AS Mode 
-       ,FORMAT(bpm,0)                                     AS BPM 
-       ,FORMAT(ar,0)                                      AS AR 
-       ,FORMAT(od,0)                                      AS OD 
-       ,FORMAT(cs,0)                                      AS CS 
-       ,FORMAT(hp,0)                                      AS HP 
+       ,FORMAT(bpm,1)                                     AS BPM 
+       ,FORMAT(ar,1)                                      AS AR 
+       ,FORMAT(od,1)                                      AS OD 
+       ,FORMAT(cs,1)                                      AS CS 
+       ,FORMAT(hp,1)                                      AS HP 
        ,total_length                                      AS TotalLength 
        ,hit_length                                        AS HitLength 
        ,playcount                                         AS Playcount 

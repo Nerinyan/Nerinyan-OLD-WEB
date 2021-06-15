@@ -72,9 +72,9 @@ var beatmap = {
                             <div slot="content" class="beatmap-tooltip">
                                 <div class="version-hoverlist-single">
                                     <div class="version-main-info">
-                                        <span :class="'version-mode mode-ico insane faa fa-extra-mode-' + convertModeToico(bmap.Mode)"></span>
-                                        <div class="version-diff">
-                                            <span class="fas fa-star"></span><% addCommas((bmap.DifficultyRating).toFixed(2)) %>
+                                        <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.DifficultyRating) + ' faa fa-extra-mode-' + convertModeToico(bmap.Mode)"></span>
+                                        <div :class="'version-diff ver-' + convertDiffToClass(bmap.DifficultyRating)">
+                                            <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.DifficultyRating).toFixed(2)) %></span>
                                         </div>
                                         <span class="version-name"><% bmap.DiffName %></span>
                                     </div>
@@ -323,7 +323,7 @@ var beatmap = {
             }, false);
         },
         createBmpDlUri: function(setid){
-            console.log("request generate beatmap download url...");
+            // console.log("request generate beatmap download url...");
             json = {
                 'server': dlserver,
                 'beatmapsetid': setid
@@ -331,7 +331,7 @@ var beatmap = {
             let json2string = JSON.stringify(json);
             var conv = btoa(json2string);
             var downloadUrl = "https://api.nerina.pw/download?b=" + conv;
-            console.log("generated!: " + downloadUrl);
+            // console.log("generated!: " + downloadUrl);
             return downloadUrl;
         },
         redirectDownload: function(setid){

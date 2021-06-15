@@ -16225,6 +16225,32 @@ input .el-input__inner::placeholder {
     color: #000;
 }
 
+
+
+.ver-easy {
+    background-color: #67840e !important;
+}
+
+.ver-normal {
+    background-color: #4a97bd !important;
+}
+
+.ver-hard {
+    background-color: #c19c21 !important;
+}
+
+.ver-insane {
+    background-color: #d04b86 !important;
+}
+
+.ver-expert {
+    background-color: #6d52bb !important;
+}
+
+.ver-expertplus {
+    background-color: #000 !important;
+}
+
 .beatmap-tooltip {
     font-size: 13px !important;
     text-align: center;
@@ -16403,14 +16429,14 @@ input .el-input__inner::placeholder {
 .version-more-info-line {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 6px;
 }
 
 .version-more-info-line-last {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .version-more-info-text {
@@ -16478,6 +16504,7 @@ input .el-input__inner::placeholder {
     line-height: 2px;
     font-weight: bold;
     margin-right: 6px;
+    color: white !important;
 }
 
 .version-info {
@@ -16746,6 +16773,10 @@ span.beatmap.songname.title {
     .el-menu-item {
         padding: 0 8px;
     }
+}
+
+.version-diff-txt{
+    color: white !important;
 }
 
 .tooltip-inner {

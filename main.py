@@ -72,9 +72,10 @@ def RedirectDownload(setid):
     BaseURL = "https://api.nerina.pw/download?b="
     setJson = {
         "server": int(server),
-        "beatmapset_id": int(setid)
+        "beatmapsetid": int(setid)
     }
     setString = str(json.dumps(setJson))
+    setString = setString.replace(" ", "")
     setb64 = str(stringToBase64(setString))
     setb64 = setb64.replace("b'", "")
     setb64 = setb64.replace("'", "")
