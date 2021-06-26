@@ -8,8 +8,14 @@ var beatmap = {
                 <a :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
                     :style="'background-image: linear-gradient(to right, #00000099, #ffe4e100), url(https://assets.ppy.sh/beatmaps/' + beatmap.id + '/covers/cover.jpg?1622784772);'">
                     <div class="beatamp-header-block">
-                        <div :class="'song-status ' + convertRankedStatusToText(beatmap.ranked)">
-                            <% convertRankedStatusToText(beatmap.ranked) %>
+                        <div>
+                            <div :class="'song-status ' + convertRankedStatusToText(beatmap.ranked)">
+                                <% convertRankedStatusToText(beatmap.ranked) %>
+                            </div>
+                            
+                            <div class="song-status nsfw" v-if="beatmap.nsfw" v-show="beatmap.nsfw">
+                                EXPLICIT
+                            </div>
                         </div>
                         <div class="song-stats-block">
                             <div class="song-stats">

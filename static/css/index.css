@@ -16505,6 +16505,10 @@ input .el-input__inner::placeholder {
     background: #000;
     color: #5c6970;
 }
+.song-status.nsfw {
+    background: #1c2123;
+    color: #DEB945;
+}
 
 .beatmap-single {
     position: relative;
