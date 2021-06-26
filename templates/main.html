@@ -29,7 +29,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
     <script src="/static/js/jquery.min.js"></script>
     <link href="https://rawcdn.githack.com/hung1001/font-awesome-pro/0ac23ca/css/all.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?13972142">
+    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?1328142">
     <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -56,6 +56,7 @@
         var sort = '{{ sort }}';
         var scrptloadchk = 0;
         var dlserver = 0;
+        var dlNovideo = 0;
     </script>
     <div id="app">
         <el-col class="loading" :span="24" v-bind:class="{ 'load' : load }" v-if="first_load">
@@ -206,8 +207,23 @@
                                         </p>
                                     </div>
                                 </div>
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Download Server</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="serverid = 0" :class="serverid == 0 ? 'active' : ''">
+                                            <span>Any</span>
+                                        </p>
+                                        <p v-on:click="serverid = 1" :class="serverid == 1 ? 'active' : ''">
+                                            <span>Main Server</span>
+                                        </p>
+                                        <p v-on:click="serverid = 2" :class="serverid == 2 ? 'active' : ''">
+                                            <span>Sub Server(ko)</span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div class="navbar-beatmapsearch-options-block" id="navbar-beatmapsearch-options-sub-block" v-if="isExpand">
                             <div class="navbar-beatmapsearch-options">
                                 <div class="navbar-beatmapsearch-options-single">
@@ -327,7 +343,7 @@
     <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue/mixins/generalMixins.min.js?13656742" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.min.js?178642" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.min.js?1786421" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
         setTimeout(CheckLoadScript, 1000);
@@ -343,6 +359,7 @@
         {
             var tid = $('#navbar-beatmapsearch-options-block')
             var tidsub = $('#navbar-expand-toggle')
+            var tidssub = $('#navbar-beatmapsearch-options-sub-block')
             var tid_t = tid.offset().top
             var window_t = $(window).scrollTop()
 
@@ -350,10 +367,12 @@
             {
                 tid.css('display', 'none')
                 tidsub.css('display', 'flex')
+                tidssub.css('display', 'flex')
             }
             if (tid_t == window_t ) {
                 tid.css('display', origin_val.display)
                 tidsub.css('display', 'none')
+                tidssub.css('display', 'none')
             }
         };
         $("#backtotop").click(function () {

@@ -16126,6 +16126,7 @@ input .el-input__inner::placeholder {
     bottom: 20px;
     font-size: 29px;
     cursor: pointer;
+    z-index: 12381234;
 }
 
 .navbar-search-box {
@@ -16389,6 +16390,11 @@ input .el-input__inner::placeholder {
     position: absolute;
 }
 
+.beatamp-header-block {
+    display: flex;
+    justify-content: space-between;
+}
+
 .beatmap-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
@@ -16471,7 +16477,7 @@ input .el-input__inner::placeholder {
     border-radius: 12px;
     color: #394246;
     display: inline-flex;
-    z-index: 123;
+    z-index: 10;
     align-items: center;
     font-weight: bold;
     font-size: 14px;
@@ -16764,25 +16770,31 @@ span.beatmap.songname.title {
     display: flex;
     align-items: flex-end;
     flex-direction: row;
-    position: absolute;
-    right: 0;
-    top: 10px;
     background: #282c2f99;
     padding: 3px;
-    margin-right: 10px;
     border-radius: 10px;
 }
 
 .song-stats {
     opacity: 1;
-    color: white;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+    color: #fff;
+    text-shadow: 0 2px 5px rgba(0,0,0,.7);
     font-size: 14px;
     float: right;
     position: relative;
     font-weight: 600;
-    transition: opacity 0.2s;
+    transition: opacity .2s;
     padding: 2.5px;
+    margin-right: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.betmaphasvideo {
+    padding: 1px 0;
+}
+
+.song-stats > i {
     margin-right: 4px;
 }
 
@@ -17231,10 +17243,6 @@ span.beatmap.songname.title {
 .beatmap-preview-progressbar.playing {
     transition-duration: 10.0049s;
     width: 100%;
-}
-
-.copyico {
-    vertical-align: middle;
 }
 
 .version-list-single {

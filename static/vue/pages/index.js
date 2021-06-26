@@ -5,38 +5,45 @@ var beatmap = {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a :href="createBmpDlUri(beatmap.id)" :id="beatmap.id" class="cardheader ranked"
+                <a :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
                     :style="'background-image: linear-gradient(to right, #00000099, #ffe4e100), url(https://assets.ppy.sh/beatmaps/' + beatmap.id + '/covers/cover.jpg?1622784772);'">
-                    <div>
+                    <div class="beatamp-header-block">
                         <div :class="'song-status ' + convertRankedStatusToText(beatmap.ranked)">
                             <% convertRankedStatusToText(beatmap.ranked) %>
                         </div>
                         <div class="song-stats-block">
                             <div class="song-stats">
-                                <el-tooltip class="item" effect="dark" content="Favorites count" placement="top">
+                                <el-tooltip class="item" effect="dark" :content="'Favorites count: ' + addCommas(beatmap.favourite_count)" placement="top">
                                     <div class="song-stats">
                                         <i class="fas fa-heart"></i> <% addCommas(beatmap.favourite_count) %>
                                     </div>
                                 </el-tooltip>   
                             </div>
                             <div class="song-stats">
-                                <el-tooltip class="item" effect="dark" content="Play count" placement="top">
+                                <el-tooltip class="item" effect="dark" :content="'Play count:' + addCommas(beatmap.play_count)" placement="top">
                                     <div class="song-stats">
                                         <i class="fas fa-play-circle"></i> <% addCommas(beatmap.play_count) %>
                                     </div>
                                 </el-tooltip>
                             </div>
                             <div class="song-stats">
-                                <el-tooltip class="item" effect="dark" content="BPM" placement="top">
+                                <el-tooltip class="item" effect="dark" :content="'BPM: ' + parseFloat(beatmap.bpm)" placement="top">
                                     <div class="song-stats">
                                         <i class="fas fa-music"></i> <% parseFloat(beatmap.bpm) %>
                                     </div>
                                 </el-tooltip>
                             </div>
                             <div class="song-stats">
-                                <el-tooltip class="item" effect="dark" content="Beatmaps Count" placement="top">
+                                <el-tooltip class="item" effect="dark" :content="'Beatmaps Count: ' + beatmap.beatmaps.length" placement="top">
                                     <div class="song-stats">
                                         <i class="fas fa-clipboard-list"></i> <% beatmap.beatmaps.length %>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="song-stats" v-if="beatmap.video == 1" v-show="beatmap.video == 1">
+                                <el-tooltip class="item" effect="dark" content="This beatmap contains video" placement="top">
+                                    <div class="song-stats">
+                                        <i class="betmaphasvideo fas fa-video"></i>
                                     </div>
                                 </el-tooltip>
                             </div>
@@ -55,13 +62,23 @@ var beatmap = {
                     </div>
                     <div class="beatmap-clipboard-btn">
                         <el-tooltip class="item" effect="dark" content="Copy Download URL" placement="top">
-                            <a @click="clipboardDluri(beatmap.id)" class="clipboard-icon">
+                            <a @click="clipboardDluri(beatmap.id, false)" class="clipboard-icon">
                                 <i class="copyico fas fa-paste" :id="'Copy-' + beatmap.id"></i>
                             </a>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="Download" placement="top">
-                            <a :href="createBmpDlUri(beatmap.id)" class="clipboard-icon">
+                        <el-tooltip class="item" effect="dark" content="Download" placement="top" v-if="beatmap.video == 0">
+                            <a :href="createBmpDlUri(beatmap.id, false)" class="clipboard-icon">
                                 <i class="copyico fas fa-download"></i>
+                            </a>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="Download with video" placement="top" v-if="beatmap.video == 1">
+                            <a :href="createBmpDlUri(beatmap.id, false)" class="clipboard-icon">
+                                <i class="copyico fas fa-download"></i>
+                            </a>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="Download without video" placement="top" v-if="beatmap.video == 1">
+                            <a :href="createBmpDlUri(beatmap.id, true)" class="clipboard-icon">
+                                <i class="copyico fas fa-video-slash"></i>
                             </a>
                         </el-tooltip>
                     </div>
@@ -922,7 +939,7 @@ var beatmap = {
                 return
             }, false);
         },
-        createBmpDlUri: function (id) {
+        createBmpDlUri: function (id, video) {
             // console.log("request generate beatmap download url...");
             json = {
                 'server': dlserver,
@@ -931,6 +948,9 @@ var beatmap = {
             let json2string = JSON.stringify(json);
             var conv = btoa(json2string);
             var downloadUrl = "https://api.nerina.pw/download?b=" + conv;
+            if (video) {
+                downloadUrl += "&noVideo=1";
+            }
             // console.log("generated!: " + downloadUrl);
             return downloadUrl;
         },
@@ -1015,17 +1035,8 @@ new Vue({
                 sort: 'set_last_updated',
                 sort2: 'Descending'
             },
-            downloadserver: [{
-                serverid: 0,
-                listlabel: 'All Server'
-            }, {
-                serverid: 1,
-                listlabel: 'Main Server Only'
-            }, {
-                serverid: 2,
-                listlabel: 'Sub Server Only'
-            }],
-            serverid: 0
+            serverid: 0,
+            novideo: 0
         }
     },
     watch: {
@@ -1087,6 +1098,9 @@ new Vue({
         },
         serverid() {
             dlserver = this.serverid;
+        },
+        novideo() {
+            dlNovideo = this.novideo;
         }
     },
     created() {
@@ -1098,12 +1112,6 @@ new Vue({
         }));
     },
     methods: {
-        openFullScreen1() {
-            this.fullscreenLoading = true;
-            setTimeout(() => {
-                this.fullscreenLoading = false;
-            }, 2000);
-        },
         toggleExpand() {
             var vm = this;
             if (vm.isExpand) {
@@ -1387,62 +1395,11 @@ new Vue({
             }
             window.history.replaceState("", document.title, uri);
         },
-        formatadvenceSearch(val) {
-            return val / 10;
-        },
-        formlength(val) {
-            var hrs = ~~(val / 3600);
-            var mins = ~~((val % 3600) / 60);
-            var secs = ~~val % 60;
-            var ret = "";
-
-            if (hrs > 0) {
-                ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-            }
-
-            ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-            ret += "" + secs;
-            return ret;
-        },
         changeoffset: function (page = 0) {
             var vm = this;
             this.page = page;
             this.offset = 0;
             vm.getBeatmapData();
-        },
-        ApiConvertMode(m) {
-            switch (m) {
-                case 0:
-                    "0"
-                    break;
-                case 1:
-                    "1"
-                    break;
-                case 2:
-                    "2"
-                    break;
-                case 3:
-                    "3"
-                    break;
-                default:
-                    break;
-            }
-        },
-        ApiConvertRanked(m) {
-            switch (m) {
-                case 1:
-                    return "ranked"
-                case 3:
-                    return "qualified"
-                case 4:
-                    return "loved"
-                case 0:
-                    return "unranked"
-                case -3:
-                    return "any"
-                default:
-                    return "ranked"
-            }
         },
         searchQueryConvert(q) {
             if (q.length >= 1) {
@@ -1480,20 +1437,6 @@ new Vue({
                 vm.first_load = false;
                 this.fullscreenLoading = false;
             });
-        },
-        chnageMode(key, keyPath) {
-            var vm = this;
-            key = Number(key);
-            vm.offset = 0;
-            vm.page = 1;
-            vm.mode = key;
-        },
-        chnageRankedStatus(key, keyPath) {
-            var vm = this;
-            key = Number(key);
-            vm.offset = 0;
-            vm.page = 1;
-            vm.rank = key;
         },
         chageSearch_Query() {
             var vm = this;
