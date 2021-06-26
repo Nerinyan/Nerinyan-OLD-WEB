@@ -14,11 +14,7 @@ DefaultConfig = {
     "MysqlHost" : "",
     "MysqlUser" : "",
     "MysqlPassword" : "",
-    "MysqlDb" : "",
-    "MongoHost" : "",
-    "MongoUser": "",
-    "MongoPassword": "",
-    "MongoDB": ""
+    "MysqlDb" : ""
 }
 
 class JsonFile:

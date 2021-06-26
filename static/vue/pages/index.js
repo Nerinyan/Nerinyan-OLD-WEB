@@ -5,139 +5,685 @@ var beatmap = {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a :href="createBmpDlUri(beatmap.SetID)" :id="beatmap.SetID" class="cardheader ranked"
-                    :style="'background-image: url(https://assets.ppy.sh/beatmaps/' + beatmap.SetID + '/covers/cover.jpg?1622784772);'">
+                <a :href="createBmpDlUri(beatmap.id)" :id="beatmap.id" class="cardheader ranked"
+                    :style="'background-image: linear-gradient(to right, #00000099, #ffe4e100), url(https://assets.ppy.sh/beatmaps/' + beatmap.id + '/covers/cover.jpg?1622784772);'">
                     <div>
-                        <div class="song-status">
-                            <i :class="'fas fa-' + convertRankedStatusToico(beatmap.RankedStatus)"></i>
+                        <div :class="'song-status ' + convertRankedStatusToText(beatmap.ranked)">
+                            <% convertRankedStatusToText(beatmap.ranked) %>
                         </div>
                         <div class="song-stats-block">
                             <div class="song-stats">
                                 <el-tooltip class="item" effect="dark" content="Favorites count" placement="top">
                                     <div class="song-stats">
-                                        <i class="fas fa-heart"></i> <% addCommas(beatmap.Favourites) %>
+                                        <i class="fas fa-heart"></i> <% addCommas(beatmap.favourite_count) %>
                                     </div>
                                 </el-tooltip>   
                             </div>
                             <div class="song-stats">
                                 <el-tooltip class="item" effect="dark" content="Play count" placement="top">
                                     <div class="song-stats">
-                                        <i class="fas fa-play-circle"></i> <% addCommas(beatmap.Playcounts) %>
+                                        <i class="fas fa-play-circle"></i> <% addCommas(beatmap.play_count) %>
                                     </div>
                                 </el-tooltip>
                             </div>
                             <div class="song-stats">
                                 <el-tooltip class="item" effect="dark" content="BPM" placement="top">
                                     <div class="song-stats">
-                                        <i class="fas fa-music"></i> <% beatmap.BPM %>
+                                        <i class="fas fa-music"></i> <% parseFloat(beatmap.bpm) %>
                                     </div>
                                 </el-tooltip>
                             </div>
                             <div class="song-stats">
                                 <el-tooltip class="item" effect="dark" content="Beatmaps Count" placement="top">
                                     <div class="song-stats">
-                                        <i class="fas fa-clipboard-list"></i> <% beatmap.BeatmapCount %>
+                                        <i class="fas fa-clipboard-list"></i> <% beatmap.beatmaps.length %>
                                     </div>
                                 </el-tooltip>
                             </div>
                         </div>
                     </div>
                     <div class="d-flex flex-column creator-title">
-                        <span class="beatmap songname title"> <% beatmap.Title %></span>
-                        <span class="beatmap songname creator">by <% beatmap.Artist %></span>
+                        <span class="beatmap songname title"> <% beatmap.title %></span>
+                        <span class="beatmap songname creator">by <% beatmap.artist %></span>
                     </div>
                 </a>
                 <div :class="'beatmap-preview-progressbar '+(playing ? 'playing' : '')">
                 </div>
                 <div class="info">
                     <div class="desc">
-                        mapped by <a class="song-author-name" :href="'/main?creator=' + beatmap.CreatorID"> <% beatmap.Creator %></a>
+                        mapped by <a class="song-author-name" :href="'/main?creator=' + beatmap.user_id"> <% beatmap.creator %></a>
                     </div>
                     <div class="beatmap-clipboard-btn">
-                        <el-tooltip class="item" effect="dark" content="Download" placement="top">
-                            <a :href="createBmpDlUri(beatmap.SetID)" class="clipboard-icon">
-                                <i class="copyico fas fa-download"></i>
+                        <el-tooltip class="item" effect="dark" content="Copy Download URL" placement="top">
+                            <a @click="clipboardDluri(beatmap.id)" class="clipboard-icon">
+                                <i class="copyico fas fa-paste" :id="'Copy-' + beatmap.id"></i>
                             </a>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="Copy Download URL" placement="top">
-                            <a @click="clipboardDluri(beatmap.SetID)" class="clipboard-icon">
-                                <i class="copyico fas fa-paste" :id="'Copy-' + beatmap.SetID"></i>
+                        <el-tooltip class="item" effect="dark" content="Download" placement="top">
+                            <a :href="createBmpDlUri(beatmap.id)" class="clipboard-icon">
+                                <i class="copyico fas fa-download"></i>
                             </a>
                         </el-tooltip>
                     </div>
                 </div>
                 <div class="version-list">
-                    <div class="version-list-block" :id="'list-' + beatmap.SetID">
-                        <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in beatmap.ChildrenBeatmaps" v-bind:key="bmap.id">
-                            <div slot="content" class="beatmap-tooltip">
-                                <div class="version-hoverlist-single">
-                                    <div class="version-main-info">
-                                        <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.DifficultyRating) + ' faa fa-extra-mode-' + convertModeToico(bmap.Mode)"></span>
-                                        <div :class="'version-diff ver-' + convertDiffToClass(bmap.DifficultyRating)">
-                                            <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.DifficultyRating).toFixed(2)) %></span>
+                    <i :id="'versiondropdownbtn-' + beatmap.id" class="version-dropdownbtn fad fa-sort-down" v-on:click="versionHover(beatmap.id)"></i>
+                    <div class="version-list-block" :id="'versionlist-' + beatmap.id">
+                    <div class="version-list-block-in-block hoverd" :id="'hoverlist-' + beatmap.id">
+                        <div class="hover-list-block">
+                            <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.std" v-bind:key="bmap.id">
+                                <div slot="content" class="beatmap-tooltip">
+                                    <div class="version-hoverlist-single">
+                                        <div class="version-main-info">
+                                            <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                            </div>
+                                            <span class="version-name"><% bmap.version %></span>
                                         </div>
-                                        <span class="version-name"><% bmap.DiffName %></span>
-                                    </div>
-                                    <div class="version-info">
-                                        <div class="version-basic-info">
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content" class="beatmap-tooltip">
-                                                    Total Length
-                                                </div>
-                                                <div class="version-info-line">
-                                                    <div class="version-ico length"></div><% secondsToTime(bmap.TotalLength) %>
-                                                </div>
-                                            </el-tooltip>
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content" class="beatmap-tooltip">
-                                                    BPM
-                                                </div>
-                                                <div class="version-info-line">
-                                                    <div class="version-ico bpm"></div><% bmap.BPM %>
-                                                </div>
-                                            </el-tooltip>
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content" class="beatmap-tooltip">
-                                                    Circle Count
-                                                </div>
-                                                <div class="version-info-line">
-                                                    <div class="version-ico circlecount"></div><% addCommas(bmap.CircleCount) %>
-                                                </div>
-                                            </el-tooltip>
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content" class="beatmap-tooltip">
-                                                    Slider Count
-                                                </div>
-                                                <div class="version-info-line-last">
-                                                    <div class="version-ico slidercount"></div><% addCommas(bmap.SliderCount) %>
-                                                </div>
-                                            </el-tooltip>
-                                        </div>
-                                        <div class="version-more-info">
-                                            <div class="version-more-info-line">
-                                                <span class="version-more-info-text">Circle Size</span>
-                                                <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.CS)"></el-progress>
+                                        <div class="version-info">
+                                            <div class="version-basic-info">
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Total Length
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        BPM
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Circle Count
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Slider Count
+                                                    </div>
+                                                    <div class="version-info-line-last">
+                                                        <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                    </div>
+                                                </el-tooltip>
                                             </div>
-                                            <div class="version-more-info-line">
-                                                <span class="version-more-info-text">HP Drain</span>
-                                                <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.HP)"></el-progress>
-                                            </div>
-                                            <div class="version-more-info-line">
-                                                <span class="version-more-info-text">Accuracy</span>
-                                                <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.OD)"></el-progress>
-                                            </div>
-                                            <div class="version-more-info-line-last">
-                                                <span class="version-more-info-text">Approach Rate</span>
-                                                <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.AR)"></el-progress>
+                                            <div class="version-more-info">
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">Circle Size</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">HP Drain</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">Accuracy</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line-last">
+                                                    <span class="version-more-info-text">Approach Rate</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="hover-list-single">
+                                    <div class="hover-list-single-mode">
+                                        <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                    </div>
+                                    <div class="hover-list-single-diff">
+                                        <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                            <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas(bmap.difficulty_rating.toFixed(2)) %></span>
+                                        </div>
+                                        <span class="version-name"><% bmap.version %></span>
+                                    </div>
+                                </div>
+                            </el-tooltip>
+                        </div>
+                        <div class="hover-list-block">
+                            <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.taiko" v-bind:key="bmap.id">
+                                <div slot="content" class="beatmap-tooltip">
+                                    <div class="version-hoverlist-single">
+                                        <div class="version-main-info">
+                                            <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                            </div>
+                                            <span class="version-name"><% bmap.version %></span>
+                                        </div>
+                                        <div class="version-info">
+                                            <div class="version-basic-info">
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Total Length
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        BPM
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Circle Count
+                                                    </div>
+                                                    <div class="version-info-line">
+                                                        <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                    </div>
+                                                </el-tooltip>
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content" class="beatmap-tooltip">
+                                                        Slider Count
+                                                    </div>
+                                                    <div class="version-info-line-last">
+                                                        <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                    </div>
+                                                </el-tooltip>
+                                            </div>
+                                            <div class="version-more-info">
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">Circle Size</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">HP Drain</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line">
+                                                    <span class="version-more-info-text">Accuracy</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                </div>
+                                                <div class="version-more-info-line-last">
+                                                    <span class="version-more-info-text">Approach Rate</span>
+                                                    <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hover-list-single">
+                                    <div class="hover-list-single-mode">
+                                        <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                    </div>
+                                    <div class="hover-list-single-diff">
+                                        <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                            <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas(bmap.difficulty_rating.toFixed(2)) %></span>
+                                        </div>
+                                        <span class="version-name"><% bmap.version %></span>
+                                    </div>
+                                </div>
+                            </el-tooltip>
                             </div>
-                            <div class="version-list-single">
-                                <i :class="'mode-ico ' + convertDiffToClass(bmap.DifficultyRating) +' faa fa-extra-mode-' + convertModeToico(bmap.Mode)"></i>
+                            <div class="hover-list-block">
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.ctb" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hover-list-single">
+                                        <div class="hover-list-single-mode">
+                                            <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                        </div>
+                                        <div class="hover-list-single-diff">
+                                            <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas(bmap.difficulty_rating.toFixed(2)) %></span>
+                                            </div>
+                                            <span class="version-name"><% bmap.version %></span>
+                                        </div>
+                                    </div>
+                                </el-tooltip>
                             </div>
-                        </el-tooltip>
+                            <div class="hover-list-block">
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.mania" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hover-list-single">
+                                        <div class="hover-list-single-mode">
+                                            <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                        </div>
+                                        <div class="hover-list-single-diff">
+                                            <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas(bmap.difficulty_rating.toFixed(2)) %></span>
+                                            </div>
+                                            <span class="version-name"><% bmap.version %></span>
+                                        </div>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </div>
+                        <div :id="'versionlist-block-' + beatmap.id" class="version-list-block-original">
+                            <div class="version-list-miniblock" :id="'versionlist-std-' + beatmap.id" v-if="versions.std.length >= 1">
+                                <span class="version-mode mode-ico faa fa-extra-mode-osu"></span>
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.std" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i :class="'mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></i>
+                                    <div :class="'version-list-single ' + convertDiffToClass(bmap.difficulty_rating)">
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="version-list-miniblock" :id="'versionlist-taiko-' + beatmap.id" v-if="versions.taiko.length >= 1">
+                                <span class="version-mode mode-ico faa fa-extra-mode-taiko"></span>
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.taiko" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i :class="'mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></i>
+                                    <div :class="'version-list-single ' + convertDiffToClass(bmap.difficulty_rating)">
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="version-list-miniblock" :id="'versionlist-ctb-' + beatmap.id" v-if="versions.ctb.length >= 1">
+                                <span class="version-mode mode-ico faa fa-extra-mode-fruits"></span>
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.ctb" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i :class="'mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></i>
+                                    <div :class="'version-list-single ' + convertDiffToClass(bmap.difficulty_rating)">
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                            <div class="version-list-miniblock" :id="'versionlist-mania-' + beatmap.id" v-if="versions.mania.length >= 1">
+                                <span class="version-mode mode-ico faa fa-extra-mode-mania"></span>
+                                <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.mania" v-bind:key="bmap.id">
+                                    <div slot="content" class="beatmap-tooltip">
+                                        <div class="version-hoverlist-single">
+                                            <div class="version-main-info">
+                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
+                                                    <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
+                                                </div>
+                                                <span class="version-name"><% bmap.version %></span>
+                                            </div>
+                                            <div class="version-info">
+                                                <div class="version-basic-info">
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Total Length
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico length"></div><% secondsToTime(bmap.total_length) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            BPM
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico bpm"></div><% parseFloat(bmap.bpm) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Circle Count
+                                                        </div>
+                                                        <div class="version-info-line">
+                                                            <div class="version-ico circlecount"></div><% addCommas(bmap.count_circles) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                    <el-tooltip placement="top" effect="light">
+                                                        <div slot="content" class="beatmap-tooltip">
+                                                            Slider Count
+                                                        </div>
+                                                        <div class="version-info-line-last">
+                                                            <div class="version-ico slidercount"></div><% addCommas(bmap.count_sliders) %>
+                                                        </div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="version-more-info">
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Circle Size</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.cs)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">HP Drain</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.drain)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line">
+                                                        <span class="version-more-info-text">Accuracy</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.accuracy)"></el-progress>
+                                                    </div>
+                                                    <div class="version-more-info-line-last">
+                                                        <span class="version-more-info-text">Approach Rate</span>
+                                                        <el-progress :text-inside="true" :format="format" stroke-width="16" :percentage="convertPercent(bmap.ar)"></el-progress>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i :class="'mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></i>
+                                    <div :class="'version-list-single ' + convertDiffToClass(bmap.difficulty_rating)">
+                                    </div>
+                                </el-tooltip>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -151,43 +697,97 @@ var beatmap = {
         return {
             playing: false,
             active: true,
-            copied: false
+            copied: false,
+            ishover: false,
+            versions: {
+                'std': [],
+                'taiko': [],
+                'ctb': [],
+                'mania': [],
+            }
         }
+    },
+    created() {
+        var vm = this;
+        vm.resortBeatmaps(vm.beatmap);
     },
     methods: {
         format(percentage) {
             percentage = percentage / 10;
             return percentage
         },
-        convertRankedStatusToText(rankedstatus){
+        versionHover(bid) {
+            var versionblock = document.getElementById('versionlist-block-' + bid);
+            var hoverblock = document.getElementById('hoverlist-' + bid);
+            var dropdownbtn = document.getElementById('versiondropdownbtn-' + bid);
+            var vm = this;
+            if (vm.ishover) {
+                vm.ishover = false;
+                dropdownbtn.classList.toggle("fa-sort-up");
+                dropdownbtn.classList.toggle("fa-sort-down");
+                hoverblock.classList.add("hoverd");
+                versionblock.classList.remove("hoverd");
+            } else {
+                vm.ishover = true;
+                dropdownbtn.classList.toggle("fa-sort-up");
+                dropdownbtn.classList.toggle("fa-sort-down");
+                hoverblock.classList.remove("hoverd");
+                versionblock.classList.add("hoverd");
+
+            }
+        },
+        resortBeatmaps(bmp) {
+            var vm = this;
+            for (i in bmp.beatmaps) {
+                var bmap = bmp.beatmaps[i];
+                switch (bmap.mode_int) {
+                    case 0:
+                        vm.versions.std.push(bmap);
+                        break;
+                    case 1:
+                        vm.versions.taiko.push(bmap);
+                        break;
+                    case 2:
+                        vm.versions.ctb.push(bmap);
+                        break;
+                    case 3:
+                        vm.versions.mania.push(bmap);
+                        break;
+                    default:
+                        vm.versions.std.push(bmap);
+                        break;
+                }
+            }
+        },
+        convertRankedStatusToText(rankedstatus) {
             var result;
-            switch(rankedstatus){
+            switch (rankedstatus) {
                 default:
                 case -2:
-                    result = "Graveyard";
+                    result = "GRAVEYARD";
                     break;
                 case -1:
                     result = "WIP";
                     break;
                 case 0:
-                    result = "Pending";
+                    result = "PENDING";
                     break;
                 case 1:
-                    result = "Ranked";
+                    result = "RANKED";
                     break;
                 case 2:
-                    result = "Approved";
+                    result = "APPROVED";
                     break;
                 case 3:
-                    result = "Qualified";
+                    result = "QUALIFIED";
                     break;
                 case 4:
-                    result = "Loved";
+                    result = "LOVED";
                     break;
             }
-            return result; 
+            return result;
         },
-        convertDiffToClass(diff){
+        convertDiffToClass(diff) {
             if (diff < 2) {
                 return "easy"
             }
@@ -207,9 +807,9 @@ var beatmap = {
                 return "expertplus"
             }
         },
-        convertRankedStatusToico(rankedstatus){
+        convertRankedStatusToico(rankedstatus) {
             var result;
-            switch(rankedstatus){
+            switch (rankedstatus) {
                 default:
                 case -2:
                     result = "question unranked";
@@ -233,11 +833,11 @@ var beatmap = {
                     result = "heart loved";
                     break;
             }
-            return result; 
+            return result;
         },
-        convertModeToico(mode){
+        convertModeToico(mode) {
             var result;
-            switch(mode){
+            switch (mode) {
                 default:
                 case 0:
                     result = "osu";
@@ -252,9 +852,9 @@ var beatmap = {
                     result = "mania";
                     break;
             }
-            return result; 
+            return result;
         },
-        addCommas(nStr){
+        addCommas(nStr) {
             nStr += '';
             var x = nStr.split('.');
             var x1 = x[0];
@@ -265,11 +865,11 @@ var beatmap = {
             }
             return x1 + x2;
         },
-        convertPercent(before){
+        convertPercent(before) {
             after = before * 10
             return after
         },
-        addSpaces(nStr){
+        addSpaces(nStr) {
             nStr += '';
             var x = nStr.split('.');
             var x1 = x[0];
@@ -280,14 +880,14 @@ var beatmap = {
             }
             return x1 + x2;
         },
-        onFinish: function() {
+        onFinish: function () {
             this.playing = false;
-            var id = thos.beatmap.SetID;
+            var id = this.beatmap.id;
             var audio = $('#audio_' + id)[0];
             audio.pause();
             audio.currentTime = 0;
         },
-        play: function() {
+        play: function () {
             var audioElement = window.audioElement;
             var vm = this;
             if (audioElement && audioElement.currentTime > 0) {
@@ -304,29 +904,29 @@ var beatmap = {
                 audioElement = document.createElement('audio');
                 window.audioElement = audioElement;
             }
-            audioElement.setAttribute('src', 'https://b.ppy.sh/preview/' + this.beatmap.SetID + '.mp3');
-            audioElement.addEventListener('loadeddata', function() {
+            audioElement.setAttribute('src', 'https://b.ppy.sh/preview/' + this.beatmap.id + '.mp3');
+            audioElement.addEventListener('loadeddata', function () {
                 if (vm.playing) return;
                 vm.playing = true;
                 audioElement.volume = 0.2;
                 audioElement.play();
             });
 
-            audioElement.addEventListener('ended', function() {
+            audioElement.addEventListener('ended', function () {
                 vm.playing = false;
                 window.audioElement = null;
             }, false);
 
-            audioElement.addEventListener('pause', function() {
+            audioElement.addEventListener('pause', function () {
                 vm.playing = false;
                 return
             }, false);
         },
-        createBmpDlUri: function(setid){
+        createBmpDlUri: function (id) {
             // console.log("request generate beatmap download url...");
             json = {
                 'server': dlserver,
-                'beatmapsetid': setid
+                'beatmapsetid': id
             };
             let json2string = JSON.stringify(json);
             var conv = btoa(json2string);
@@ -334,19 +934,19 @@ var beatmap = {
             // console.log("generated!: " + downloadUrl);
             return downloadUrl;
         },
-        redirectDownload: function(setid){
-            uri = this.createBmpDlUri(setid);
+        redirectDownload: function (id) {
+            uri = this.createBmpDlUri(id);
             window.location.href = uri;
         },
-        clipboardDluri: function(setid){
-            uri = this.createBmpDlUri(setid);
+        clipboardDluri: function (id) {
+            uri = this.createBmpDlUri(id);
             const t = document.createElement("textarea");
             document.body.appendChild(t);
             t.value = uri;
             t.select();
             document.execCommand('copy');
             document.body.removeChild(t);
-            const aa = document.getElementById("Copy-" + setid);
+            const aa = document.getElementById("Copy-" + id);
             aa.className = "copyico fas fa-check";
             setTimeout(function () {
                 aa.className = "copyico fas fa-paste";
@@ -365,26 +965,43 @@ new Vue({
     data() {
         return {
             first_load: true,
-            colors: [
-                {color: '#f56c6c', percentage: 20},
-                {color: '#e6a23c', percentage: 40},
-                {color: '#5cb87a', percentage: 60},
-                {color: '#1989fa', percentage: 80},
-                {color: '#6f7ad3', percentage: 100}
+            colors: [{
+                    color: '#f56c6c',
+                    percentage: 20
+                },
+                {
+                    color: '#e6a23c',
+                    percentage: 40
+                },
+                {
+                    color: '#5cb87a',
+                    percentage: 60
+                },
+                {
+                    color: '#1989fa',
+                    percentage: 80
+                },
+                {
+                    color: '#6f7ad3',
+                    percentage: 100
+                }
             ],
-            advenced: false,
             mode: m,
             load: true,
             rank: s,
+            nsfw: nsfw,
+            sort: sort,
+            extra: extra,
             visible: false,
             fullscreenLoading: false,
             list: [],
-            page: 1,
+            page: 0,
             offset: 0,
             search_query: q,
             creatorid: creator,
             delay: null,
             activeSearchDetails: ['0'],
+            isExpand: false,
             form: {
                 title: '',
                 artist: '',
@@ -413,21 +1030,60 @@ new Vue({
     },
     watch: {
         mode() {
+            this.list = [];
+            this.page = 0;
+            if (window.audioElement != null) {
+                window.audioElement.pause();
+            }
             this.getBeatmapData();
         },
         rank() {
+            this.list = [];
+            this.page = 0;
+            if (window.audioElement != null) {
+                window.audioElement.pause();
+            }
             this.getBeatmapData();
         },
         search_query() {
             var vm = this;
             clearTimeout(this.delay);
-            this.delay = setTimeout(function() {
+            this.delay = setTimeout(function () {
+                vm.list = [];
+                vm.page = 0;
+                if (window.audioElement != null) {
+                    window.audioElement.pause();
+                }
                 vm.chageSearch_Query();
             }, 500);
-            vm.advenced = false;
+        },
+        nsfw() {
+            this.list = [];
+            this.page = 0;
+            if (window.audioElement != null) {
+                window.audioElement.pause();
+            }
+            this.getBeatmapData();
+        },
+        extra() {
+            this.list = [];
+            this.page = 0;
+            if (window.audioElement != null) {
+                window.audioElement.pause();
+            }
+            this.getBeatmapData();
+        },
+        sort() {
+            this.list = [];
+            this.page = 0;
+            if (window.audioElement != null) {
+                window.audioElement.pause();
+            }
+            this.getBeatmapData();
         },
         creatorid() {
-            this.getBeatmapDataByCreatorId();
+            this.list = [];
+            this.getBeatmapData();
         },
         serverid() {
             dlserver = this.serverid;
@@ -445,8 +1101,291 @@ new Vue({
         openFullScreen1() {
             this.fullscreenLoading = true;
             setTimeout(() => {
-            this.fullscreenLoading = false;
+                this.fullscreenLoading = false;
             }, 2000);
+        },
+        toggleExpand() {
+            var vm = this;
+            if (vm.isExpand) {
+                vm.isExpand = false;
+            } else {
+                vm.isExpand = true;
+            }
+            console.log(vm.isExpand);
+        },
+        convertSortIcon(sortname) {
+            var vm = this;
+            var result = ''
+            if (sortname.includes('desc')) {
+                result = 'down';
+            } else {
+                result = 'down';
+                if (sortname.includes('asc')) {
+                    result = 'up';
+                }
+            }
+            return result;
+        },
+        changeSort(sortname) {
+            var vm = this;
+            if (vm.sort.includes(sortname)) {
+                if (vm.sort.includes('desc')) {
+                    vm.sort = sortname + '_asc';
+                } else {
+                    vm.sort = sortname + '_desc';
+                }
+            } else {
+                vm.sort = sortname + '_desc';
+            }
+            console.log(vm.sort);
+        },
+        extraChanged(extra) {
+            var vm = this;
+            if (extra == "video") {
+                if (vm.extra.includes('video')) {
+                    if (vm.extra.includes('storyboard')) {
+                        vm.extra = vm.extra.replace('.video', '');
+                    } else {
+                        vm.extra = vm.extra.replace('video', '');
+                    }
+                } else {
+                    if (vm.extra.includes('storyboard')) {
+                        vm.extra += ".video";
+                    } else {
+                        vm.extra += "video";
+                    }
+                }
+            } else {
+                if (vm.extra.includes('storyboard')) {
+                    vm.extra = vm.extra.replace('storyboard', '');
+                } else {
+                    if (vm.extra.includes('video')) {
+                        vm.extra = "storyboard.video";
+                    } else {
+                        vm.extra += "storyboard";
+                    }
+                }
+            }
+        },
+        generateHref() {
+            var vm = this;
+            var uri = '/main';
+            switch (vm.mode) {
+                case -1:
+                    break;
+                case 0:
+                    if (uri.length >= 6) {
+                        uri += "&m=0"
+                    } else {
+                        uri += "?m=0"
+                    }
+                    break;
+                case 1:
+                    if (uri.length >= 6) {
+                        uri += "&m=1"
+                    } else {
+                        uri += "?m=1"
+                    }
+                    break;
+                case 2:
+                    if (uri.length >= 6) {
+                        uri += "&m=2"
+                    } else {
+                        uri += "?m=2"
+                    }
+                    break;
+                case 3:
+                    if (uri.length >= 6) {
+                        uri += "&m=3"
+                    } else {
+                        uri += "?m=3"
+                    }
+                    break;
+                default:
+                    break;
+            }
+            switch (vm.rank) {
+                case 'any':
+                    if (uri.length >= 6) {
+                        uri += "&s=any"
+                    } else {
+                        uri += "?s=any"
+                    }
+                    break;
+                case '':
+                    break;
+                case 'ranked':
+                    if (uri.length >= 6) {
+                        uri += "&s=ranked"
+                    } else {
+                        uri += "?s=ranked"
+                    }
+                    break;
+                case 'qualified':
+                    if (uri.length >= 6) {
+                        uri += "&s=qualified"
+                    } else {
+                        uri += "?s=qualified"
+                    }
+                    break;
+                case 'loved':
+                    if (uri.length >= 6) {
+                        uri += "&s=loved"
+                    } else {
+                        uri += "?s=loved"
+                    }
+                    break;
+                case 'pending':
+                    if (uri.length >= 6) {
+                        uri += "&s=pending"
+                    } else {
+                        uri += "?s=pending"
+                    }
+                    break;
+                case 'graveyard':
+                    if (uri.length >= 6) {
+                        uri += "&s=graveyard"
+                    } else {
+                        uri += "?s=graveyard"
+                    }
+                    break;
+                default:
+                    break;
+            }
+            switch (vm.nsfw) {
+                case 0:
+                    break;
+                case 1:
+                    if (uri.length >= 6) {
+                        uri += "&nsfw=1"
+                    } else {
+                        uri += "?nsfw=1"
+                    }
+                    break;
+                default:
+                    break;
+            }
+            switch (vm.extra) {
+                case "":
+                    break;
+                case "video":
+                    if (uri.length >= 6) {
+                        uri += "&e=video"
+                    } else {
+                        uri += "?e=video"
+                    }
+                    break;
+                case "storyboard":
+                    if (uri.length >= 6) {
+                        uri += "&e=storyboard"
+                    } else {
+                        uri += "?e=storyboard"
+                    }
+                    break;
+                case "storyboard.video":
+                    if (uri.length >= 6) {
+                        uri += "&e=storyboard.video"
+                    } else {
+                        uri += "?e=storyboard.video"
+                    }
+                    break;
+                default:
+                    break;
+            }
+            switch (vm.sort) {
+                case "":
+                    break;
+                case "title_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=title_desc"
+                    } else {
+                        uri += "?sort=title_desc"
+                    }
+                    break;
+                case "title_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=title_asc"
+                    } else {
+                        uri += "?sort=title_asc"
+                    }
+                    break;
+                case "artist_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=artist_desc"
+                    } else {
+                        uri += "?sort=artist_desc"
+                    }
+                    break;
+                case "artist_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=artist_asc"
+                    } else {
+                        uri += "?sort=artist_asc"
+                    }
+                    break;
+                case "difficulty_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=difficulty_desc"
+                    } else {
+                        uri += "?sort=difficulty_desc"
+                    }
+                    break;
+                case "difficulty_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=difficulty_asc"
+                    } else {
+                        uri += "?sort=difficulty_asc"
+                    }
+                    break;
+                case "ranked_desc":
+                    break;
+                case "ranked_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=ranked_asc"
+                    } else {
+                        uri += "?sort=ranked_asc"
+                    }
+                    break;
+                case "favourites_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=favourites_desc"
+                    } else {
+                        uri += "?sort=favourites_desc"
+                    }
+                    break;
+                case "favourites_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=favourites_asc"
+                    } else {
+                        uri += "?sort=favourites_asc"
+                    }
+                    break;
+                default:
+                    break;
+            }
+            switch (vm.creatorid) {
+                case 0:
+                    break;
+                default:
+                    if (uri.length >= 6) {
+                        uri += "&creator=" + vm.creatorid
+                    } else {
+                        uri += "?creator=" + vm.creatorid
+                    }
+                    break;
+            }
+            switch (vm.search_query) {
+                case "":
+                    break;
+                default:
+                    if (uri.length >= 6) {
+                        uri += "&q=" + vm.search_query
+                    } else {
+                        uri += "?q=" + vm.search_query
+                    }
+                    break;
+            }
+            window.history.replaceState("", document.title, uri);
         },
         formatadvenceSearch(val) {
             return val / 10;
@@ -465,131 +1404,81 @@ new Vue({
             ret += "" + secs;
             return ret;
         },
-        makeAdvencedQuery() {
-            var vm = this;
-            var new_query = '';
-            if (vm.form.cs[0] == vm.form.cs[1]) {
-                new_query += 'cs=' + (vm.form.cs[0] / 10) + ' ';
-            }
-            else {
-                new_query += 'cs>=' + (vm.form.cs[0] / 10) + ' cs<=' + (vm.form.cs[1] / 10) + ' ';
-            }
-            if (vm.form.ar[0] == vm.form.ar[1]) {
-                new_query += 'ar=' + (vm.form.ar[0] / 10) + ' ';
-            }
-            else {
-                new_query += 'ar>=' + (vm.form.ar[0] / 10) + ' ar<=' + (vm.form.ar[1] / 10) + ' ';
-            }
-            if (vm.form.od[0] == vm.form.od[1]) {
-                new_query += 'od=' + (vm.form.od[0] / 10) + ' ';
-            }
-            else {
-                new_query += 'od>=' + (vm.form.od[0] / 10) + ' od<=' + (vm.form.od[1] / 10) + ' ';
-            }
-            if (vm.form.hp[0] == vm.form.hp[1]) {
-                new_query += 'hp=' + (vm.form.hp[0] / 10) + ' ';
-            }
-            else {
-                new_query += 'hp>=' + (vm.form.hp[0] / 10) + ' hp<=' + (vm.form.hp[1] / 10) + ' ';
-            }
-            if (vm.form.bpm[0] == vm.form.bpm[1]) {
-                new_query += 'bpm=' + (vm.form.bpm[0] / 10) + ' ';
-            }
-            else {
-                new_query += 'bpm>=' + vm.form.bpm[0] + ' bpm<=' + vm.form.bpm[1] + ' ';
-            }
-            if (vm.form.length[0] == vm.form.length[1]) {
-                new_query += 'length=' + vm.form.length[0] + ' ';
-            }
-            else {
-                new_query += 'length>=' + vm.form.length[0] + ' length<=' + vm.form.length[1] + ' ';
-            }
-            new_query += vm.form.artist + ' ' + vm.form.title
-            if (vm.form.creator.length > 1) {
-                new_query += 'creator=' + vm.form.creator + ' ';
-            }
-            return new_query;
-        },
-        changeoffset: function (page = 1) {
+        changeoffset: function (page = 0) {
             var vm = this;
             this.page = page;
             this.offset = 0;
             vm.getBeatmapData();
         },
+        ApiConvertMode(m) {
+            switch (m) {
+                case 0:
+                    "0"
+                    break;
+                case 1:
+                    "1"
+                    break;
+                case 2:
+                    "2"
+                    break;
+                case 3:
+                    "3"
+                    break;
+                default:
+                    break;
+            }
+        },
+        ApiConvertRanked(m) {
+            switch (m) {
+                case 1:
+                    return "ranked"
+                case 3:
+                    return "qualified"
+                case 4:
+                    return "loved"
+                case 0:
+                    return "unranked"
+                case -3:
+                    return "any"
+                default:
+                    return "ranked"
+            }
+        },
+        searchQueryConvert(q) {
+            if (q.length >= 1) {
+                return '"' + this.search_query + '"';
+            }
+            return q
+        },
         getBeatmapData: function () {
             var vm = this;
             vm.load = true;
             vm.fullscreenLoading = true;
-            window.history.replaceState('', document.title, "/main?mode="+vm.mode+'&status='+vm.rank+'&query='+vm.search_query);
-            if (vm.creatorid > 1) {
-                vm.getBeatmapDataByCreatorId();
-            }
-            else {
-                if (vm.advenced != true) {
-                    this.$axios.get("https://nerina.pw/api/v2/search", {
-                        params: {
-                            mode: this.mode,
-                            amount: 48 * this.page,
-                            status: this.rank,
-                            query: this.search_query
-                        }
-                    },).then(function (response) {
-                        vm.list = response.data;
-                        vm.load = false;
-                        vm.first_load = false;
-                        this.fullscreenLoading = false;
-                    });
-                }
-                else {
-                    vm.getBeatmapDataAdvenced();
-                }
-            }
-        },
-        getBeatmapDataAdvenced: function () {
-            var vm = this;
-            this.load = true;
-            var advenced_query = vm.makeAdvencedQuery();
-            this.search_query = advenced_query;
-            window.history.replaceState('', document.title, "/main?mode="+vm.mode+'&status='+vm.rank+'sort='+this.form.sort+'&order='+this.form.sort2+'&query='+vm.search_query);
-            this.$axios.get("https://nerina.pw/api/v2/search", {
+            vm.generateHref();
+            var querys = vm.searchQueryConvert(vm.search_query);
+            console.log(querys);
+            this.$axios.get("https://api.nerina.pw/search", {
                 params: {
-                    offset: this.offset,
-                    mode: this.mode,
-                    amount: 48 * this.page,
-                    status: this.rank,
-                    sort: this.form.sort,
-                    order: this.form.sort2,
-                    query: this.search_query
-                },
-                onDownloadProgress: progressEvent => {
-                    let percentCompleted = Math.floor((progressEvent.loaded * 100) / 100000);
-                    // })
-                    console.log("load now", percentCompleted);
-                    this.loadPercent = percentCompleted;
+                    m: this.mode,
+                    p: this.page,
+                    s: this.rank,
+                    nsfw: this.nsfw,
+                    e: this.extra,
+                    q: querys,
+                    sort: this.sort,
+                    creator: this.creatorid
                 }
-            }).then(function (response) {
-                vm.list = response.data;
-                vm.activeSearchDetails = ['0']; 
-                vm.load = false;
-            });
-        },
-        getBeatmapDataByCreatorId: function() {
-            var vm = this;
-            console.log("Creator ID: " + vm.creatorid);
-            window.history.replaceState('', document.title, "/main?creator=" + vm.creatorid + "&mode="+vm.mode+'&status='+vm.rank+'sort='+this.form.sort+'&order='+this.form.sort2+'&query='+vm.search_query);
-            this.$axios.get("https://nerina.pw/api/v2/search", {
-                params: {
-                    offset: this.offset,
-                    mode: this.mode,
-                    amount: 48 * this.page,
-                    status: this.rank,
-                    query: this.search_query,
-                    creatorid: this.creatorid
+            }, ).then(function (response) {
+                if (vm.list.length < 1) {
+                    vm.list = response.data;
+                } else {
+                    for (bms in response.data) {
+                        vm.list.push(response.data[bms]);
+                    }
                 }
-            }).then(function (response) {
-                vm.list = response.data;
                 vm.load = false;
                 vm.first_load = false;
+                this.fullscreenLoading = false;
             });
         },
         chnageMode(key, keyPath) {
@@ -609,11 +1498,6 @@ new Vue({
         chageSearch_Query() {
             var vm = this;
             vm.offset = 0;
-            vm.getBeatmapData();
-        },
-        onSubmit() {
-            var vm = this;
-            vm.advenced = true;
             vm.getBeatmapData();
         }
     }

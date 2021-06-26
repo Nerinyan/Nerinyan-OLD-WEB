@@ -28,9 +28,8 @@
     <meta property="article:tag" content="osu! mirror">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
     <script src="/static/js/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
-        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?139142">
+    <link href="https://rawcdn.githack.com/hung1001/font-awesome-pro/0ac23ca/css/all.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?13972142">
     <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -43,16 +42,18 @@
         gtag('config', 'G-PZPLP7ZRTL');
     </script>
 </head>
-
 <body>
     <noscript>
         현재 사용 중인 브라우저는 스크립트를 지원하지 않거나, 해당 기능이 활성화되어 있지 않습니다!
     </noscript>
     <script>
         var creator = {{ creator }};
+        var nsfw = {{ nsfw }};
+        var extra = '{{ extra }}';
         var m = '{{ mode }}';
         var s = '{{ status }}';
         var q = '{{ query }}';
+        var sort = '{{ sort }}';
         var scrptloadchk = 0;
         var dlserver = 0;
     </script>
@@ -76,160 +77,243 @@
                         </div>
                     </el-col>
                 </el-row>
-                <el-row class="navbar search">
-                    <el-col :span="24" class="navbar-search-flex">
-                        <div class="navbar-search-box aa" :style="activeSearchDetails == '0' ? '' : 'display: none'">
-                            <div class="navbar-search-block">
-                                <i class="fas fa-search navbar-search-icon"></i>
-                                <el-input class="navbar-search-input dark" placeholder="Search..."
-                                    v-model="search_query">
-                                </el-input>
-                            </div>
-                            <div class="navbar-switcher-block">
-                                <el-select v-model="serverid" placeholder="Select">
-                                    <el-option
-                                      v-for="item in downloadserver"
-                                      :key="item.serverid"
-                                      :label="item.listlabel"
-                                      :value="item.serverid">
-                                    </el-option>
-                                  </el-select>
-                            </div>
-                        </div>
-                    </el-col>
-                </el-row>
-                <el-row class="more-search">
-                    <el-collapse v-model="activeSearchDetails">
-                        <el-collapse-item title="Advanced search (Beta)" name="1">
-                            <el-form class="advanced-search-block" ref="form" :model="form" label-width="120px">
-                                <dlv class="form-inline">
-                                    <el-form-item label="Song Title">
-                                        <el-input v-model="form.title" class="form-inline-input"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="Song Artist">
-                                        <el-input v-model="form.artist" class="form-inline-input"></el-input>
-                                    </el-form-item>
-                                </dlv>
-                                <el-form-item label="Creator">
-                                    <el-input v-model="form.creator" class="form-inline-input"></el-input>
-                                </el-form-item>
-                                <dlv class="form-inline">
-                                    <el-form-item label="sort by">
-                                        <el-select v-model="form.sort" placeholder="Please Select...">
-                                            <el-option label="Last updated" value="set_last_updated"></el-option>
-                                            <el-option label="Ranked Date" value="set_ranked_date"></el-option>
-                                            <el-option label="Submitted Date" value="set_submitted_date">
-                                            </el-option>
-                                            <el-option label="BeatmapSet ID" value="set_id"></el-option>
-                                            <el-option label="Song Length" value="total_length"></el-option>
-                                            <el-option label="Title" value="title"></el-option>
-                                            <el-option label="Artist" value="artist"></el-option>
-                                        </el-select>
-                                        <el-radio-group v-model="form.sort2" class="form-margin">
-                                            <el-radio label="Ascending" value="asc"></el-radio>
-                                            <el-radio label="Descending" value="desc"></el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-                                </dlv>
-                                <dlv class="form-inline fr4">
-                                    <el-form-item label="CS">
-                                        <el-slider v-model="form.cs" range :format-tooltip="formatadvenceSearch">
-                                        </el-slider>
-                                    </el-form-item>
-                                    <el-form-item label="AR">
-                                        <el-slider v-model="form.ar" range :format-tooltip="formatadvenceSearch">
-                                        </el-slider>
-                                    </el-form-item>
-                                    <el-form-item label="OD">
-                                        <el-slider v-model="form.od" range :format-tooltip="formatadvenceSearch">
-                                        </el-slider>
-                                    </el-form-item>
-                                    <el-form-item label="HP">
-                                        <el-slider v-model="form.hp" range :format-tooltip="formatadvenceSearch">
-                                        </el-slider>
-                                    </el-form-item>
-                                </dlv>
-                                <dlv class="form-inline fr2">
-                                    <el-form-item label="BPM">
-                                        <el-slider v-model="form.bpm" :max="360" range></el-slider>
-                                    </el-form-item>
-                                    <el-form-item label="Length">
-                                        <el-slider v-model="form.length" range :max="1000"
-                                            :format-tooltip="formlength"></el-slider>
-                                    </el-form-item>
-                                </dlv>
-                                <div class="search-btn">
-                                    <el-button type="primary" @click="onSubmit" style="width: 100%;">Search
-                                    </el-button>
-                                </div>
-                            </el-form>
-                        </el-collapse-item>
-                    </el-collapse>
-                </el-row>
             </div>
+            
             <div class="sticky">
                 <div class="ui-navbar-block">
-                    <el-row>
-                        <el-col :span="24" class="navbar-block">
-                            <el-menu :default-active="mode" class="navbar left" mode="horizontal" @select="chnageMode">
-                                <el-tooltip class="item" effect="dark" content="osu!Standard" placement="bottom">
-                                    <el-menu-item index="0" class="navbar item">
-                                        <i class="navbar-mode-ico faa fa-extra-mode-osu"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu!Taiko" placement="bottom">
-                                    <el-menu-item index="1" class="navbar item">
-                                        <i class="navbar-mode-ico faa fa-extra-mode-taiko"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu!Catch The Beat" placement="bottom">
-                                    <el-menu-item index="2" class="navbar item">
-                                        <i class="navbar-mode-ico faa fa-extra-mode-fruits"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="osu!Mania" placement="bottom">
-                                    <el-menu-item index="3" class="navbar item">
-                                        <i class="navbar-mode-ico faa fa-extra-mode-mania"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-menu-item index="-1" class="navbar item">
-                                    ALL
-                                </el-menu-item>
-                            </el-menu>
-                            <el-menu :default-active="rank" class="navbar right" mode="horizontal"
-                                @select="chnageRankedStatus">
-                                <el-tooltip class="item" effect="dark" content="Ranked" placement="bottom">
-                                    <el-menu-item index="1" class="navbar item">
-                                        <i class="fas fa-angle-double-up ranked"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="Qualified" placement="bottom">
-                                    <el-menu-item index="3" class="navbar item">
-                                        <i class="fas fa-check qualified"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="Loved" placement="bottom">
-                                    <el-menu-item index="4" class="navbar item">
-                                        <i class="fas fa-heart loved"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-tooltip class="item bold" effect="dark" content="Unranked" placement="bottom">
-                                    <el-menu-item index="0" class="navbar item">
-                                        <i class="fas fa-question unranked"></i>
-                                    </el-menu-item>
-                                </el-tooltip>
-                                <el-menu-item index="-3" class="navbar item">All</el-menu-item>
-                            </el-menu>
+                    <el-row class="navbar search">
+                        <el-col :span="24" class="navbar-search-flex">
+                            <div class="navbar-search-box aa">
+                                <div class="navbar-search-block">
+                                    <el-input class="dark" placeholder="Search..."
+                                        v-model="search_query">
+                                    </el-input>
+                                    <i class="fas fa-search navbar-search-icon"></i>
+                                </div>
+                            </div>
                         </el-col>
+                        <div class="navbar-beatmapsearch-options-block" id="navbar-beatmapsearch-options-block">
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Mode</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="mode=-1" :class="mode == -1 ? 'active' : ''">
+                                            <span>Any</span>
+                                        </p>
+                                        <p v-on:click="mode=0" :class="mode == 0 ? 'active' : ''">
+                                            <span>osu!</span>
+                                        </p>
+                                        <p v-on:click="mode=1" :class="mode == 1 ? 'active' : ''">
+                                            <span>osu!taiko</span>
+                                        </p>
+                                        <p v-on:click="mode=2" :class="mode == 2 ? 'active' : ''">
+                                            <span>osu!catch</span>
+                                        </p>
+                                        <p v-on:click="mode=3" :class="mode == 3 ? 'active' : ''">
+                                            <span>osu!mania</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Categories</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="rank='any'" :class="rank == 'any' ? 'active' : ''">
+                                            <span>Any</span>
+                                        </p>
+                                        <p v-on:click="rank=''" :class="rank == '' ? 'active' : ''">
+                                            <span>Has Leaderboard</span>
+                                        </p>
+                                        <p v-on:click="rank='ranked'" :class="rank == 'ranked' ? 'active' : ''">
+                                            <span>Ranked</span>
+                                        </p>
+                                        <p v-on:click="rank='qualified'" :class="rank == 'qualified' ? 'active' : ''">
+                                            <span>Qualified</span>
+                                        </p>
+                                        <p v-on:click="rank='loved'" :class="rank == 'loved' ? 'active' : ''">
+                                            <span>Loved</span>
+                                        </p>
+                                        <p v-on:click="rank='pending'" :class="rank == 'pending' ? 'active' : ''">
+                                            <span>Pending</span>
+                                        </p>
+                                        <p v-on:click="rank='graveyard'" :class="rank == 'graveyard' ? 'active' : ''">
+                                            <span>Graveyard</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Explicit Content</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="nsfw=0" :class="nsfw == '0' ? 'active' : ''">
+                                            <span>Hide</span>
+                                        </p>
+                                        <p v-on:click="nsfw=1" :class="nsfw == '1' ? 'active' : ''">
+                                            <span>Show</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Extra</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="extraChanged('video')" :class="extra.includes('video') ? 'active' : ''">
+                                            <span>Has Video</span>
+                                        </p>
+                                        <p v-on:click="extraChanged('storyboard')" :class="extra.includes('storyboard') ? 'active' : ''">
+                                            <span>Has Storyboard</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Sort by</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="changeSort('title')" :class="sort == 'title_desc' ? 'active' : '' || sort == 'title_asc' ? 'active' : ''">
+                                            <span>Title
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('artist')" :class="sort == 'artist_desc' ? 'active' : '' || sort == 'artist_asc' ? 'active' : ''">
+                                            <span>Artist
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('difficulty')" :class="sort == 'difficulty_desc' ? 'active' : '' || sort == 'difficulty_asc' ? 'active' : ''">
+                                            <span>Difficulty
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('ranked')" :class="sort == 'ranked_desc' ? 'active' : '' || sort == 'ranked_asc' ? 'active' : ''">
+                                            <span>Ranked
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('favourites')" :class="sort == 'favourites_desc' ? 'active' : '' || sort == 'favourites_asc' ? 'active' : ''">
+                                            <span>Favourites
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="navbar-beatmapsearch-options-block" id="navbar-beatmapsearch-options-sub-block" v-if="isExpand">
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Mode</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="mode=-1" :class="mode == -1 ? 'active' : ''">
+                                            <span>Any</span>
+                                        </p>
+                                        <p v-on:click="mode=0" :class="mode == 0 ? 'active' : ''">
+                                            <span>osu!</span>
+                                        </p>
+                                        <p v-on:click="mode=1" :class="mode == 1 ? 'active' : ''">
+                                            <span>osu!taiko</span>
+                                        </p>
+                                        <p v-on:click="mode=2" :class="mode == 2 ? 'active' : ''">
+                                            <span>osu!catch</span>
+                                        </p>
+                                        <p v-on:click="mode=3" :class="mode == 3 ? 'active' : ''">
+                                            <span>osu!mania</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Categories</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="rank='any'" :class="rank == 'any' ? 'active' : ''">
+                                            <span>Any</span>
+                                        </p>
+                                        <p v-on:click="rank=''" :class="rank == '' ? 'active' : ''">
+                                            <span>Has Leaderboard</span>
+                                        </p>
+                                        <p v-on:click="rank='ranked'" :class="rank == 'ranked' ? 'active' : ''">
+                                            <span>Ranked</span>
+                                        </p>
+                                        <p v-on:click="rank='qualified'" :class="rank == 'qualified' ? 'active' : ''">
+                                            <span>Qualified</span>
+                                        </p>
+                                        <p v-on:click="rank='loved'" :class="rank == 'loved' ? 'active' : ''">
+                                            <span>Loved</span>
+                                        </p>
+                                        <p v-on:click="rank='pending'" :class="rank == 'pending' ? 'active' : ''">
+                                            <span>Pending</span>
+                                        </p>
+                                        <p v-on:click="rank='graveyard'" :class="rank == 'graveyard' ? 'active' : ''">
+                                            <span>Graveyard</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-beatmapsearch-options">
+                                <div class="navbar-beatmapsearch-options-single">
+                                    <span class="navbar-beatmapsearch-options-title">Sort by</span>
+                                    <div class="navbar-beatmapsearch-options-description">
+                                        <p v-on:click="changeSort('title')" :class="sort == 'title_desc' ? 'active' : '' || sort == 'title_asc' ? 'active' : ''">
+                                            <span>Title
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('artist')" :class="sort == 'artist_desc' ? 'active' : '' || sort == 'artist_asc' ? 'active' : ''">
+                                            <span>Artist
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('difficulty')" :class="sort == 'difficulty_desc' ? 'active' : '' || sort == 'difficulty_asc' ? 'active' : ''">
+                                            <span>Difficulty
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('ranked')" :class="sort == 'ranked_desc' ? 'active' : '' || sort == 'ranked_asc' ? 'active' : ''">
+                                            <span>Ranked
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('favourites')" :class="sort == 'favourites_desc' ? 'active' : '' || sort == 'favourites_asc' ? 'active' : ''">
+                                            <span>Favourites
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="navbar-expand-toggle-btn" id="navbar-expand-toggle">
+                            <i :class="isExpand ? 'fas fa-sort-up' : 'fas fa-sort-down'" v-on:click="toggleExpand()"></i>
+                        </div>
                     </el-row>
                 </div>
-                <!-- <el-row class="progressbar-line" v-if="load">
-                    <el-progress stroke-width="12" stroke-linecap="butt" :percentage="loadPercent" :color="colors"></el-progress>
-                </el-row> -->
-                <el-alert title="cs, ar, od, hp, bpm, length search support ex)cs>3 kimi no bouken" type="Success"
-                    description="cs, ar, od, hp, bpm, length 검색 지원 ex)cs>3 kimi no bouken" show-icon effect="dark">
-                </el-alert>
             </div>
+            <div class="backtotop" id="backtotop">
+                <i class="fas fa-chevron-up"></i>
+            </div>
+            <el-alert title="Nerinyan has been changed a lot!, A new Nerinyan has changed a lot, including Ui and Api." type="success"
+                description="네리냥에 많은 변화가 찾아왔습니다! Ui, Api 등, 여러가지 편의성이 업데이트 되었습니다." show-icon effect="dark">
+            </el-alert>
             <div class="ui-main-block">
                 <div class="beatmap-row">
                     <template v-for="(i, index) in list" v-bind:key="i.id">
@@ -237,19 +321,13 @@
                     </template>
                 </div>
             </div>
-
-            <el-col :span="24" class="loading_block" v-if="load">
-                <div class="loadingWrap">
-                    <div class="loadingBall"></div>
-                </div>
-            </el-col>
         </div>
     </div>
     <script src="/static/vue_modules/vue.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue/mixins/generalMixins.min.js?13656742" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.min.js?17642" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.min.js?178642" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
         setTimeout(CheckLoadScript, 1000);
@@ -259,6 +337,35 @@
                 window.location.replace(window.location.pathname + window.location.search + window.location.hash);
             }
         }
+    </script>
+    <script>
+        function navbarchange()
+        {
+            var tid = $('#navbar-beatmapsearch-options-block')
+            var tidsub = $('#navbar-expand-toggle')
+            var tid_t = tid.offset().top
+            var window_t = $(window).scrollTop()
+
+            if( origin_val.top <= window_t )
+            {
+                tid.css('display', 'none')
+                tidsub.css('display', 'flex')
+            }
+            if (tid_t == window_t ) {
+                tid.css('display', origin_val.display)
+                tidsub.css('display', 'none')
+            }
+        };
+        $("#backtotop").click(function () {
+            $("html, body").animate({scrollTop: 0}, 1000);
+        });
+        var origin_val = {}
+        origin_val.top = $('#navbar-beatmapsearch-options-block').offset().top
+        origin_val.display = $('#navbar-beatmapsearch-options-block').css('display')
+        $(window).scroll(function(){
+            navbarchange()
+        });
+    </script>
     </script>
 </body>
 

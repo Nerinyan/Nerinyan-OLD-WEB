@@ -22,23 +22,35 @@ def page_not_found(error):
 def main():
     parser = reqparse.RequestParser()
     parser.add_argument('creator', type=int)
-    parser.add_argument('mode', type=int)
-    parser.add_argument('status', type=int)
-    parser.add_argument('query', type=str)
+    parser.add_argument('m', type=str)
+    parser.add_argument('s', type=str)
+    parser.add_argument('q', type=str)
+    parser.add_argument('nsfw', type=str)
+    parser.add_argument('e', type=str)
+    parser.add_argument('sort', type=str)
     args = parser.parse_args()
     creatorid = args['creator']
-    mode = args['mode']
-    status = args['status']
-    query = args['query']
+    mode = args['m']
+    status = args['s']
+    query = args['q']
+    nsfw = args['nsfw']
+    extra = args['e']
+    sort = args['sort']
     if creatorid == None:
         creatorid = 0
     if mode == None:
-        mode = 0
+        mode = -1
     if status == None:
-        status = 1
+        status = ""
     if query == None:
         query = ''
-    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query))
+    if nsfw == None:
+        nsfw = '0'
+    if extra == None:
+        extra = ''
+    if sort == None:
+        sort = 'ranked_desc'
+    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort))
 
 @app.route("/d")
 def downloadMainPage():
@@ -88,76 +100,6 @@ def downlaod_beatmap(bid):
     setid = convertToBeatmapidToSetid(bid)
     print(f"bid({bid}) converting -> sid({setid})")
     return RedirectDownload(setid)
-
-@app.route('/api/b/<setid>', methods=['get'])
-def api_getset(setid):
-    data = get_setdata_from_db(setid)
-    result = data
-
-    return result
-
-@app.route('/api/v1/search', methods=['get'])
-def routeapiV1():
-    parser = reqparse.RequestParser()
-    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount'},
-                    'str': {'query','sort','sortby'}
-                }
-    for parsers in parser_rows:
-        parserKey = parser_rows[parsers]
-        for pars in parserKey:
-            parser.add_argument(pars, type=type(parsers))
-
-    args = parser.parse_args()
-
-    ar = dict(min=args["min_ar"], max=args["max_ar"])
-    cs = dict(min=args["min_cs"], max=args["max_cs"])
-    od = dict(min=args["min_od"], max=args["max_od"])
-    hp = dict(min=args["min_hp"], max=args["max_hp"])
-    bpm = dict(min=args["min_bpm"], max=args["max_bpm"])
-    length = dict(min=args["min_length"], max=args["max_length"])
-
-    query = args["query"]
-    mode = args["mode"]
-    status = args["status"]
-    amount = args["amount"]
-    sort = args["sort"]
-    sortby = args["sortby"]
-
-    data = ApiV1(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby)
-    result = jsonify(data)
-
-    return result
-
-@app.route('/api/v2/search', methods=['get', 'options'])
-def routeapiV2():
-    parser = reqparse.RequestParser()
-    parser_rows = {'int': {'min_ar','max_ar','min_cs','max_cs','min_od','max_od','min_hp','max_hp','min_bpm','max_bpm','min_length','max_length','mode','status','amount', 'creatorid'},
-                    'str': {'query','sort','sortby'}
-                }
-    for parsers in parser_rows:
-        parserKey = parser_rows[parsers]
-        for pars in parserKey:
-            parser.add_argument(pars, type=type(parsers))
-
-    args = parser.parse_args()
-    ar = dict(min=args["min_ar"], max=args["max_ar"])
-    cs = dict(min=args["min_cs"], max=args["max_cs"])
-    od = dict(min=args["min_od"], max=args["max_od"])
-    hp = dict(min=args["min_hp"], max=args["max_hp"])
-    bpm = dict(min=args["min_bpm"], max=args["max_bpm"])
-    length = dict(min=args["min_length"], max=args["max_length"])
-    query = args["query"]
-    mode = args["mode"]
-    status = args["status"]
-    amount = args["amount"]
-    sort = args["sort"]
-    sortby = args["sortby"]
-    creatorid = args["creatorid"]
-
-    data = ApiV2(ar=ar, cs=cs, od=od, hp=hp, bpm=bpm, length=length, query=query, mode=mode, status=status, amount=amount, sort=sort, sortby=sortby, creatorid=creatorid)
-    result = jsonify(data)
-
-    return result
 
 def goto_error_page(reason):
     return render_template("404.html", reason=reason)
