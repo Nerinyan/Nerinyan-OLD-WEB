@@ -198,6 +198,20 @@
                                                 </span>
                                             </span>
                                         </p>
+                                        <p v-on:click="changeSort('updated')" :class="sort == 'updated_desc' ? 'active' : '' || sort == 'updated_asc' ? 'active' : ''">
+                                            <span>Last Updated
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p v-on:click="changeSort('plays')" :class="sort == 'plays_desc' ? 'active' : '' || sort == 'plays_asc' ? 'active' : ''">
+                                            <span>Plays
+                                                <span class="sort__item-arrow">
+                                                    <i :class="'fas fa-caret-' + convertSortIcon(sort)"></i>
+                                                </span>
+                                            </span>
+                                        </p>
                                         <p v-on:click="changeSort('favourites')" :class="sort == 'favourites_desc' ? 'active' : '' || sort == 'favourites_asc' ? 'active' : ''">
                                             <span>Favourites
                                                 <span class="sort__item-arrow">
