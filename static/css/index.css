@@ -16413,6 +16413,7 @@ input .el-input__inner::placeholder {
     cursor: pointer;
     padding: 0 0 0 10px;
     position: absolute;
+    top: 8px;
 }
 
 .beatmap-block:hover .song-status {
@@ -16766,6 +16767,10 @@ span.beatmap.songname.title {
     padding: 0 10px 0 30px;
 }
 
+.version-list-block-in-block {
+    padding: 2.5px 0;
+}
+
 .hoverd {
     display: none !important;
 }
@@ -16773,6 +16778,7 @@ span.beatmap.songname.title {
 .song-stats-block {
     display: flex;
     align-items: flex-end;
+    flex-wrap: wrap;
     flex-direction: row;
     background: #282c2f99;
     padding: 3px;
