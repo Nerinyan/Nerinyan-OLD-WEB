@@ -16827,7 +16827,8 @@ span.beatmap.songname.title {
 .beatmap-row {
     display: flex;
     flex-wrap: wrap;
-    margin: 12px 0;
+    margin: 12px auto;
+    justify-content: center;
 }
 
 .advanced-search-block {

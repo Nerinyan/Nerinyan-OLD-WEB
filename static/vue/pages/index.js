@@ -1374,6 +1374,34 @@ new Vue({
                         uri += "?sort=favourites_asc"
                     }
                     break;
+                case "updated_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=updated_desc"
+                    } else {
+                        uri += "?sort=updated_desc"
+                    }
+                    break;
+                case "updated_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=updated_asc"
+                    } else {
+                        uri += "?sort=updated_asc"
+                    }
+                    break;
+                case "plays_desc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=plays_desc"
+                    } else {
+                        uri += "?sort=plays_desc"
+                    }
+                    break;
+                case "plays_asc":
+                    if (uri.length >= 6) {
+                        uri += "&sort=plays_asc"
+                    } else {
+                        uri += "?sort=plays_asc"
+                    }
+                    break;
                 default:
                     break;
             }
