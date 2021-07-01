@@ -1440,7 +1440,7 @@ new Vue({
         },
         searchQueryConvert(q) {
             if (q.length >= 1) {
-                return '"' + this.search_query + '"';
+                return this.search_query;
             }
             return q
         },
