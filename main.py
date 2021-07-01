@@ -52,6 +52,41 @@ def main():
         sort = 'ranked_desc'
     return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort))
 
+
+@app.route("/dev")
+def dev():
+    parser = reqparse.RequestParser()
+    parser.add_argument('creator', type=int)
+    parser.add_argument('m', type=str)
+    parser.add_argument('s', type=str)
+    parser.add_argument('q', type=str)
+    parser.add_argument('nsfw', type=str)
+    parser.add_argument('e', type=str)
+    parser.add_argument('sort', type=str)
+    args = parser.parse_args()
+    creatorid = args['creator']
+    mode = args['m']
+    status = args['s']
+    query = args['q']
+    nsfw = args['nsfw']
+    extra = args['e']
+    sort = args['sort']
+    if creatorid == None:
+        creatorid = 0
+    if mode == None:
+        mode = -1
+    if status == None:
+        status = ""
+    if query == None:
+        query = ''
+    if nsfw == None:
+        nsfw = '0'
+    if extra == None:
+        extra = ''
+    if sort == None:
+        sort = 'ranked_desc'
+    return render_template("dev.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort))
+
 @app.route("/d")
 def downloadMainPage():
     return render_template("download.html")

@@ -5,7 +5,7 @@ var beatmap = {
         <div class="beatmap-block">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
+                <a v-on:click="redirectDownload(beatmap.id)" :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
                     :style="'background-image: linear-gradient(to right, #00000099, #ffe4e100), url(https://assets.ppy.sh/beatmaps/' + beatmap.id + '/covers/cover.jpg?1622784772);'">
                     <div class="beatamp-header-block">
                         <div>
@@ -946,7 +946,7 @@ var beatmap = {
             }, false);
         },
         createBmpDlUri: function (id, video) {
-            // console.log("request generate beatmap download url...");
+            // console.log("request generate beatmap download url... DownloadServer: ", dlserver);
             json = {
                 'server': dlserver,
                 'beatmapsetid': id
@@ -982,6 +982,7 @@ var beatmap = {
 }
 
 Vue.use(window.VueTimeago);
+Vue.prototype.downloadServer = 0;
 Vue.config.devtools = true
 new Vue({
     el: "#app",
@@ -1104,6 +1105,8 @@ new Vue({
         },
         serverid() {
             dlserver = this.serverid;
+            this.downloadServer = this.serverid;
+            // console.log("index.js", this.downloadServer);
         },
         novideo() {
             dlNovideo = this.novideo;
@@ -1125,7 +1128,7 @@ new Vue({
             } else {
                 vm.isExpand = true;
             }
-            console.log(vm.isExpand);
+            // console.log(vm.isExpand);
         },
         convertSortIcon(sortname) {
             var vm = this;
@@ -1151,7 +1154,7 @@ new Vue({
             } else {
                 vm.sort = sortname + '_desc';
             }
-            console.log(vm.sort);
+            // console.log(vm.sort);
         },
         extraChanged(extra) {
             var vm = this;
@@ -1447,7 +1450,6 @@ new Vue({
             vm.fullscreenLoading = true;
             vm.generateHref();
             var querys = vm.searchQueryConvert(vm.search_query);
-            console.log(querys);
             this.$axios.get("https://api.nerina.pw/search", {
                 params: {
                     m: this.mode,
