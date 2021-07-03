@@ -7,7 +7,7 @@
 - Easy-to-manipulate search options
 
 ## Support This Project
-- [Toss](toss.me/zeeee) | [Shinhan MySol](MySol.ID/ze2ee)
+- [Toss](http://toss.me/zeeee) | [Shinhan MySol](http://MySol.ID/ze2ee)
 
 ## Preview
 ![Preview Image](https://i.imgur.com/MxPuVsS.png)
