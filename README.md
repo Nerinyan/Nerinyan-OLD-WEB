@@ -15,4 +15,4 @@
 ### License
 
 Copyright © 2020 ~ 2021 [Nerina1241](https://github.com/Nerina1241)\
-This project is [GPL-3.0](https://github.com/KeepSOBP/Hikari/blob/v3/LICENSE) licensed.
+This project is [GPL-3.0](https://github.com/Nerina1241/osu-Beatmap-Mirror/blob/main/LICENSE) licensed.
