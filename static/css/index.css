@@ -16119,7 +16119,6 @@ input .el-input__inner::placeholder {
 .backtotop {
     position: fixed;
     display: block;
-    padding: 8px 12px;
     background: #93faff;
     border-radius: 100%;
     right: 20px;
@@ -16127,6 +16126,9 @@ input .el-input__inner::placeholder {
     font-size: 29px;
     cursor: pointer;
     z-index: 12381234;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
 }
 
 .navbar-search-box {
