@@ -18,5 +18,5 @@ Nerinyan is osu! beatmap mirror written by vue-js, flask
 
 ### License
 
-Copyright © 2020 ~ 2021 [Nerina1241](https://github.com/Nerina1241)\
+Copyright © 2020 ~ 2021 [ZEEE](https://github.com/zeee2)\
 This project is [GPL-3.0](https://github.com/Nerina1241/osu-Beatmap-Mirror/blob/main/LICENSE) licensed.
