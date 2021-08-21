@@ -80,7 +80,9 @@ def checkServerStatus():
         title = "Nerinyan's All services has some problemes now..."
         description = "네리냥의 모든 서비스에 현재 문제가 발생하였습니다."
         alertType = "error"
-    result.append({"title": title, "description": description, "alertType": alertType})
+    MainServerStatusCode = MainServer
+    SubServerStatusCode = SubServer
+    result.append({"title": title, "description": description, "alertType": alertType, "ServerStatus": {"Main": MainServerStatusCode, "Sub": SubServerStatusCode}})
     return result
 
 def convertToBeatmapidToSetid(bid):

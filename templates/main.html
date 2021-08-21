@@ -58,8 +58,14 @@
         var q = '{{ query }}';
         var sort = '{{ sort }}';
         var scrptloadchk = 0;
-        var dlserver = 0;
         var dlNovideo = 0;
+        var SubServer = {{ SubServerStatus }};
+        if (SubServer != 200) {
+            var dlserver = 1;
+        }
+        else {
+            var dlserver = 0;
+        }
     </script>
     <div id="app">
         <el-col class="loading" :span="24" v-bind:class="{ 'load' : load }" v-if="first_load">
@@ -227,14 +233,22 @@
                                 <div class="navbar-beatmapsearch-options-single">
                                     <span class="navbar-beatmapsearch-options-title">Download Server</span>
                                     <div class="navbar-beatmapsearch-options-description">
-                                        <p v-on:click="serverid = 0" :class="serverid == 0 ? 'active' : ''">
+                                        <p v-on:click="serverid = 0" :class="serverid == 0 ? 'active' : ''" v-if="{{ SubServerStatus }} == 200">
                                             <span>Any</span>
                                         </p>
-                                        <p v-on:click="serverid = 1" :class="serverid == 1 ? 'active' : ''">
-                                            <span>Main Server</span>
+                                        <p :class="serverid == 0 ? 'active' : ''" v-if="{{ SubServerStatus }} != 200" style="color: black;">
+                                            <span>Any</span>
                                         </p>
+
+                                        <p v-on:click="serverid = 1" :class="serverid == 1 ? 'active' : ''">
+                                            <span>Main Server(kr)</span>
+                                        </p>
+
                                         <p v-on:click="serverid = 2" :class="serverid == 2 ? 'active' : ''">
-                                            <span>Sub Server(ko)</span>
+                                            <span>Sub Server(kr)</span>
+                                        </p>
+                                        <p :class="serverid == 2 ? 'active' : ''" v-if="{{ SubServerStatus }} != 200" style="color: black;">
+                                            <span>Sub Server(kr)</span>
                                         </p>
                                     </div>
                                 </div>

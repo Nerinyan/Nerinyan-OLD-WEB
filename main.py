@@ -53,7 +53,7 @@ def main():
     if sort == None:
         sort = 'ranked_desc'
         
-    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort), Title=Status[0]["title"], Description=Status[0]["description"], AlertType=Status[0]["alertType"])
+    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort), Title=Status[0]["title"], Description=Status[0]["description"], AlertType=Status[0]["alertType"], SubServerStatus=Status[0]["ServerStatus"]["Sub"])
 
 @app.route("/d")
 def downloadMainPage():

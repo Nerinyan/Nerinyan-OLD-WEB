@@ -1044,7 +1044,7 @@ new Vue({
                 sort: 'set_last_updated',
                 sort2: 'Descending'
             },
-            serverid: 0,
+            serverid: dlserver,
             novideo: 0
         }
     },
