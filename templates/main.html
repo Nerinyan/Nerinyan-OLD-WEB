@@ -244,7 +244,7 @@
                                             <span>Main Server(kr)</span>
                                         </p>
 
-                                        <p v-on:click="serverid = 2" :class="serverid == 2 ? 'active' : ''">
+                                        <p v-on:click="serverid = 2" :class="serverid == 2 ? 'active' : ''" v-if="{{ SubServerStatus }} == 200">
                                             <span>Sub Server(kr)</span>
                                         </p>
                                         <p :class="serverid == 2 ? 'active' : ''" v-if="{{ SubServerStatus }} != 200" style="color: black;">
