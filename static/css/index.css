@@ -17028,6 +17028,10 @@ span.beatmap.songname.title {
     /* justify-content: space-around; */
 }
 
+.hover-list-block:not(:last-child) { 
+    margin-bottom: 10px;
+}
+
 .hover-mode {
     font-size: 16px !important;
 }

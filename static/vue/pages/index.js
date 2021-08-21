@@ -93,12 +93,12 @@ var beatmap = {
                     <i :id="'versiondropdownbtn-' + beatmap.id" class="version-dropdownbtn fad fa-sort-down" v-on:click="versionHover(beatmap.id)"></i>
                     <div class="version-list-block" :id="'versionlist-' + beatmap.id">
                     <div class="version-list-block-in-block hoverd" :id="'hoverlist-' + beatmap.id" xyz="fade up">
-                        <div class="hover-list-block">
+                        <div class="hover-list-block" v-if="versions.std.length > 0" v-show="versions.std.length > 0">
                             <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.std" v-bind:key="bmap.id">
                                 <div slot="content" class="beatmap-tooltip">
                                     <div class="version-hoverlist-single">
                                         <div class="version-main-info">
-                                            <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <span :class="'version-mode mode-ico  faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                             <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                 <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                             </div>
@@ -162,7 +162,7 @@ var beatmap = {
                                 </div>
                                 <div class="hover-list-single">
                                     <div class="hover-list-single-mode">
-                                        <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                        <span :class="'hover-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                     </div>
                                     <div class="hover-list-single-diff">
                                         <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
@@ -173,12 +173,12 @@ var beatmap = {
                                 </div>
                             </el-tooltip>
                         </div>
-                        <div class="hover-list-block">
+                        <div class="hover-list-block" v-if="versions.taiko.length > 0" v-show="versions.taiko.length > 0">
                             <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.taiko" v-bind:key="bmap.id">
                                 <div slot="content" class="beatmap-tooltip">
                                     <div class="version-hoverlist-single">
                                         <div class="version-main-info">
-                                            <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                             <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                 <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                             </div>
@@ -242,7 +242,7 @@ var beatmap = {
                                 </div>
                                 <div class="hover-list-single">
                                     <div class="hover-list-single-mode">
-                                        <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                        <span :class="'hover-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                     </div>
                                     <div class="hover-list-single-diff">
                                         <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
@@ -253,12 +253,12 @@ var beatmap = {
                                 </div>
                             </el-tooltip>
                             </div>
-                            <div class="hover-list-block">
+                            <div class="hover-list-block" v-if="versions.ctb.length > 0" v-show="versions.ctb.length > 0">
                                 <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.ctb" v-bind:key="bmap.id">
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
@@ -322,7 +322,7 @@ var beatmap = {
                                     </div>
                                     <div class="hover-list-single">
                                         <div class="hover-list-single-mode">
-                                            <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <span :class="'hover-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                         </div>
                                         <div class="hover-list-single-diff">
                                             <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
@@ -333,12 +333,12 @@ var beatmap = {
                                     </div>
                                 </el-tooltip>
                             </div>
-                            <div class="hover-list-block">
+                            <div class="hover-list-block" v-if="versions.mania.length > 0" v-show="versions.mania.length > 0">
                                 <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.mania" v-bind:key="bmap.id">
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
@@ -402,7 +402,7 @@ var beatmap = {
                                     </div>
                                     <div class="hover-list-single">
                                         <div class="hover-list-single-mode">
-                                            <span :class="'hover-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                            <span :class="'hover-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                         </div>
                                         <div class="hover-list-single-diff">
                                             <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
@@ -421,7 +421,7 @@ var beatmap = {
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
@@ -494,7 +494,7 @@ var beatmap = {
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
@@ -567,7 +567,7 @@ var beatmap = {
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
@@ -640,7 +640,7 @@ var beatmap = {
                                     <div slot="content" class="beatmap-tooltip">
                                         <div class="version-hoverlist-single">
                                             <div class="version-main-info">
-                                                <span :class="'version-mode mode-ico ' + convertDiffToClass(bmap.difficulty_rating) + ' faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
+                                                <span :class="'version-mode mode-ico faa fa-extra-mode-' + convertModeToico(bmap.mode_int)"></span>
                                                 <div :class="'version-diff ver-' + convertDiffToClass(bmap.difficulty_rating)">
                                                     <span class="version-diff-txt"><i class="fas fa-star"></i> <% addCommas((bmap.difficulty_rating).toFixed(2)) %></span>
                                                 </div>
