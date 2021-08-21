@@ -16425,7 +16425,7 @@ input .el-input__inner::placeholder {
 .beatmap-block {
     box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
     -webkit-box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
-    transition: 200ms box-shadow;
+    transition: 200ms box-shadow, scale 1s ease-in-out;
     overflow: hidden;
     position: relative;
     display: flex;
@@ -16438,6 +16438,7 @@ input .el-input__inner::placeholder {
 .beatmap-block:hover {
     -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, .75);
     box-shadow: 0 10px 20px rgba(0, 0, 0, .75);
+    transform: scale(1.025);
 }
 
 .beatmap-block:hover .beatmapset-panel-prev {

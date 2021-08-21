@@ -20,14 +20,15 @@ def page_not_found(error):
 @app.route("/")
 @app.route("/main")
 def main():
+    Status = checkServerStatus()
+    
     parser = reqparse.RequestParser()
-    parser.add_argument('creator', type=int)
-    parser.add_argument('m', type=str)
-    parser.add_argument('s', type=str)
-    parser.add_argument('q', type=str)
-    parser.add_argument('nsfw', type=str)
-    parser.add_argument('e', type=str)
-    parser.add_argument('sort', type=str)
+    parser_rows = {'int': {'creator'}, 'str': {'m', 's', 'q', 'nsfw', 'e', 'sort'}}
+    for parsers in parser_rows:
+        parserKey = parser_rows[parsers]
+        for pars in parserKey:
+            parser.add_argument(pars, type=type(parsers))
+
     args = parser.parse_args()
     creatorid = args['creator']
     mode = args['m']
@@ -36,6 +37,7 @@ def main():
     nsfw = args['nsfw']
     extra = args['e']
     sort = args['sort']
+
     if creatorid == None:
         creatorid = 0
     if mode == None:
@@ -50,42 +52,8 @@ def main():
         extra = ''
     if sort == None:
         sort = 'ranked_desc'
-    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort))
-
-
-@app.route("/dev")
-def dev():
-    parser = reqparse.RequestParser()
-    parser.add_argument('creator', type=int)
-    parser.add_argument('m', type=str)
-    parser.add_argument('s', type=str)
-    parser.add_argument('q', type=str)
-    parser.add_argument('nsfw', type=str)
-    parser.add_argument('e', type=str)
-    parser.add_argument('sort', type=str)
-    args = parser.parse_args()
-    creatorid = args['creator']
-    mode = args['m']
-    status = args['s']
-    query = args['q']
-    nsfw = args['nsfw']
-    extra = args['e']
-    sort = args['sort']
-    if creatorid == None:
-        creatorid = 0
-    if mode == None:
-        mode = -1
-    if status == None:
-        status = ""
-    if query == None:
-        query = ''
-    if nsfw == None:
-        nsfw = '0'
-    if extra == None:
-        extra = ''
-    if sort == None:
-        sort = 'ranked_desc'
-    return render_template("dev.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort))
+        
+    return render_template("main.html", creator=creatorid, mode=str(mode), status=str(status), query=str(query), nsfw=str(nsfw), extra=str(extra), sort=str(sort), Title=Status[0]["title"], Description=Status[0]["description"], AlertType=Status[0]["alertType"])
 
 @app.route("/d")
 def downloadMainPage():

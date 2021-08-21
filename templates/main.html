@@ -28,8 +28,11 @@
     <meta property="article:tag" content="osu! mirror">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PZPLP7ZRTL"></script>
     <script src="/static/js/jquery.min.js"></script>
+    <!-- <script src="/static/js/anime.min.js"></script> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@animxyz/core">
+
     <link href="https://rawcdn.githack.com/hung1001/font-awesome-pro/0ac23ca/css/all.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?6828142">
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css?6828142">
     <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -341,8 +344,8 @@
             <div class="backtotop" id="backtotop">
                 <i class="fas fa-chevron-up"></i>
             </div>
-            <el-alert title="Nerinyan has been changed a lot!, A new Nerinyan has changed a lot, including Ui and Api." type="success"
-                description="네리냥에 많은 변화가 찾아왔습니다! Ui, Api 등, 여러가지 편의성이 업데이트 되었습니다." show-icon effect="dark">
+            <el-alert title="{{ Title }}" type="{{ AlertType }}"
+                description="{{ Description }}" show-icon effect="dark">
             </el-alert>
             <div class="ui-main-block">
                 <div class="beatmap-row">
@@ -357,7 +360,7 @@
     <script src="/static/vue_modules/vue-axios-plugin.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue_modules/vue-timeago.min.js" onload="scrptloadchk += 1;"></script>
     <script src="/static/vue/mixins/generalMixins.min.js?13656742" onload="scrptloadchk += 1;"></script>
-    <script src="/static/vue/pages/index.min.js?12618421" onload="scrptloadchk += 1;"></script>
+    <script src="/static/vue/pages/index.js?12618421" onload="scrptloadchk += 1;"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js" onload="scrptloadchk += 1;"></script>
     <script>
         setTimeout(CheckLoadScript, 1000);

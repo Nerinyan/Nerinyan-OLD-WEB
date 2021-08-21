@@ -2,7 +2,7 @@ var beatmap = {
     props: ['beatmap'],
     delimiters: ["<%", "%>"],
     template: `                    
-        <div class="beatmap-block">
+        <div class="beatmap-block xyz-in" xyz="fade up">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
                 <a v-on:click="redirectDownload(beatmap.id)" :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
@@ -92,7 +92,7 @@ var beatmap = {
                 <div class="version-list">
                     <i :id="'versiondropdownbtn-' + beatmap.id" class="version-dropdownbtn fad fa-sort-down" v-on:click="versionHover(beatmap.id)"></i>
                     <div class="version-list-block" :id="'versionlist-' + beatmap.id">
-                    <div class="version-list-block-in-block hoverd" :id="'hoverlist-' + beatmap.id">
+                    <div class="version-list-block-in-block hoverd" :id="'hoverlist-' + beatmap.id" xyz="fade up">
                         <div class="hover-list-block">
                             <el-tooltip popper-class="bmap-tooltip" placement="top" v-for="bmap in versions.std" v-bind:key="bmap.id">
                                 <div slot="content" class="beatmap-tooltip">
@@ -749,12 +749,14 @@ var beatmap = {
                 dropdownbtn.classList.toggle("fa-sort-up");
                 dropdownbtn.classList.toggle("fa-sort-down");
                 hoverblock.classList.add("hoverd");
+                hoverblock.classList.add("xyz-in");
                 versionblock.classList.remove("hoverd");
             } else {
                 vm.ishover = true;
                 dropdownbtn.classList.toggle("fa-sort-up");
                 dropdownbtn.classList.toggle("fa-sort-down");
                 hoverblock.classList.remove("hoverd");
+                hoverblock.classList.remove("xyz-in");
                 versionblock.classList.add("hoverd");
 
             }
@@ -1121,6 +1123,45 @@ new Vue({
         }));
     },
     methods: {
+        convertServerStatus(type) {
+            var vm = this;
+            if (vm.status_server.MainServer == 1 && vm.status_server.SubServer == 1) {
+                switch (type) {
+                    case 'title':
+                        return "Nerinyan's All services are running normally!"
+                    case 'description':
+                        return "네리냥의 모든 서비스가 정상적으로 작동되고 있습니다!"
+                    case 'style':
+                        return "success"
+                    default:
+                        return 'error';
+                }
+            }
+            else if (vm.status_server.MainServer == 1 && vm.status_server.SubServer == 0) {
+                switch (type) {
+                    case 'title':
+                        return "Nerinyan's Sub Download server has some problemes now..."
+                    case 'description':
+                        return "네리냥의 미러 서버에 현재 문제가 발생하였습니다."
+                    case 'style':
+                        return "warning"
+                    default:
+                        return 'error'
+                }
+            }
+            else if (vm.status_server.MainServer == 0 && vm.status_server.SubServer == 1) {
+                switch (type) {
+                    case 'title':
+                        return "Nerinyan's Main server has some problemes now..."
+                    case 'description':
+                        return "네리냥의 메인 서버에 현재 문제가 발생하였습니다."
+                    case 'style':
+                        return "warning"
+                    default:
+                        return 'error'
+                }
+            }
+        },
         toggleExpand() {
             var vm = this;
             if (vm.isExpand) {
@@ -1461,7 +1502,8 @@ new Vue({
                     sort: this.sort,
                     creator: this.creatorid
                 }
-            }, ).then(function (response) {
+            })
+            .then(function (response) {
                 if (vm.list.length < 1) {
                     vm.list = response.data;
                 } else {
@@ -1472,6 +1514,12 @@ new Vue({
                 vm.load = false;
                 vm.first_load = false;
                 this.fullscreenLoading = false;
+            })
+            .catch(error => {
+                vm.load = false;
+                vm.first_load = false;
+                this.fullscreenLoading = false;
+                vm.list = [];
             });
         },
         chageSearch_Query() {
