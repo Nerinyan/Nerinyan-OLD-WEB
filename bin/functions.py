@@ -60,7 +60,7 @@ def checkBeatmapInDB(setid):
 
 def checkServerStatus():
     url_MainServer = f"https://api.nerina.pw/"
-    url_SubServer = f"https://xiiov.com/search"
+    url_SubServer = f"https://xiiov.com/health"
     MainServer = get(url_MainServer).status_code
     SubServer = get(url_SubServer).status_code
     result = []

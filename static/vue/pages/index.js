@@ -1477,7 +1477,9 @@ new Vue({
             var vm = this;
             this.page = page;
             this.offset = 0;
-            vm.getBeatmapData();
+            if (vm.list.length >= (48 * vm.page)) {
+                vm.getBeatmapData();
+            }
         },
         searchQueryConvert(q) {
             if (q.length >= 1) {
@@ -1519,7 +1521,11 @@ new Vue({
                 vm.load = false;
                 vm.first_load = false;
                 this.fullscreenLoading = false;
-                vm.list = [];
+                if (vm.list.length >= 48) {
+                    vm.list = vm.list;
+                } else {
+                    vm.list = []
+                }
             });
         },
         chageSearch_Query() {
