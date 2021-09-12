@@ -1,24 +1,22 @@
-# nerinyan
+# osu-Beatmap-Mirror | Nerinyan
+Nerinyan is osu! beatmap mirror written by vue-js, flask
 
-## Project setup
-```
-npm install
-```
+## Api Server
+[osu-Beatmap-Mirror-API](https://github.com/zeee2/osu-Beatmap-Mirror-API)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Features
+- A design similar to the osu! website
+- Easy-to-use ui
+- Easy-to-manipulate search options
 
-### Lints and fixes files
-```
-npm run lint
-```
+## Support This Project
+- [Toss](http://toss.me/zeeee) | [Shinhan MySol](http://MySol.ID/ze2ee)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Preview
+![Preview Image](https://i.imgur.com/MxPuVsS.png)
+
+### License
+
+Copyright © 2020 ~ 2021 [ZEEE](https://github.com/zeee2)\
+This project is [GPL-3.0](https://github.com/Nerina1241/osu-Beatmap-Mirror/blob/main/LICENSE) licensed.
