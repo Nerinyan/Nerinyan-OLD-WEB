@@ -1,1 +1,0 @@
-SELECT artist, title FROM BeatmapMirror.beatmaps where set_id = {0} limit 1;
