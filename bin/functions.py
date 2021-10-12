@@ -18,9 +18,65 @@ from flask import redirect
 import base64
 
 BASE_API = 'https://osu.ppy.sh/api'
+NERINYAN_API = 'https://api.nerina.pw'
 
 def stringToBase64(s):
     return base64.b64encode(s.encode('utf-8'))
+
+def conevrtStatus(status):
+    status = int(status)
+    if status == 4:
+        return "Loved"
+    elif status == 3:
+        return "Qualified"
+    elif status == 2:
+        return "Approved"
+    elif status == 1:
+        return "Ranked"
+    elif status == 0:
+        return "Pending"
+    elif status == -1:
+        return "WIP"
+    elif status == -2:
+        return "Graveyard"
+
+def conevrtStatusWithIcon(status):
+    status = int(status)
+    if status == 4:
+        return "💟 Loved"
+    elif status == 3:
+        return "✅ Qualified"
+    elif status == 2:
+        return "🔥 Approved"
+    elif status == 1:
+        return "⏫ Ranked"
+    elif status == 0:
+        return "❔ Pending"
+    elif status == -1:
+        return "🛠️ WIP"
+    elif status == -2:
+        return "⚰️ Graveyard"
+
+def convertTotalLength(length):
+    m, s = divmod(length, 60)
+    h, m = divmod(m, 60)
+    
+    if f"{h:d}" == "0" and f"{m:02d}" == "00":
+        return f"{s:02d}"
+    elif f"{h:d}" == "0":
+        return f"{m:02d}:{s:02d}"
+    else:
+        return f"{h:d}:{m:02d}:{s:02d}"
+
+def convertMode(m):
+    if m == 0:
+        return "osu!"
+    elif m == 1:
+        return "taiko"
+    elif m == 2:
+        return "catch"
+    elif m == 3:
+        return "mania"
 
 def req_update_beatmapsets(setid):
     url = f"https://api.nerina.pw/u?k={UserConfig['ApiKey']}&s={setid}"
@@ -35,6 +91,18 @@ def req_update_beatmapsets(setid):
             return False
     except:
         return False
+
+def generateMainDesc(B_DATA):
+    desc = f"{conevrtStatus(B_DATA['ranked'])} osu! beatmap by {B_DATA['creator']}."
+    desc += f"\n{conevrtStatusWithIcon(B_DATA['ranked'])} · 📚 {len(B_DATA['beatmaps'])} Difficulties · 🎵 {round(float(B_DATA['bpm']))} · ❤️ {B_DATA['favourite_count']}\n"
+    for i in B_DATA['beatmaps']:
+        desc += f"\n    ({convertMode(i['mode_int'])}) {i['version']} - ⭐ {i['difficulty_rating']} · ⏳ {convertTotalLength(i['total_length'])} | CS {i['cs']} · AR {i['ar']}"
+    return desc
+
+def get_beatmapData(setid):
+    json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
+    data = json.loads(json_url.read())
+    return data[0]
 
 def checkBeatmapInDB(setid):
     try:

@@ -5,7 +5,7 @@ var beatmap = {
         <div class="beatmap-block xyz-in" xyz="fade up">
             <div class="beatmap-single">
                 <div class="beatmap-bg-default"></div>
-                <a v-on:click="redirectDownload(beatmap.id)" :href="createBmpDlUri(beatmap.id, false)" :id="beatmap.id" class="cardheader ranked"
+                <a :href="createBmpDlUri(beatmap.id, false)" target="_blank" :id="beatmap.id" class="cardheader ranked"
                     :style="'background-image: linear-gradient(to right, #00000099, #ffe4e100), url(https://assets.ppy.sh/beatmaps/' + beatmap.id + '/covers/cover.jpg?1622784772);'">
                     <div class="beatamp-header-block">
                         <div>
@@ -73,17 +73,17 @@ var beatmap = {
                             </a>
                         </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="Download" placement="top" v-if="beatmap.video == 0">
-                            <a :href="createBmpDlUri(beatmap.id, false)" class="clipboard-icon">
+                            <a :href="createBmpDlUri(beatmap.id, false)" target="_blank" class="clipboard-icon">
                                 <i class="copyico fas fa-download"></i>
                             </a>
                         </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="Download with video" placement="top" v-if="beatmap.video == 1">
-                            <a :href="createBmpDlUri(beatmap.id, false)" class="clipboard-icon">
+                            <a :href="createBmpDlUri(beatmap.id, false)" target="_blank" class="clipboard-icon">
                                 <i class="copyico fas fa-download"></i>
                             </a>
                         </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="Download without video" placement="top" v-if="beatmap.video == 1">
-                            <a :href="createBmpDlUri(beatmap.id, true)" class="clipboard-icon">
+                            <a :href="createBmpDlUri(beatmap.id, true)" target="_blank" class="clipboard-icon">
                                 <i class="copyico fas fa-video-slash"></i>
                             </a>
                         </el-tooltip>
@@ -948,18 +948,10 @@ var beatmap = {
             }, false);
         },
         createBmpDlUri: function (id, video) {
-            // console.log("request generate beatmap download url... DownloadServer: ", dlserver);
-            json = {
-                'server': dlserver,
-                'beatmapsetid': id
-            };
-            let json2string = JSON.stringify(json);
-            var conv = btoa(json2string);
-            var downloadUrl = "https://api.nerina.pw/download?b=" + conv;
+            var downloadUrl = "https://nerina.pw/d/" + id + "?server=" + dlserver;
             if (video) {
                 downloadUrl += "&noVideo=1";
             }
-            // console.log("generated!: " + downloadUrl);
             return downloadUrl;
         },
         redirectDownload: function (id) {
@@ -1024,6 +1016,7 @@ new Vue({
             visible: false,
             fullscreenLoading: false,
             list: [],
+            temp_list: [],
             page: 0,
             offset: 0,
             search_query: q,
@@ -1106,9 +1099,15 @@ new Vue({
             this.getBeatmapData();
         },
         serverid() {
+            console.log("download server changed.")
             dlserver = this.serverid;
             this.downloadServer = this.serverid;
-            // console.log("index.js", this.downloadServer);
+            this.temp_list = this.list;
+            this.list = [];
+            this.page = 0;
+            setInterval(() => {
+                this.list = this.temp_list;
+            }, 5);
         },
         novideo() {
             dlNovideo = this.novideo;
@@ -1516,6 +1515,7 @@ new Vue({
                 vm.load = false;
                 vm.first_load = false;
                 this.fullscreenLoading = false;
+                vm.temp_list = response.data
             })
             .catch(error => {
                 vm.load = false;

@@ -71,15 +71,18 @@ def update_beatmap(setid):
 @app.route('/s/<setid>', methods=['get'])
 @app.route('/osu/s/<setid>', methods=['get'])
 def RedirectDownload(setid):
+    B_DATA = get_beatmapData(setid)
+
     parser = reqparse.RequestParser()
-    parser_rows = {'int': {'s'}}
+    parser_rows = {'int': {'server', 'noVideo'}}
     for parsers in parser_rows:
         parserKey = parser_rows[parsers]
         for pars in parserKey:
             parser.add_argument(pars, type=type(parsers))
 
     args = parser.parse_args()
-    server = args["s"]
+    server = args["server"]
+    novid = args["noVideo"]
 
     if server == None:
         server = 0
@@ -95,7 +98,16 @@ def RedirectDownload(setid):
     setb64 = setb64.replace("b'", "")
     setb64 = setb64.replace("'", "")
 
-    return redirect(f"{BaseURL}{setb64}")
+    uri = f"{BaseURL}{setb64}"
+    if novid == 1:
+        uri += "?noVideo=1"
+    desc = generateMainDesc(B_DATA)
+    return render_template("redirect.html", 
+        redirect_uri = uri,
+        beatmap_data = B_DATA,
+        title=f"{B_DATA['artist_unicode']} - {B_DATA['title_unicode']}",
+        description=desc,
+        thumb = f"https://b.ppy.sh/thumb/{setid}l.jpg")
 
 @app.route('/osu/b/<bid>', methods=['get'])
 @app.route('/b/<bid>', methods=['get'])

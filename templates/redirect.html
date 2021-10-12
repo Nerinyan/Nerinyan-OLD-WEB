@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta property="og:site_name" content="NeriNyan: osu! Beatmap Mirror">
+    <meta property="og:type" content="website">
+    <meta name="Subject" content="osu! Beatmap Mirror">
+    <meta name="Publisher" content="osu! Beatmap Mirror">
+    <meta name="keywords"
+        content="osu!,오스,beatmap,osu! beatmap, osu! mirror, bloodcat, beatconnect, nerina, osu! beatmap mirror, mirror, beatmap mirror, cookiezi">
+    <meta name="author" content="Nerina">
+    <meta name="Location" content="South Korea">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <meta property="article:tag" content="osu!">
+    <meta property="article:tag" content="osu! beatmap mirror">
+    <meta property="article:tag" content="osu! beatmap">
+    <meta property="article:tag" content="osu! beatmap download">
+    <meta property="article:tag" content="osu! mirror">
+
+    <meta property="title" content="{{ title }}">
+    <meta property="twitter:title" content="{{ title }}">
+    <meta name="description" content="{{ description }}">
+    <meta name="twitter:description" content="{{ description }}">
+    <meta property="vk:image" content="{{ thumb }}">
+    <meta property="twitter:image" content="{{ thumb }}">
+    <meta property="og:image" content="{{ thumb }}">
+    <script src="/static/js/jquery.min.js"></script>
+    <title>{{ title }} | NeriNyan</title>
+    <script>
+        redirect_uri = "{{ redirect_uri }}"
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?6828142">
+    <link rel="stylesheet" type="text/css" href="/static/css/redirect.css">
+</head>
+<body>
+    <div id="app">
+        <div class="ui container" id="main-form">
+            <div class="ui-navbar-block">
+                <el-row class="navbar logo">
+                    <el-col :span="24">
+                        <div class="navbar-search-box">
+                            <a href="/main" class="logo">NeriNyan: osu! Beatmap Mirror</a>
+                            <a href="https://discordapp.com/users/637921223312932895/" class="nav-logo right"><i
+                                    class="fab fa-discord"></i></a>
+                            <a href="mailto:nerina@debian.moe" class="nav-logo2 right">DMCA</i></a>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+        </div>
+        
+        <div class="main-form">
+            <div class="owo">
+                <h1>Thank you for using Nerinyan!🐈</h1>
+                <h2>잠시후, 비트맵 다운로드가 시작됩니다. 다운로드가 시작되지 않을 경우 <a href="{{ redirect_uri }}">여기를 클릭해주세요.</a></h2>
+                <h2>Your Requested Beatmapset will download in seconds... Download failed? <a href="{{ redirect_uri }}">Click Here to download manually.</a></h2>
+            </div>
+            <a href="/main">
+                <button>
+                    Return to Main Page
+                </button>
+            </a>
+        </div>
+    </div>
+    <script>
+        window.location.href = redirect_uri
+    </script>
+</body>
+</html>
