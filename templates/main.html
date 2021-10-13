@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@animxyz/core">
 
     <link href="https://rawcdn.githack.com/hung1001/font-awesome-pro/0ac23ca/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="https://kit.fontawesome.com/803eab826e.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/index.min.css?6828142">
     <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
     <script>
@@ -81,8 +82,9 @@
                     <el-col :span="24">
                         <div class="navbar-search-box">
                             <a href="/main" class="logo">NeriNyan: osu! Beatmap Mirror</a>
-                            <a href="https://discordapp.com/users/637921223312932895/" class="nav-logo right"><i
-                                    class="fab fa-discord"></i></a>
+                            <a href="https://discord.gg/SyFmvf2tZk" class="nav-logo right">
+                                <i class="fab fa-discord"></i>
+                            </a>
                             <a href="mailto:nerina@debian.moe" class="nav-logo2 right">DMCA</i></a>
                         </div>
                     </el-col>
@@ -360,6 +362,11 @@
             </div>
             <el-alert title="{{ Title }}" type="{{ AlertType }}"
                 description="{{ Description }}" show-icon effect="dark">
+            </el-alert>
+            <el-alert title="Join Nerinyan's Discord now!" type="info" show-icon effect="dark">
+                <div slot="">
+                    <a href="https://discord.gg/SyFmvf2tZk">https://discord.gg/SyFmvf2tZk</a>
+                </div>
             </el-alert>
             <div class="ui-main-block">
                 <div class="beatmap-row">

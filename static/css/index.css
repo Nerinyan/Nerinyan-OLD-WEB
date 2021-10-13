@@ -1147,7 +1147,9 @@ a {
 }
 
 .el-icon-info:before {
-    content: "\e7a1"
+    font-family: "Font Awesome 5 Brands";
+    font-size: 24px;
+    content: "\f392"
 }
 
 .el-icon-question:before {
@@ -6017,7 +6019,7 @@ a {
 }
 
 .el-alert__icon.el-icon-info.is-big {
-    color: #1f350d;
+    color: #fff;
 }
 
 .el-alert__title.is-bold {
@@ -6048,7 +6050,7 @@ a {
 }
 
 .el-alert--info.is-dark {
-    background-color: #909399;
+    background-color: #754397;
     color: #FFF
 }
 
@@ -16131,6 +16133,31 @@ input .el-input__inner::placeholder {
     text-align: center;
 }
 
+.discordurl {
+    position: fixed;
+    display: flex;
+    left: 20px;
+    bottom: 20px;
+    cursor: pointer;
+    z-index: 12381234;
+    flex-direction: column-reverse;
+}
+
+.discordurl > h2 {
+    font-size: 16px;
+}
+
+.discorduri {
+    display: block;
+    background: #93faff;
+    border-radius: 100%;
+    font-size: 29px;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: #2f2f2f;
+}
+
 .navbar-search-box {
     justify-content: left;
     justify-items: left;
@@ -16277,6 +16304,7 @@ input .el-input__inner::placeholder {
 
 .right {
     display: flex;
+    align-items: center;
 }
 
 .left {

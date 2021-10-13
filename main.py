@@ -105,7 +105,7 @@ def RedirectDownload(setid):
     return render_template("redirect.html", 
         redirect_uri = uri,
         beatmap_data = B_DATA,
-        title=f"{B_DATA['artist_unicode']} - {B_DATA['title_unicode']}",
+        title=f"{B_DATA['artist']} - {B_DATA['title']}",
         description=desc,
         thumb = f"https://b.ppy.sh/thumb/{setid}l.jpg")
 
