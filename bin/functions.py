@@ -129,8 +129,16 @@ def checkBeatmapInDB(setid):
 def checkServerStatus():
     url_MainServer = f"https://api.nerina.pw/"
     url_SubServer = f"https://xiiov.com/health"
-    MainServer = get(url_MainServer).status_code
-    SubServer = get(url_SubServer).status_code
+
+    try:
+        MainServer = get(url_MainServer).status_code
+    except:
+        MainServer = 0
+    try:        
+        SubServer = get(url_SubServer).status_code
+    except:
+        SubServer = 0
+
     result = []
     if MainServer == 200 and SubServer == 200:
         title = "Nerinyan's All services are running normally!"
@@ -148,8 +156,10 @@ def checkServerStatus():
         title = "Nerinyan's All services has some problemes now..."
         description = "네리냥의 모든 서비스에 현재 문제가 발생하였습니다."
         alertType = "error"
+
     MainServerStatusCode = MainServer
     SubServerStatusCode = SubServer
+    
     result.append({"title": title, "description": description, "alertType": alertType, "ServerStatus": {"Main": MainServerStatusCode, "Sub": SubServerStatusCode}})
     return result
 

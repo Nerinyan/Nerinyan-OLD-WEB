@@ -85,7 +85,7 @@ def RedirectDownload(setid):
     novid = args["noVideo"]
 
     if server == None:
-        server = 0
+        server = 1
 
     BaseURL = "https://api.nerina.pw/download?b="
     setJson = {
