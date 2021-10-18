@@ -9,7 +9,7 @@ import time
 import json
 from requests import get
 from colorama import Fore
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 import pymongo
 from bson.json_util import dumps
 import datetime
@@ -100,12 +100,13 @@ def generateMainDesc(B_DATA):
     return desc
 
 def get_beatmapData(setid):
+    uri = f"{NERINYAN_API}/beatmapset/{setid}"
+    req = Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
     try:
-        json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
+        data = json.loads(urlopen(req).read())
     except:
         req_update_beatmapsets(setid)
-        json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
-    data = json.loads(json_url.read())
+        data = json.loads(urlopen(req).read())
     return data[0]
 
 def checkBeatmapInDB(setid):
