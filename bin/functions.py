@@ -100,7 +100,11 @@ def generateMainDesc(B_DATA):
     return desc
 
 def get_beatmapData(setid):
-    json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
+    try:
+        json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
+    except:
+        req_update_beatmapsets(setid)
+        json_url = urlopen(f"{NERINYAN_API}/beatmapset/{setid}")
     data = json.loads(json_url.read())
     return data[0]
 

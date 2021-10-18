@@ -61,11 +61,24 @@ def downloadMainPage():
 
 @app.route('/beatmap/update/<setid>')
 def update_beatmap(setid):
-    aaaa = req_update_beatmapsets(setid)
-    if aaaa:
-        return "ok"
+    parser = reqparse.RequestParser()
+    parser_rows = {'str': {'k'}}
+    for parsers in parser_rows:
+        parserKey = parser_rows[parsers]
+        for pars in parserKey:
+            parser.add_argument(pars, type=type(parsers))
+    args = parser.parse_args()
+
+    key = args['k']
+
+    if key == UserConfig['ApiKey']:
+        aaaa = req_update_beatmapsets(setid)
+        if aaaa:
+            return "ok"
+        else:
+            return goto_error_page('Beatmap Update Failed')
     else:
-        return goto_error_page('Beatmap Update Failed')
+        return goto_error_page('Private Key not matched')
 
 @app.route('/d/<setid>')
 @app.route('/s/<setid>', methods=['get'])
